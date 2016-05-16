@@ -126,7 +126,7 @@
             this.groupBox1.Size = new System.Drawing.Size(197, 309);
             this.groupBox1.TabIndex = 19;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Ingrese usuario y contrseña";
+            this.groupBox1.Text = "Ingrese usuario y contraseña";
             // 
             // groupBox2
             // 
