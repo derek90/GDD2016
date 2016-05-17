@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WindowsFormsApplication1.Login
@@ -19,7 +13,6 @@ namespace WindowsFormsApplication1.Login
             InitializeComponent();
             this.roles = roles;
             this.fill_select();
-
         }
 
         private void fill_select()
