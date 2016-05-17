@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WindowsFormsApplication1.ABM_Visibilidad
+namespace WindowsFormsApplication1.ABM_Usuario
 {
-    public partial class Form1 : Form
+    public partial class AbmUsuario : Form
     {
-        public Form1()
+        public AbmUsuario()
         {
             InitializeComponent();
         }
