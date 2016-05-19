@@ -748,3 +748,11 @@ CREATE PROCEDURE HARDCOR.login (@userName NVARCHAR(255), @password VARCHAR(255))
      AND U.cod_us = RxU.cod_us
 END
 GO
+
+CREATE PROCEDURE HARDCOR.updateRole (@cod_rol TINYINT, @nombre NVARCHAR(255), @habilitado BIT) AS BEGIN
+  UPDATE HARDCOR.ROl
+     SET nombre = @nombre,
+         habilitado = @habilitado
+   WHERE cod_rol = @cod_rol
+END
+GO
