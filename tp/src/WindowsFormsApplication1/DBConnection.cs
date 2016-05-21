@@ -3,11 +3,20 @@ using System.Configuration;
 
 namespace WindowsFormsApplication1
 {
-    class DBConnection
+    public sealed class DBConnection
     {
         string server = ConfigurationManager.AppSettings["server"].ToString();
         string user = ConfigurationManager.AppSettings["user"].ToString();
         string password = ConfigurationManager.AppSettings["password"].ToString();
+
+        private static readonly DBConnection instance = new DBConnection();
+
+        private DBConnection(){}
+
+        public static DBConnection getInstance()
+        {
+            return instance;
+        }
 
         public SqlConnection openConnection()
         {
@@ -17,3 +26,4 @@ namespace WindowsFormsApplication1
         }
     }
 }
+
