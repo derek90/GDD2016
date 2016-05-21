@@ -21,7 +21,7 @@ namespace WindowsFormsApplication1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var connection = DBConnection.getInstance().openConnection();
+            var connection = DBConnection.getInstance().getConnection();
 
             SqlCommand command = new SqlCommand("HARDCOR.login", connection);
             command.CommandType = CommandType.StoredProcedure;

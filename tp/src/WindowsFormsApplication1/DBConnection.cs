@@ -18,7 +18,7 @@ namespace WindowsFormsApplication1
             return instance;
         }
 
-        public SqlConnection openConnection()
+        public SqlConnection getConnection()
         {
             SqlConnection con = new SqlConnection();
             con.ConnectionString = "SERVER=" + server + "\\SQLSERVER2102;DATABASE=GD1C2016;UID=" + user + ";PASSWORD=" + password + ";";
