@@ -114,6 +114,12 @@ GO
 IF (OBJECT_ID ('HARDCOR.login') IS NOT NULL)
 	DROP PROCEDURE HARDCOR.login
 GO
+IF (OBJECT_ID ('HARDCOR.updateRole') IS NOT NULL)
+	DROP PROCEDURE HARDCOR.login
+GO
+IF (OBJECT_ID ('HARDCOR.newRole') IS NOT NULL)
+	DROP PROCEDURE HARDCOR.login
+GO
 
 
  if exists (select SCHEMA_NAME from INFORMATION_SCHEMA.SCHEMATA where SCHEMA_NAME = 'HARDCOR')
@@ -750,9 +756,15 @@ END
 GO
 
 CREATE PROCEDURE HARDCOR.updateRole (@cod_rol TINYINT, @nombre NVARCHAR(255), @habilitado BIT) AS BEGIN
-  UPDATE HARDCOR.ROl
+  UPDATE HARDCOR.Rol
      SET nombre = @nombre,
          habilitado = @habilitado
    WHERE cod_rol = @cod_rol
+END
+GO
+
+CREATE PROCEDURE HARDCOR.newRole (@nombre NVARCHAR(255), @habilitado BIT) AS BEGIN
+  INSERT INTO HARDCOR.Rol (nombre, habilitado)
+  VALUES (@nombre, @habilitado)
 END
 GO
