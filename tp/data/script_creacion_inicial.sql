@@ -114,11 +114,25 @@ GO
 IF (OBJECT_ID ('HARDCOR.login') IS NOT NULL)
 	DROP PROCEDURE HARDCOR.login
 GO
+
 IF (OBJECT_ID ('HARDCOR.updateRole') IS NOT NULL)
-	DROP PROCEDURE HARDCOR.login
+	DROP PROCEDURE HARDCOR.updateRole
 GO
+
 IF (OBJECT_ID ('HARDCOR.newRole') IS NOT NULL)
-	DROP PROCEDURE HARDCOR.login
+	DROP PROCEDURE HARDCOR.newRole
+GO
+
+IF (OBJECT_ID ('HARDCOR.functionalitiesOf') IS NOT NULL)
+	DROP PROCEDURE HARDCOR.functionalitiesOf
+GO
+
+IF (OBJECT_ID ('HARDCOR.addFunctionality') IS NOT NULL)
+	DROP PROCEDURE HARDCOR.addFunctionality
+GO
+
+IF (OBJECT_ID ('HARDCOR.removeFunctionality') IS NOT NULL)
+	DROP PROCEDURE HARDCOR.removeFunctionality
 GO
 
 
@@ -766,5 +780,31 @@ GO
 CREATE PROCEDURE HARDCOR.newRole (@nombre NVARCHAR(255), @habilitado BIT) AS BEGIN
   INSERT INTO HARDCOR.Rol (nombre, habilitado)
   VALUES (@nombre, @habilitado)
+
+  SELECT SCOPE_IDENTITY() AS nuevo_pk
+    FROM HARDCOR.Rol
+END
+GO
+
+CREATE PROCEDURE HARDCOR.functionalitiesOf (@cod_rol TINYINT) AS BEGIN
+  SELECT F.cod_fun, F.descripcion
+    FROM HARDCOR.Funcionalidad F, HARDCOR.RolXfunc R
+   WHERE R.cod_rol = @cod_rol
+     AND F.cod_fun = R.cod_fun
+END
+GO
+
+CREATE PROCEDURE HARDCOR.addFunctionality (@cod_rol TINYINT, @cod_fun TINYINT) AS BEGIN
+  IF(NOT EXISTS(SELECT 1 FROM HARDCOR.RolXfunc WHERE cod_rol = @cod_rol AND cod_fun = @cod_fun)) BEGIN
+    INSERT INTO HARDCOR.RolXfunc (cod_rol, cod_fun)
+    VALUES (@cod_rol, @cod_fun)
+  END
+END
+GO
+
+CREATE PROCEDURE HARDCOR.removeFunctionality (@cod_rol TINYINT, @cod_fun TINYINT) AS BEGIN
+  DELETE FROM HARDCOR.RolXfunc
+   WHERE cod_rol = @cod_rol
+     AND cod_fun = @cod_fun
 END
 GO

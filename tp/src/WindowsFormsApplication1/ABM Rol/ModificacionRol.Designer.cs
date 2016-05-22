@@ -98,6 +98,7 @@
             this.checkedListBox1.Name = "checkedListBox1";
             this.checkedListBox1.Size = new System.Drawing.Size(189, 94);
             this.checkedListBox1.TabIndex = 9;
+            this.checkedListBox1.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.CheckedListBox1_ItemCheck);
             // 
             // checkBox1
             // 
