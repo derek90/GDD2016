@@ -53,7 +53,7 @@ namespace WindowsFormsApplication1.ABM_Rol
             {
                 this.apply_sp_to_list_of_functionalities(this.added_functionalities, "HARDCOR.addFunctionality");
                 this.apply_sp_to_list_of_functionalities(this.deleted_functionalities, "HARDCOR.removeFunctionality");
-                this.Hide();
+                this.Close();
                 MessageBox.Show("Se modificaron los campos correctamente");
                 this.parent.fill_data_set();  // Para que refresque el data set
             }
@@ -82,7 +82,7 @@ namespace WindowsFormsApplication1.ABM_Rol
                 int inserted_pk = Int32.Parse(insert_command.ExecuteScalar().ToString());
                 this.role_code = inserted_pk;
                 this.apply_sp_to_list_of_functionalities(this.added_functionalities, "HARDCOR.addFunctionality");
-                this.Hide();
+                this.Close();
                 message = "Se agregó correctamente el rol " + this.textBox1.Text;
                 this.parent.fill_data_set();  // Para que refresque el data set
             }
