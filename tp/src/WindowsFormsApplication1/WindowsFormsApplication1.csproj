@@ -63,6 +63,18 @@
     <Compile Include="ABM Usuario\AbmUsuario.Designer.cs">
       <DependentUpon>AbmUsuario.cs</DependentUpon>
     </Compile>
+    <Compile Include="ABM Usuario\AltaContactoCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABM Usuario\AltaContactoCliente.Designer.cs">
+      <DependentUpon>AltaContactoCliente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ABM Usuario\AltaUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABM Usuario\AltaUsuario.Designer.cs">
+      <DependentUpon>AltaUsuario.cs</DependentUpon>
+    </Compile>
     <Compile Include="ABM Visibilidad\AbmVisibilidad.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -122,6 +134,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ABM Usuario\AbmUsuario.resx">
       <DependentUpon>AbmUsuario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ABM Usuario\AltaContactoCliente.resx">
+      <DependentUpon>AltaContactoCliente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ABM Usuario\AltaUsuario.resx">
+      <DependentUpon>AltaUsuario.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ABM Visibilidad\AbmVisibilidad.resx">
       <DependentUpon>AbmVisibilidad.cs</DependentUpon>
