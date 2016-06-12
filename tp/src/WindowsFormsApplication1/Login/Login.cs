@@ -24,7 +24,7 @@ namespace WindowsFormsApplication1.Login
             command.Parameters.Add(new SqlParameter("@password", this.textBox2.Text));
             connection.Open();
             SqlDataReader reader = command.ExecuteReader();
-            Dictionary<int, string> role_codes = new Dictionary<int, string>();
+            List<KeyValuePair<int, string>> role_codes = new List<KeyValuePair<int, string>>();
             if (!reader.HasRows)  // El usuario no existe
                 MessageBox.Show("El usuario " + this.textBox1.Text + " no está registrado en el sistema",
                     "Error al iniciar sesión", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -43,8 +43,8 @@ namespace WindowsFormsApplication1.Login
                         break;
                     }
                     else
-                        role_codes.Add(Int32.Parse(reader["cod_rol"].ToString()),
-                                       reader["nombre"].ToString());
+                        role_codes.Add(new KeyValuePair<int, string> (Int32.Parse(reader["cod_rol"].ToString()),
+                                                                      reader["nombre"].ToString()));
                 }
             reader.Close();
             connection.Close();
@@ -52,7 +52,7 @@ namespace WindowsFormsApplication1.Login
             if (role_codes.Count > 0)
                 this.Hide();
             if (role_codes.Count == 1)
-                ;//Muestra el menú princpal
+                (new Menu_principal.MainMenu(Int32.Parse(role_codes[0].Key.ToString()))).Show();
             if (role_codes.Count > 1) 
                 (new EleccionRoles(role_codes)).Show();
         }
