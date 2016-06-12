@@ -28,7 +28,7 @@ namespace WindowsFormsApplication1.ABM_Rol
 
         public void fill_data_set()
         {
-            var connection = (new DBConnection()).openConnection();
+            var connection = DBConnection.getInstance().getConnection();
 
             //Creo el adapter usando el select_query
             this.adapter = new SqlDataAdapter(this.select_query, connection);

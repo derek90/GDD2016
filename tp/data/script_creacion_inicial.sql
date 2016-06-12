@@ -133,20 +133,20 @@ IF (OBJECT_ID ('HARDCOR.modificar_empresa') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.existe_usuario') IS NOT NULL)
   DROP FUNCTION HARDCOR.existe_usuario
 
-IF (OBJECT_ID ('HARDCOR.updateRole') IS NOT NULL)
-  DROP PROCEDURE HARDCOR.updateRole
+IF (OBJECT_ID ('HARDCOR.modificar_rol') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.modificar_rol
 
-IF (OBJECT_ID ('HARDCOR.newRole') IS NOT NULL)
-  DROP PROCEDURE HARDCOR.newRole
+IF (OBJECT_ID ('HARDCOR.crear_rol') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.crear_rol
 
-IF (OBJECT_ID ('HARDCOR.functionalitiesOf') IS NOT NULL)
-  DROP PROCEDURE HARDCOR.functionalitiesOf
+IF (OBJECT_ID ('HARDCOR.funcionalidades_del_rol') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.funcionalidades_del_rol
 
-IF (OBJECT_ID ('HARDCOR.addFunctionality') IS NOT NULL)
-  DROP PROCEDURE HARDCOR.addFunctionality
+IF (OBJECT_ID ('HARDCOR.agregar_funcionalidad') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.agregar_funcionalidad
 
-IF (OBJECT_ID ('HARDCOR.removeFunctionality') IS NOT NULL)
-  DROP PROCEDURE HARDCOR.removeFunctionality
+IF (OBJECT_ID ('HARDCOR.quitar_funcionalidad') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.quitar_funcionalidad
 
 IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
   DROP SCHEMA HARDCOR 
@@ -808,8 +808,9 @@ CREATE FUNCTION HARDCOR.existe_usuario (@username NVARCHAR(255)) RETURNS BIT AS 
     RETURN 1
   RETURN 0
 END
+GO
 
-CREATE PROCEDURE HARDCOR.updateRole (@cod_rol TINYINT, @nombre NVARCHAR(255), @habilitado BIT) AS BEGIN
+CREATE PROCEDURE HARDCOR.modificar_rol (@cod_rol TINYINT, @nombre NVARCHAR(255), @habilitado BIT) AS BEGIN
   UPDATE HARDCOR.Rol
      SET nombre = @nombre,
          habilitado = @habilitado
@@ -817,7 +818,7 @@ CREATE PROCEDURE HARDCOR.updateRole (@cod_rol TINYINT, @nombre NVARCHAR(255), @h
 END
 GO
 
-CREATE PROCEDURE HARDCOR.newRole (@nombre NVARCHAR(255), @habilitado BIT) AS BEGIN
+CREATE PROCEDURE HARDCOR.crear_rol (@nombre NVARCHAR(255), @habilitado BIT) AS BEGIN
   INSERT INTO HARDCOR.Rol (nombre, habilitado)
   VALUES (@nombre, @habilitado)
 
@@ -826,7 +827,8 @@ CREATE PROCEDURE HARDCOR.newRole (@nombre NVARCHAR(255), @habilitado BIT) AS BEG
 END
 GO
 
-CREATE PROCEDURE HARDCOR.functionalitiesOf (@cod_rol TINYINT) AS BEGIN
+CREATE PROCEDURE HARDCOR.funcionalidades_del_rol (@cod_rol TINYINT) AS BEGIN
+  /* Lista las funcionalidades que tiene asignado un rol */
   SELECT F.cod_fun, F.descripcion
     FROM HARDCOR.Funcionalidad F, HARDCOR.RolXfunc R
    WHERE R.cod_rol = @cod_rol
@@ -834,7 +836,9 @@ CREATE PROCEDURE HARDCOR.functionalitiesOf (@cod_rol TINYINT) AS BEGIN
 END
 GO
 
-CREATE PROCEDURE HARDCOR.addFunctionality (@cod_rol TINYINT, @cod_fun TINYINT) AS BEGIN
+CREATE PROCEDURE HARDCOR.agregar_funcionalidad (@cod_rol TINYINT, @cod_fun TINYINT) AS BEGIN
+  /* Agrega la funcionalidad descrita por el codigo al rol,
+     si es que no lo tenia asignado previamente */
   IF(NOT EXISTS(SELECT 1 FROM HARDCOR.RolXfunc WHERE cod_rol = @cod_rol AND cod_fun = @cod_fun)) BEGIN
     INSERT INTO HARDCOR.RolXfunc (cod_rol, cod_fun)
     VALUES (@cod_rol, @cod_fun)
@@ -842,7 +846,7 @@ CREATE PROCEDURE HARDCOR.addFunctionality (@cod_rol TINYINT, @cod_fun TINYINT) A
 END
 GO
 
-CREATE PROCEDURE HARDCOR.removeFunctionality (@cod_rol TINYINT, @cod_fun TINYINT) AS BEGIN
+CREATE PROCEDURE HARDCOR.quitar_funcionalidad (@cod_rol TINYINT, @cod_fun TINYINT) AS BEGIN
   DELETE FROM HARDCOR.RolXfunc
    WHERE cod_rol = @cod_rol
      AND cod_fun = @cod_fun

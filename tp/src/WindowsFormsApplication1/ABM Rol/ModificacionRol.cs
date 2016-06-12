@@ -41,8 +41,8 @@ namespace WindowsFormsApplication1.ABM_Rol
 
         private void update(object sender, EventArgs e)
         {
-            var connection = (new DBConnection()).openConnection();
-            SqlCommand update_command = new SqlCommand("HARDCOR.updateRole", connection);
+            var connection = DBConnection.getInstance().getConnection();
+            SqlCommand update_command = new SqlCommand("HARDCOR.modificar_rol", connection);
             update_command.CommandType = CommandType.StoredProcedure;
             update_command.Parameters.Add(new SqlParameter("@cod_rol", this.role_code));
             update_command.Parameters.Add(new SqlParameter("@nombre", this.textBox1.Text));
@@ -51,8 +51,8 @@ namespace WindowsFormsApplication1.ABM_Rol
             connection.Open();
             if(update_command.ExecuteNonQuery() == 1)
             {
-                this.apply_sp_to_list_of_functionalities(this.added_functionalities, "HARDCOR.addFunctionality");
-                this.apply_sp_to_list_of_functionalities(this.deleted_functionalities, "HARDCOR.removeFunctionality");
+                this.apply_sp_to_list_of_functionalities(this.added_functionalities, "HARDCOR.agregar_funcionalidad");
+                this.apply_sp_to_list_of_functionalities(this.deleted_functionalities, "HARDCOR.quitar_funcionalidad");
                 this.Close();
                 MessageBox.Show("Se modificaron los campos correctamente");
                 this.parent.fill_data_set();  // Para que refresque el data set
@@ -69,8 +69,8 @@ namespace WindowsFormsApplication1.ABM_Rol
                 MessageBox.Show("El rol debe tener un nombre", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            var connection = (new DBConnection()).openConnection();
-            SqlCommand insert_command = new SqlCommand("HARDCOR.newRole", connection);
+            var connection = DBConnection.getInstance().getConnection();
+            SqlCommand insert_command = new SqlCommand("HARDCOR.crear_rol", connection);
             insert_command.CommandType = CommandType.StoredProcedure;
             insert_command.Parameters.Add(new SqlParameter("@nombre", this.textBox1.Text));
             insert_command.Parameters.Add(new SqlParameter("@habilitado", this.checkBox1.Checked));
@@ -81,7 +81,7 @@ namespace WindowsFormsApplication1.ABM_Rol
             {
                 int inserted_pk = Int32.Parse(insert_command.ExecuteScalar().ToString());
                 this.role_code = inserted_pk;
-                this.apply_sp_to_list_of_functionalities(this.added_functionalities, "HARDCOR.addFunctionality");
+                this.apply_sp_to_list_of_functionalities(this.added_functionalities, "HARDCOR.agregar_funcionalidad");
                 this.Close();
                 message = "Se agregó correctamente el rol " + this.textBox1.Text;
                 this.parent.fill_data_set();  // Para que refresque el data set
@@ -99,7 +99,7 @@ namespace WindowsFormsApplication1.ABM_Rol
 
         private void fill_functionalities_list ()
         {
-            var connection = (new DBConnection()).openConnection();
+            var connection = DBConnection.getInstance().getConnection();
             List<Functionality> current_functionalities = new List<Functionality>();
             List<Functionality> all_functionalities = new List<Functionality>();
 
@@ -114,7 +114,7 @@ namespace WindowsFormsApplication1.ABM_Rol
             // Si es un update, pido las funcionalidades asignadas al rol
             if(this.role_code > 0)
             {
-                SqlCommand current_functionalities_command =  new SqlCommand("HARDCOR.functionalitiesOf", connection);
+                SqlCommand current_functionalities_command =  new SqlCommand("HARDCOR.funcionalidades_del_rol", connection);
                 current_functionalities_command.CommandType = CommandType.StoredProcedure;
                 current_functionalities_command.Parameters.Add(new SqlParameter("@cod_rol", role_code));
                 connection.Open();
@@ -130,7 +130,7 @@ namespace WindowsFormsApplication1.ABM_Rol
 
         private void apply_sp_to_list_of_functionalities(List<Functionality> list, string sp)
         {
-            var connection = (new DBConnection()).openConnection();
+            var connection = DBConnection.getInstance().getConnection();
             SqlCommand command;
             foreach (Functionality functionality in list)
             {
