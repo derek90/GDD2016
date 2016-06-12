@@ -91,20 +91,11 @@ IF OBJECT_ID('HARDCOR.Inconsistencias','U') IS NOT NULL
         DROP TABLE HARDCOR.Inconsistencias;
     END;
 
-IF (OBJECT_ID ('HARDCOR.alta_rol') IS NOT NULL)  
-	DROP PROCEDURE HARDCOR.alta_rol
-
 IF (OBJECT_ID ('HARDCOR.tr_calificacion_af_ins') IS NOT NULL)  
 	DROP TRIGGER HARDCOR.tr_calificacion_af_ins
 
 IF (OBJECT_ID ('HARDCOR.tr_visibilidad_af_ins') IS NOT NULL)  
 	DROP TRIGGER HARDCOR.tr_visibilidad_af_ins
-
-IF (OBJECT_ID ('HARDCOR.mod_rol') IS NOT NULL)  
-	DROP PROCEDURE HARDCOR.mod_rol
-
-IF (OBJECT_ID ('HARDCOR.baja_rol') IS NOT NULL)
-	DROP PROCEDURE HARDCOR.baja_rol
 
 IF (OBJECT_ID ('HARDCOR.login') IS NOT NULL)
 	DROP PROCEDURE HARDCOR.login
@@ -142,9 +133,24 @@ IF (OBJECT_ID ('HARDCOR.modificar_empresa') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.existe_usuario') IS NOT NULL)
   DROP FUNCTION HARDCOR.existe_usuario
 
- if exists (select SCHEMA_NAME from INFORMATION_SCHEMA.SCHEMATA where SCHEMA_NAME = 'HARDCOR')
- drop schema HARDCOR 
- GO
+IF (OBJECT_ID ('HARDCOR.modificar_rol') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.modificar_rol
+
+IF (OBJECT_ID ('HARDCOR.crear_rol') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.crear_rol
+
+IF (OBJECT_ID ('HARDCOR.funcionalidades_del_rol') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.funcionalidades_del_rol
+
+IF (OBJECT_ID ('HARDCOR.agregar_funcionalidad') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.agregar_funcionalidad
+
+IF (OBJECT_ID ('HARDCOR.quitar_funcionalidad') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.quitar_funcionalidad
+
+IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
+  DROP SCHEMA HARDCOR 
+GO
 
 CREATE SCHEMA HARDCOR AUTHORIZATION gd; 
 GO
@@ -495,241 +501,6 @@ AS BEGIN
 END
 GO
 
-IF (OBJECT_ID ('HARDCOR.alta_rol') IS NOT NULL)  
-	DROP PROCEDURE HARDCOR.alta_rol
-GO
-
-CREATE PROCEDURE HARDCOR.alta_rol (@rol NVARCHAR(225), @ABM_Rol BIT, @ABM_Usuario BIT, @ABM_Rubro BIT, 
-						  @ABM_Visibilidad BIT, @Generar_publ BIT, @Compra_oferta BIT, @Historial BIT, 
-						  @Calificar BIT, @Consulta_factura BIT, @Listados BIT)
-AS BEGIN
-
-	DECLARE @cod_rol INT
-
-	BEGIN TRY
-		BEGIN TRANSACTION
-			INSERT INTO HARDCOR.Rol
-			VALUES(@rol, 1)
-
-			SET @cod_rol = (SELECT r.cod_rol FROM HARDCOR.Rol r WHERE r.nombre = @rol)
-
-			IF @ABM_Rol = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 1)
-			END
-
-			IF @ABM_Usuario = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 2)
-			END
-
-			IF @ABM_Rubro = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 3)
-			END
-
-			IF @ABM_Visibilidad = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 4)
-			END
-
-			IF @Generar_publ = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 5)
-			END
-
-			IF @Compra_oferta = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 6)
-			END
-
-			IF @Historial = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 7)
-			END
-  
-			IF @Calificar = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 8)
-			END
-
-			IF @Consulta_factura = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 9)
-			END
-
-			IF @Listados = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 10)
-			END
-		
-		COMMIT TRANSACTION
-	END TRY	
-
-	BEGIN CATCH
-		ROLLBACK TRANSACTION
-
-		IF EXISTS (SELECT * FROM HARDCOR.Rol r WHERE r.nombre = @rol)
-		BEGIN
-			PRINT 'El Rol ingresado ya existe'
-			RETURN -1	
-		END  	
-	END CATCH
-
-	RETURN 1
-END   
-GO
-
-IF (OBJECT_ID ('HARDCOR.mod_rol') IS NOT NULL)  
-	DROP PROCEDURE HARDCOR.mod_rol
-GO
-
-CREATE PROCEDURE HARDCOR.mod_rol (@rol NVARCHAR(225), @nuevo_rol NVARCHAR(225), @habilitado BIT,
-						  @ABM_Rol BIT, @ABM_Usuario BIT, @ABM_Rubro BIT, @ABM_Visibilidad BIT, 
-						  @Generar_publ BIT, @Compra_oferta BIT, @Historial BIT, @Calificar BIT, 
-						  @Consulta_factura BIT, @Listados BIT)
-AS BEGIN 
-
-	DECLARE @cod_rol INT
-
-	BEGIN TRY
-		BEGIN TRANSACTION
-			SET @cod_rol = (SELECT r.cod_rol FROM HARDCOR.Rol r WHERE r.nombre = @rol)
-	
-			IF (@habilitado = 0 AND 0 = (SELECT r.habilitado FROM HARDCOR.Rol r WHERE r.cod_rol = @cod_rol)) OR @habilitado = 1
-			BEGIN
-				UPDATE HARDCOR.Rol SET habilitado = @habilitado WHERE HARDCOR.Rol.cod_rol = @cod_rol
-			END
-
-			UPDATE HARDCOR.Rol SET nombre = @nuevo_rol WHERE HARDCOR.Rol.cod_rol = @cod_rol
-
-			IF @ABM_Rol = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 1)
-			END
-
-			IF @ABM_Usuario = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 2)
-			END
-
-			IF @ABM_Rubro = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 3)
-			END
-
-			IF @ABM_Visibilidad = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 4)
-			END
-
-			IF @Generar_publ = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 5)
-			END
-
-			IF @Compra_oferta = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 6)
-			END
-
-			IF @Historial = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 7)
-			END
-  
-			IF @Calificar = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 8)
-			END
-
-			IF @Consulta_factura = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 9)
-			END
-
-			IF @Listados = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 10)
-			END
-		COMMIT TRANSACTION					
-	END TRY
-		
-	BEGIN CATCH
-		IF NOT EXISTS (SELECT * FROM HARDCOR.Rol r WHERE r.nombre = @rol)
-		BEGIN			
-			PRINT 'El Rol que se quiere modificar no existe'
-			RETURN -1
-		END
-		
-		IF @habilitado > 1 
-		BEGIN
-			PRINT 'El campo de habilitado solo puede modificarse con el valor 1'
-			RETURN -2
-		END
-		
-		IF @habilitado = 0 AND @habilitado <> (SELECT r.habilitado FROM HARDCOR.Rol r WHERE r.cod_rol = @cod_rol)  
-		BEGIN
-			PRINT 'No se puede dar de baja un rol desde modificar rol'
-			RETURN -3
-		END			
-	END CATCH
-	RETURN 1
-END      
-GO
-
-
-CREATE PROCEDURE HARDCOR.baja_rol (@rol NVARCHAR(225))
-AS BEGIN
-  	DECLARE @cod_rol TINYINT
-
-	BEGIN TRY
-		BEGIN TRANSACTION
-			SET @cod_rol = (SELECT r.cod_rol FROM HARDCOR.Rol r WHERE r.nombre = @rol)
-
-			UPDATE HARDCOR.Rol SET habilitado = 0 WHERE cod_rol = @cod_rol
-
-			UPDATE HARDCOR.Usuario SET habilitado = 0 WHERE cod_us IN 
-			(SELECT u.cod_us FROM HARDCOR.Usuario u, HARDCOR.RolXus r WHERE r.cod_rol = @cod_rol AND r.cod_us = u.cod_us) 
-		
-			DELETE FROM HARDCOR.RolXfunc WHERE HARDCOR.RolXfunc.cod_rol = @rol
-			DELETE FROM HARDCOR.RolXus WHERE HARDCOR.RolXus.cod_rol = @rol  
-		COMMIT TRANSACTION
-	END TRY
-
-	BEGIN CATCH
-		IF NOT EXISTS (SELECT * FROM HARDCOR.Rol r WHERE r.nombre = @rol )
-		BEGIN
-			PRINT 'El Rol que se quiere inhabilitar no existe'
-			RETURN -1
-		END	
-	END CATCH
-		
-	RETURN 1
-END     
-GO
-
-
 CREATE PROCEDURE HARDCOR.login (@userName NVARCHAR(255), @password VARCHAR(255)) AS BEGIN
   /* Devuelve una fila por cada rol que el usuario posea con:
     - Si el login fue exitoso o no (BIT)
@@ -1036,5 +807,48 @@ CREATE FUNCTION HARDCOR.existe_usuario (@username NVARCHAR(255)) RETURNS BIT AS 
             WHERE username = @username)
     RETURN 1
   RETURN 0
+END
+GO
+
+CREATE PROCEDURE HARDCOR.modificar_rol (@cod_rol TINYINT, @nombre NVARCHAR(255), @habilitado BIT) AS BEGIN
+  UPDATE HARDCOR.Rol
+     SET nombre = @nombre,
+         habilitado = @habilitado
+   WHERE cod_rol = @cod_rol
+END
+GO
+
+CREATE PROCEDURE HARDCOR.crear_rol (@nombre NVARCHAR(255), @habilitado BIT) AS BEGIN
+  INSERT INTO HARDCOR.Rol (nombre, habilitado)
+  VALUES (@nombre, @habilitado)
+
+  SELECT SCOPE_IDENTITY() AS nuevo_pk
+    FROM HARDCOR.Rol
+END
+GO
+
+CREATE PROCEDURE HARDCOR.funcionalidades_del_rol (@cod_rol TINYINT) AS BEGIN
+  /* Lista las funcionalidades que tiene asignado un rol */
+  SELECT F.cod_fun, F.descripcion
+    FROM HARDCOR.Funcionalidad F, HARDCOR.RolXfunc R
+   WHERE R.cod_rol = @cod_rol
+     AND F.cod_fun = R.cod_fun
+END
+GO
+
+CREATE PROCEDURE HARDCOR.agregar_funcionalidad (@cod_rol TINYINT, @cod_fun TINYINT) AS BEGIN
+  /* Agrega la funcionalidad descrita por el codigo al rol,
+     si es que no lo tenia asignado previamente */
+  IF(NOT EXISTS(SELECT 1 FROM HARDCOR.RolXfunc WHERE cod_rol = @cod_rol AND cod_fun = @cod_fun)) BEGIN
+    INSERT INTO HARDCOR.RolXfunc (cod_rol, cod_fun)
+    VALUES (@cod_rol, @cod_fun)
+  END
+END
+GO
+
+CREATE PROCEDURE HARDCOR.quitar_funcionalidad (@cod_rol TINYINT, @cod_fun TINYINT) AS BEGIN
+  DELETE FROM HARDCOR.RolXfunc
+   WHERE cod_rol = @cod_rol
+     AND cod_fun = @cod_fun
 END
 GO

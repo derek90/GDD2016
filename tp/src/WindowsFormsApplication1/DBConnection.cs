@@ -21,7 +21,7 @@ namespace WindowsFormsApplication1
         public SqlConnection getConnection()
         {
             SqlConnection con = new SqlConnection();
-            con.ConnectionString = "SERVER=" + server + "\\SQLSERVER2102;DATABASE=GD1C2016;UID=" + user + ";PASSWORD=" + password + ";";
+            con.ConnectionString = "SERVER=" + server + "\\SQLSERVER2012;DATABASE=GD1C2016;UID=" + user + ";PASSWORD=" + password + ";";
             return con;
         }
     }
