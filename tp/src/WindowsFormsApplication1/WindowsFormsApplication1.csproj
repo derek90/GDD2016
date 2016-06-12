@@ -180,6 +180,9 @@
     <EmbeddedResource Include="ABM Usuario\ModificacionEmpresa.resx">
       <DependentUpon>ModificacionEmpresa.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ABM Visibilidad\AbmVisibilidad.resx">
+      <DependentUpon>AbmVisibilidad.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
