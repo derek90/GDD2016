@@ -22,11 +22,14 @@ namespace WindowsFormsApplication1.Login
 
             foreach (var pair in this.roles)
                 this.comboBox1.Items.Add(pair);
+
+            // Para que seleccione el primer elemento de la lista
+            this.comboBox1.SelectedItem = this.comboBox1.Items[0];
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            this.Close();
             (new Login()).Show();
         }
     }
