@@ -66,7 +66,6 @@ IF OBJECT_ID('HARDCOR.RolXus','U') IS NOT NULL
         DROP TABLE HARDCOR.RolXus;
     END;
 
-
 IF OBJECT_ID('HARDCOR.Usuario','U') IS NOT NULL
     BEGIN
         DROP TABLE HARDCOR.Usuario;
@@ -92,53 +91,66 @@ IF OBJECT_ID('HARDCOR.Inconsistencias','U') IS NOT NULL
         DROP TABLE HARDCOR.Inconsistencias;
     END;
 
-IF (OBJECT_ID ('HARDCOR.alta_rol') IS NOT NULL)  
-	DROP PROCEDURE HARDCOR.alta_rol
-GO
 IF (OBJECT_ID ('HARDCOR.tr_calificacion_af_ins') IS NOT NULL)  
 	DROP TRIGGER HARDCOR.tr_calificacion_af_ins
-GO
 
 IF (OBJECT_ID ('HARDCOR.tr_visibilidad_af_ins') IS NOT NULL)  
 	DROP TRIGGER HARDCOR.tr_visibilidad_af_ins
-GO
-
-IF (OBJECT_ID ('HARDCOR.mod_rol') IS NOT NULL)  
-	DROP PROCEDURE HARDCOR.mod_rol
-GO
-
-IF (OBJECT_ID ('HARDCOR.baja_rol') IS NOT NULL)
-	DROP PROCEDURE HARDCOR.baja_rol
-GO
 
 IF (OBJECT_ID ('HARDCOR.login') IS NOT NULL)
 	DROP PROCEDURE HARDCOR.login
-GO
+
+IF (OBJECT_ID ('HARDCOR.listar_empresas') IS NOT NULL)
+	DROP PROCEDURE HARDCOR.listar_empresas
+
+IF (OBJECT_ID ('HARDCOR.listar_clientes') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.listar_clientes
+
+IF (OBJECT_ID ('HARDCOR.obtener_cliente') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.obtener_cliente
+
+IF (OBJECT_ID ('HARDCOR.obtener_empresa') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.obtener_empresa
+
+IF (OBJECT_ID ('HARDCOR.crear_usuario') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.crear_usuario
+
+IF (OBJECT_ID ('HARDCOR.crear_contacto') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.crear_contacto
+
+IF (OBJECT_ID ('HARDCOR.crear_cliente') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.crear_cliente
+
+IF (OBJECT_ID ('HARDCOR.crear_empresa') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.crear_empresa
+
+IF (OBJECT_ID ('HARDCOR.modificar_cliente') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.modificar_cliente
+
+IF (OBJECT_ID ('HARDCOR.modificar_empresa') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.modificar_empresa
+
+IF (OBJECT_ID ('HARDCOR.existe_usuario') IS NOT NULL)
+  DROP FUNCTION HARDCOR.existe_usuario
 
 IF (OBJECT_ID ('HARDCOR.updateRole') IS NOT NULL)
-	DROP PROCEDURE HARDCOR.updateRole
-GO
+  DROP PROCEDURE HARDCOR.updateRole
 
 IF (OBJECT_ID ('HARDCOR.newRole') IS NOT NULL)
-	DROP PROCEDURE HARDCOR.newRole
-GO
+  DROP PROCEDURE HARDCOR.newRole
 
 IF (OBJECT_ID ('HARDCOR.functionalitiesOf') IS NOT NULL)
-	DROP PROCEDURE HARDCOR.functionalitiesOf
-GO
+  DROP PROCEDURE HARDCOR.functionalitiesOf
 
 IF (OBJECT_ID ('HARDCOR.addFunctionality') IS NOT NULL)
-	DROP PROCEDURE HARDCOR.addFunctionality
-GO
+  DROP PROCEDURE HARDCOR.addFunctionality
 
 IF (OBJECT_ID ('HARDCOR.removeFunctionality') IS NOT NULL)
-	DROP PROCEDURE HARDCOR.removeFunctionality
+  DROP PROCEDURE HARDCOR.removeFunctionality
+
+IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
+  DROP SCHEMA HARDCOR 
 GO
-
-
- if exists (select SCHEMA_NAME from INFORMATION_SCHEMA.SCHEMATA where SCHEMA_NAME = 'HARDCOR')
- drop schema HARDCOR 
- GO
 
 CREATE SCHEMA HARDCOR AUTHORIZATION gd; 
 GO
@@ -489,241 +501,6 @@ AS BEGIN
 END
 GO
 
-IF (OBJECT_ID ('HARDCOR.alta_rol') IS NOT NULL)  
-	DROP PROCEDURE HARDCOR.alta_rol
-GO
-
-CREATE PROCEDURE HARDCOR.alta_rol (@rol NVARCHAR(225), @ABM_Rol BIT, @ABM_Usuario BIT, @ABM_Rubro BIT, 
-						  @ABM_Visibilidad BIT, @Generar_publ BIT, @Compra_oferta BIT, @Historial BIT, 
-						  @Calificar BIT, @Consulta_factura BIT, @Listados BIT)
-AS BEGIN
-
-	DECLARE @cod_rol INT
-
-	BEGIN TRY
-		BEGIN TRANSACTION
-			INSERT INTO HARDCOR.Rol
-			VALUES(@rol, 1)
-
-			SET @cod_rol = (SELECT r.cod_rol FROM HARDCOR.Rol r WHERE r.nombre = @rol)
-
-			IF @ABM_Rol = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 1)
-			END
-
-			IF @ABM_Usuario = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 2)
-			END
-
-			IF @ABM_Rubro = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 3)
-			END
-
-			IF @ABM_Visibilidad = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 4)
-			END
-
-			IF @Generar_publ = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 5)
-			END
-
-			IF @Compra_oferta = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 6)
-			END
-
-			IF @Historial = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 7)
-			END
-  
-			IF @Calificar = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 8)
-			END
-
-			IF @Consulta_factura = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 9)
-			END
-
-			IF @Listados = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 10)
-			END
-		
-		COMMIT TRANSACTION
-	END TRY	
-
-	BEGIN CATCH
-		ROLLBACK TRANSACTION
-
-		IF EXISTS (SELECT * FROM HARDCOR.Rol r WHERE r.nombre = @rol)
-		BEGIN
-			PRINT 'El Rol ingresado ya existe'
-			RETURN -1	
-		END  	
-	END CATCH
-
-	RETURN 1
-END   
-GO
-
-IF (OBJECT_ID ('HARDCOR.mod_rol') IS NOT NULL)  
-	DROP PROCEDURE HARDCOR.mod_rol
-GO
-
-CREATE PROCEDURE HARDCOR.mod_rol (@rol NVARCHAR(225), @nuevo_rol NVARCHAR(225), @habilitado BIT,
-						  @ABM_Rol BIT, @ABM_Usuario BIT, @ABM_Rubro BIT, @ABM_Visibilidad BIT, 
-						  @Generar_publ BIT, @Compra_oferta BIT, @Historial BIT, @Calificar BIT, 
-						  @Consulta_factura BIT, @Listados BIT)
-AS BEGIN 
-
-	DECLARE @cod_rol INT
-
-	BEGIN TRY
-		BEGIN TRANSACTION
-			SET @cod_rol = (SELECT r.cod_rol FROM HARDCOR.Rol r WHERE r.nombre = @rol)
-	
-			IF (@habilitado = 0 AND 0 = (SELECT r.habilitado FROM HARDCOR.Rol r WHERE r.cod_rol = @cod_rol)) OR @habilitado = 1
-			BEGIN
-				UPDATE HARDCOR.Rol SET habilitado = @habilitado WHERE HARDCOR.Rol.cod_rol = @cod_rol
-			END
-
-			UPDATE HARDCOR.Rol SET nombre = @nuevo_rol WHERE HARDCOR.Rol.cod_rol = @cod_rol
-
-			IF @ABM_Rol = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 1)
-			END
-
-			IF @ABM_Usuario = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 2)
-			END
-
-			IF @ABM_Rubro = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 3)
-			END
-
-			IF @ABM_Visibilidad = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 4)
-			END
-
-			IF @Generar_publ = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 5)
-			END
-
-			IF @Compra_oferta = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 6)
-			END
-
-			IF @Historial = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 7)
-			END
-  
-			IF @Calificar = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 8)
-			END
-
-			IF @Consulta_factura = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 9)
-			END
-
-			IF @Listados = 1 
-			BEGIN
-				INSERT INTO HARDCOR.RolXfunc
-				VALUES(@cod_rol, 10)
-			END
-		COMMIT TRANSACTION					
-	END TRY
-		
-	BEGIN CATCH
-		IF NOT EXISTS (SELECT * FROM HARDCOR.Rol r WHERE r.nombre = @rol)
-		BEGIN			
-			PRINT 'El Rol que se quiere modificar no existe'
-			RETURN -1
-		END
-		
-		IF @habilitado > 1 
-		BEGIN
-			PRINT 'El campo de habilitado solo puede modificarse con el valor 1'
-			RETURN -2
-		END
-		
-		IF @habilitado = 0 AND @habilitado <> (SELECT r.habilitado FROM HARDCOR.Rol r WHERE r.cod_rol = @cod_rol)  
-		BEGIN
-			PRINT 'No se puede dar de baja un rol desde modificar rol'
-			RETURN -3
-		END			
-	END CATCH
-	RETURN 1
-END      
-GO
-
-
-CREATE PROCEDURE HARDCOR.baja_rol (@rol NVARCHAR(225))
-AS BEGIN
-  	DECLARE @cod_rol TINYINT
-
-	BEGIN TRY
-		BEGIN TRANSACTION
-			SET @cod_rol = (SELECT r.cod_rol FROM HARDCOR.Rol r WHERE r.nombre = @rol)
-
-			UPDATE HARDCOR.Rol SET habilitado = 0 WHERE cod_rol = @cod_rol
-
-			UPDATE HARDCOR.Usuario SET habilitado = 0 WHERE cod_us IN 
-			(SELECT u.cod_us FROM HARDCOR.Usuario u, HARDCOR.RolXus r WHERE r.cod_rol = @cod_rol AND r.cod_us = u.cod_us) 
-		
-			DELETE FROM HARDCOR.RolXfunc WHERE HARDCOR.RolXfunc.cod_rol = @rol
-			DELETE FROM HARDCOR.RolXus WHERE HARDCOR.RolXus.cod_rol = @rol  
-		COMMIT TRANSACTION
-	END TRY
-
-	BEGIN CATCH
-		IF NOT EXISTS (SELECT * FROM HARDCOR.Rol r WHERE r.nombre = @rol )
-		BEGIN
-			PRINT 'El Rol que se quiere inhabilitar no existe'
-			RETURN -1
-		END	
-	END CATCH
-		
-	RETURN 1
-END     
-GO
-
-
 CREATE PROCEDURE HARDCOR.login (@userName NVARCHAR(255), @password VARCHAR(255)) AS BEGIN
   /* Devuelve una fila por cada rol que el usuario posea con:
     - Si el login fue exitoso o no (BIT)
@@ -768,6 +545,269 @@ CREATE PROCEDURE HARDCOR.login (@userName NVARCHAR(255), @password VARCHAR(255))
      AND U.cod_us = RxU.cod_us
 END
 GO
+
+CREATE PROCEDURE HARDCOR.listar_empresas (@razon_social NVARCHAR(255), @cuit NVARCHAR(50), @mail NVARCHAR(50)) AS BEGIN
+  SELECT *
+    FROM HARDCOR.Empresa E, HARDCOR.Contacto C
+   WHERE E.cod_contacto = C.cod_contacto
+     AND ((E.emp_cuit = @cuit) OR (@cuit LIKE ''))
+     AND ((E.emp_razon_soc = @razon_social) OR (@razon_social LIKE ''))
+     AND ((C.mail = @mail) OR (@mail LIKE ''))
+END
+GO
+
+CREATE PROCEDURE HARDCOR.listar_clientes (@nombre NVARCHAR(255), @apellido NVARCHAR(255),
+                                          @dni NUMERIC(18, 0), @email NVARCHAR(50)) AS BEGIN
+  SELECT *
+    FROM HARDCOR.Cliente Cl, HARDCOR.Contacto Co
+   WHERE Cl.cod_contacto = Co.cod_contacto
+     AND ((@nombre LIKE '') OR (Cl.cli_nombre LIKE '%' + @nombre + '%'))
+     AND ((@apellido LIKE '') OR (Cl.cli_apellido LIKE '%' +  @apellido + '%'))
+     AND ((@email LIKE '') OR (Co.mail LIKE '%' +  @email + '%'))
+     AND ((@dni = 0) OR (Cl.cli_dni = @dni))
+END
+GO
+
+CREATE PROCEDURE HARDCOR.get_roles AS BEGIN
+  SELECT *
+    FROM HARDCOR.Rol
+   WHERE habilitado = 1
+END
+GO
+
+CREATE PROCEDURE HARDCOR.obtener_cliente (@codigo  INT) AS BEGIN
+  SELECT *
+    FROM HARDCOR.Cliente Cl, HARDCOR.Contacto Co
+   WHERE  Cl.cod_contacto = Co.cod_contacto
+     AND  Cl.cod_us = @codigo
+END
+GO
+
+CREATE PROCEDURE HARDCOR.obtener_empresa (@codigo  INT) AS BEGIN
+  SELECT *
+    FROM HARDCOR.Empresa E, HARDCOR.Contacto C
+   WHERE  E.cod_contacto = C.cod_contacto
+     AND  E.cod_us = @codigo
+END
+GO
+
+CREATE PROCEDURE HARDCOR.crear_usuario (@username NVARCHAR(255), @password VARCHAR(255), @codigo_rol TINYINT) AS BEGIN
+  /* Intenta crear un usuario con los datos especificados
+     Para eso debe crear una entrada en la tabla Usuario y una en la table RolXus
+     Si alguna de las dos inserciones falla, todo se vuelve para atras
+     Devuelve el codigo del nuevo usuario o -1 en caso de error
+  */
+  BEGIN TRY
+    BEGIN TRANSACTION
+     INSERT INTO HARDCOR.Usuario (username, pass_word, habilitado, intentos)
+           VALUES (@username, HASHBYTES('SHA2_256', @password), 1, 0)
+
+       DECLARE @nuevo_codigo_usuario INT = (SELECT cod_us
+                                            FROM HARDCOR.Usuario
+                                           WHERE username = @username)
+
+       INSERT INTO HARDCOR.RolXus (cod_rol, cod_us)
+         VALUES (@codigo_rol, @nuevo_codigo_usuario)
+
+    COMMIT TRANSACTION
+    RETURN @nuevo_codigo_usuario
+  END TRY
+  BEGIN CATCH
+    ROLLBACK TRANSACTION
+    -- No hago nada si hubo un error (el username está duplicado)
+    RETURN -1
+  END CATCH
+END
+GO
+
+CREATE PROCEDURE HARDCOR.crear_contacto (@telefono NVARCHAR(255),
+                                         @mail NVARCHAR(50),
+                                         @direccion_calle NVARCHAR(100),
+                                         @direccion_numero NUMERIC(18, 0),
+                                         @direccion_piso NUMERIC(18, 0),
+                                         @numero_departamento NVARCHAR(50),
+                                         @localidad NVARCHAR(255),
+                                         @codigo_postal NVARCHAR(50)) AS BEGIN
+
+  /* Crea un nuevo contacto y devuelve su codigo */
+
+  INSERT INTO HARDCOR.Contacto (mail, nro_tel, dom_calle, nro_calle, nro_piso, nro_dpto, localidad, cod_postal)
+  VALUES (@mail, @telefono, @direccion_calle, @direccion_numero, @direccion_piso, @numero_departamento, @localidad, @codigo_postal)
+
+  RETURN SCOPE_IDENTITY()
+END
+GO
+
+CREATE PROCEDURE HARDCOR.crear_cliente (@username NVARCHAR(255),
+										@password VARCHAR(255),
+										@codigo_rol TINYINT,
+										@nombre NVARCHAR(255),
+                                        @apellido NVARCHAR(255),
+                                        @dni NUMERIC(18, 0),
+                                        @telefono NVARCHAR(255),
+                                        @mail NVARCHAR(50),
+                                        @fecha_nacimiento DATETIME,
+                                        @fecha_creacion DATETIME,
+                                        @direccion_calle NVARCHAR(100),
+                                        @direccion_numero NUMERIC(18, 0),
+                                        @direccion_piso NUMERIC(18, 0),
+                                        @numero_departamento NVARCHAR(50),
+                                        @localidad NVARCHAR(255),
+                                        @codigo_postal NVARCHAR(50)) AS BEGIN
+
+  /* Crea un nuevo usuario, un nuevo cliente y un nuevo contacto y los llena con los datos recibidos */
+  BEGIN TRY
+    BEGIN TRANSACTION
+    DECLARE @codigo_usuario INT
+    EXEC @codigo_usuario = HARDCOR.crear_usuario @username, @password, @codigo_rol
+
+    IF @codigo_usuario = -1
+      RAISERROR('El usuario ya existe', 16, 1)  -- Que salte directamente al CATCH
+
+    DECLARE @codigo_contacto INT
+    EXEC @codigo_contacto = HARDCOR.crear_contacto @telefono, @mail, @direccion_calle, @direccion_numero, @direccion_piso,
+                                                             @numero_departamento, @localidad, @codigo_postal
+
+    INSERT INTO HARDCOR.Cliente (cod_us, cod_contacto, cli_nombre, cli_apellido, cli_dni, cli_fecha_Nac, cli_fecha_creacion)
+    VALUES (@codigo_usuario, @codigo_contacto, @nombre, @apellido, @dni, @fecha_nacimiento, @fecha_creacion)
+
+    COMMIT TRANSACTION
+  END TRY
+  BEGIN CATCH
+    ROLLBACK TRANSACTION
+  END CATCH
+END
+GO
+
+CREATE PROCEDURE HARDCOR.crear_empresa (@username NVARCHAR(255),
+										@password VARCHAR(255),
+										@codigo_rol TINYINT,
+                                        @razon_social NVARCHAR(255),
+                                        @cuit NVARCHAR(50),
+										@ciudad NVARCHAR(255),
+										@telefono NVARCHAR(255),
+										@mail NVARCHAR(50),
+										@direccion_calle NVARCHAR(100),
+										@direccion_numero NUMERIC(18, 0),
+										@direccion_piso NUMERIC(18, 0),
+										@numero_departamento NVARCHAR(50),
+										@localidad NVARCHAR(255),
+										@codigo_postal NVARCHAR(50)) AS BEGIN
+
+  /* Crea un nuevo usuario, una nueva empresa y un nuevo contacto y los llena con los datos recibidos */
+  BEGIN TRY
+    BEGIN TRANSACTION
+      DECLARE @codigo_usuario INT
+      EXEC @codigo_usuario = HARDCOR.crear_usuario @username, @password, @codigo_rol
+
+      IF @codigo_usuario = -1
+        RAISERROR('El usuario ya existe', 16, 1)  -- Que salte directamente al CATCH
+
+      DECLARE @codigo_contacto INT
+      EXEC @codigo_contacto = HARDCOR.crear_contacto @telefono, @mail, @direccion_calle, @direccion_numero, @direccion_piso,
+                                                               @numero_departamento, @localidad, @codigo_postal
+
+      INSERT INTO HARDCOR.Empresa (cod_us, cod_contacto, emp_razon_soc, emp_cuit, emp_ciudad)
+      VALUES (@codigo_usuario, @codigo_contacto, @razon_social, @cuit, @ciudad)
+
+      COMMIT TRANSACTION
+  END TRY
+  BEGIN CATCH
+    ROLLBACK TRANSACTION
+  END CATCH
+END
+GO
+
+CREATE PROCEDURE HARDCOR.modificar_cliente (@codigo INT,
+                                            @nombre NVARCHAR(255),
+											@apellido NVARCHAR(255),
+											@dni NUMERIC(18, 0),
+											@telefono NVARCHAR(255),
+											@mail NVARCHAR(50),
+											@fecha_nacimiento DATETIME,
+											@direccion_calle NVARCHAR(100),
+											@direccion_numero NUMERIC(18, 0),
+											@direccion_piso NUMERIC(18, 0),
+											@numero_departamento NVARCHAR(50),
+											@ciudad NVARCHAR(255),
+											@codigo_postal NVARCHAR(50)) AS BEGIN
+  BEGIN TRY
+    BEGIN TRANSACTION
+    UPDATE HARDCOR.Cliente
+       SET cli_fecha_Nac = @fecha_nacimiento,
+	        cli_apellido = @apellido,
+              cli_nombre = @nombre,
+	             cli_dni = @dni
+     WHERE cod_us = @codigo
+
+    UPDATE HARDCOR.Contacto
+       SET cod_postal = @codigo_postal,
+	        dom_calle = @direccion_calle,
+            nro_calle = @direccion_numero,
+	        localidad = @ciudad,
+             nro_piso = @direccion_piso,
+             nro_dpto = @numero_departamento,
+              nro_tel = @telefono,
+                 mail = @mail
+     WHERE cod_contacto = (SELECT cod_contacto
+                             FROM HARDCOR.Cliente
+                            WHERE cod_us = @codigo)
+	COMMIT TRANSACTION
+  END TRY
+  BEGIN CATCH
+    ROLLBACK TRANSACTION
+  END CATCH
+END
+GO
+
+CREATE PROCEDURE HARDCOR.modificar_empresa (@codigo INT,
+                                            @razon_social NVARCHAR(255),
+                                            @cuit NVARCHAR(50),
+											@ciudad NVARCHAR(255),
+											@telefono NVARCHAR(255),
+											@mail NVARCHAR(50),
+											@direccion_calle NVARCHAR(100),
+											@direccion_numero NUMERIC(18, 0),
+											@direccion_piso NUMERIC(18, 0),
+											@numero_departamento NVARCHAR(50),
+											@localidad NVARCHAR(255),
+											@codigo_postal NVARCHAR(50)) AS BEGIN
+  BEGIN TRY
+    BEGIN TRANSACTION
+    UPDATE HARDCOR.Empresa
+       SET emp_razon_soc = @razon_social,
+                emp_cuit = @cuit,
+              emp_ciudad = @ciudad
+     WHERE cod_us = @codigo
+
+    UPDATE HARDCOR.Contacto
+       SET cod_postal = @codigo_postal,
+            localidad = @localidad,
+            dom_calle = @direccion_calle,
+            nro_calle = @direccion_numero,
+             nro_dpto = @numero_departamento,
+             nro_piso = @direccion_piso,
+              nro_tel = @telefono,
+                 mail = @mail
+     WHERE cod_contacto = (SELECT cod_contacto
+                             FROM HARDCOR.Empresa
+                            WHERE emp_cuit = @cuit)
+
+    COMMIT TRANSACTION
+  END TRY
+  BEGIN CATCH
+    ROLLBACK TRANSACTION
+  END CATCH
+END
+GO
+
+CREATE FUNCTION HARDCOR.existe_usuario (@username NVARCHAR(255)) RETURNS BIT AS BEGIN
+  IF EXISTS(SELECT 1
+             FROM HARDCOR.Usuario
+            WHERE username = @username)
+    RETURN 1
+  RETURN 0
+END
 
 CREATE PROCEDURE HARDCOR.updateRole (@cod_rol TINYINT, @nombre NVARCHAR(255), @habilitado BIT) AS BEGIN
   UPDATE HARDCOR.Rol

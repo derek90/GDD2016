@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -66,6 +66,36 @@
     <Compile Include="ABM Usuario\AbmUsuario.Designer.cs">
       <DependentUpon>AbmUsuario.cs</DependentUpon>
     </Compile>
+    <Compile Include="ABM Usuario\AltaContactoCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABM Usuario\AltaContactoCliente.Designer.cs">
+      <DependentUpon>AltaContactoCliente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ABM Usuario\AltaContactoEmpresa.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABM Usuario\AltaContactoEmpresa.Designer.cs">
+      <DependentUpon>AltaContactoEmpresa.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ABM Usuario\AltaUsuario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABM Usuario\AltaUsuario.Designer.cs">
+      <DependentUpon>AltaUsuario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ABM Usuario\ModificacionCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABM Usuario\ModificacionCliente.Designer.cs">
+      <DependentUpon>ModificacionCliente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ABM Usuario\ModificacionEmpresa.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABM Usuario\ModificacionEmpresa.Designer.cs">
+      <DependentUpon>ModificacionEmpresa.cs</DependentUpon>
+    </Compile>
     <Compile Include="ABM Visibilidad\AbmVisibilidad.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,11 +162,23 @@
     <EmbeddedResource Include="ABM Usuario\AbmUsuario.resx">
       <DependentUpon>AbmUsuario.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ABM Visibilidad\AbmVisibilidad.resx">
-      <DependentUpon>AbmVisibilidad.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ABM Rol\ModificacionRol.resx">
       <DependentUpon>ModificacionRol.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ABM Usuario\AltaContactoCliente.resx">
+      <DependentUpon>AltaContactoCliente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ABM Usuario\AltaContactoEmpresa.resx">
+      <DependentUpon>AltaContactoEmpresa.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ABM Usuario\AltaUsuario.resx">
+      <DependentUpon>AltaUsuario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ABM Usuario\ModificacionCliente.resx">
+      <DependentUpon>ModificacionCliente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ABM Usuario\ModificacionEmpresa.resx">
+      <DependentUpon>ModificacionEmpresa.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
