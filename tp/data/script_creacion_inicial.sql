@@ -148,6 +148,12 @@ IF (OBJECT_ID ('HARDCOR.agregar_funcionalidad') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.quitar_funcionalidad') IS NOT NULL)
   DROP PROCEDURE HARDCOR.quitar_funcionalidad
 
+IF (OBJECT_ID ('HARDCOR.obtener_rubros') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.obtener_rubros
+
+IF (OBJECT_ID ('HARDCOR.obtener_visibilidades') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.obtener_visibilidades
+
 IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
   DROP SCHEMA HARDCOR 
 GO
@@ -850,5 +856,21 @@ CREATE PROCEDURE HARDCOR.quitar_funcionalidad (@cod_rol TINYINT, @cod_fun TINYIN
   DELETE FROM HARDCOR.RolXfunc
    WHERE cod_rol = @cod_rol
      AND cod_fun = @cod_fun
+END
+GO
+
+CREATE PROCEDURE HARDCOR.obtener_rubros AS BEGIN
+  SELECT *
+    FROM HARDCOR.Rubro
+END
+GO
+
+CREATE PROCEDURE HARDCOR.obtener_visibilidades AS BEGIN
+  /* Deberia recibir el usuario
+     Si ese usuario no tiene publicacion, deberia devolver solo gratis
+     Si tiene publicaciones, deberia devolver todos menos gratis
+   */
+  SELECT *
+    FROM HARDCOR.Visibilidad
 END
 GO

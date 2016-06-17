@@ -24,20 +24,19 @@ namespace WindowsFormsApplication1.Menu_principal
 
         private void fill_list(int role_code)
         {
-            // Seteo que el listBox muestre la info adecuada
-            this.listBox1.DisplayMember = "Value";
-            this.listBox1.ValueMember = "Key";
+            var sp_params = new List<KeyValuePair<string, object>>();
+            sp_params.Add(new KeyValuePair<string, object>("@cod_rol", role_code));
+            var roles = new List<KeyValuePair<int, string>>();
 
-            SqlConnection connection = DBConnection.getInstance().getConnection();
-            SqlCommand query = new SqlCommand("HARDCOR.funcionalidades_del_rol", connection);
-            query.CommandType = CommandType.StoredProcedure;
-            query.Parameters.Add(new SqlParameter("@cod_rol", role_code));
-
-            connection.Open();
-            SqlDataReader reader = query.ExecuteReader();
-            while (reader.Read())
-                this.listBox1.Items.Add(new KeyValuePair<int, string>(Int32.Parse(reader["cod_fun"].ToString()), reader["descripcion"].ToString()));
-            connection.Close();
+            using (SqlConnection connection = DBConnection.getInstance().getConnection())
+            { 
+                SqlCommand query = Utils.create_sp("HARDCOR.funcionalidades_del_rol", sp_params, connection);
+                connection.Open();
+                SqlDataReader reader = query.ExecuteReader();
+                while (reader.Read())
+                    roles.Add(new KeyValuePair<int, string>(Int32.Parse(reader["cod_fun"].ToString()), reader["descripcion"].ToString()));
+            }
+            Utils.populate(this.listBox1, roles);
         }
 
         private void initialize_form_mapping()
@@ -47,7 +46,7 @@ namespace WindowsFormsApplication1.Menu_principal
             this.form_mapping.Add(2, new ABM_Usuario.AbmUsuario());
             this.form_mapping.Add(3, new ABM_Rubro.AbmRubro());
             this.form_mapping.Add(4, new ABM_Visibilidad.AbmVisibilidad());
-            this.form_mapping.Add(5, new Generar_Publicación.Form1());
+            this.form_mapping.Add(5, new Generar_Publicación.GenerarPublicacion());
             this.form_mapping.Add(6, new ComprarOfertar.Form1());
             this.form_mapping.Add(7, new Historial_Cliente.Form1());
             this.form_mapping.Add(8, new Calificar.Form1());

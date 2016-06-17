@@ -26,22 +26,16 @@ namespace WindowsFormsApplication1.ABM_Usuario
 
         private void fill_select()
         {
-            // Cada elemento que llene el combobox va a ser un KeyValuePair
-            this.comboBox1.DisplayMember = "Key";
-            this.comboBox1.ValueMember = "Value";
-
-            SqlConnection connection = DBConnection.getInstance().getConnection();
-            SqlCommand query = new SqlCommand("HARDCOR.get_roles", connection);
-            connection.Open();
-            SqlDataReader reader = query.ExecuteReader();
-            while (reader.Read())
-                // Por cada fila devuelta por el SP, creo una tupla y la agrego al combobox
-                this.comboBox1.Items.Add(new KeyValuePair<string, int>(reader["nombre"].ToString(),
-                                                                       Int32.Parse(reader["cod_rol"].ToString())));
-            connection.Close();
-
-            // Selecciono el primero en la lista (para que tenga un default)
-            this.comboBox1.SelectedIndex = 0;
+            var roles = new List<KeyValuePair<int, string>>();
+            using (SqlConnection connection = DBConnection.getInstance().getConnection())
+            {
+                SqlCommand query = new SqlCommand("HARDCOR.get_roles", connection);
+                connection.Open();
+                SqlDataReader reader = query.ExecuteReader();
+                while (reader.Read())
+                    roles.Add(new KeyValuePair<int, string>(Int32.Parse(reader["cod_fun"].ToString()), reader["descripcion"].ToString()));
+            }
+            Utils.populate(this.comboBox1, roles);
         }
 
         private void button1_Click(object sender, EventArgs e)

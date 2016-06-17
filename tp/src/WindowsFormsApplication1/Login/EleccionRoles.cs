@@ -9,19 +9,7 @@ namespace WindowsFormsApplication1.Login
         public EleccionRoles(List<KeyValuePair<int, string>> roles)
         {
             InitializeComponent();
-            this.fill_select(roles);
-        }
-
-        private void fill_select(List<KeyValuePair<int, string>> roles)
-        {
-            this.comboBox1.DisplayMember = "Value";
-            this.comboBox1.ValueMember = "Key";
-
-            foreach (var pair in roles)
-                this.comboBox1.Items.Add(pair);
-
-            // Para que seleccione el primer elemento de la lista
-            this.comboBox1.SelectedItem = this.comboBox1.Items[0];
+            Utils.populate(this.comboBox1, roles);
         }
 
         private void button2_Click(object sender, EventArgs e)
