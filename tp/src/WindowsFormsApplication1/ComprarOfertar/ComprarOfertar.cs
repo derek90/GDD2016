@@ -16,17 +16,30 @@ namespace WindowsFormsApplication1.ComprarOfertar
         Form parent;
         Paginator paginator;
         string username;
+        bool over_pending_reviews;
 
         public ComprarOfertar(Form parent, string username)
         {
             InitializeComponent();
             this.parent = parent;
             this.username = username;
-            this.fill_list();
-            /* TODO: Hacer SP */
-            this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.", this.button3,
-                                                this.button4, "HARDCOR.", this.label3, 10);
-            // this.paginator.set_max_page_number();
+
+            this.over_pending_reviews = this.has_too_much_pending_reviews(username);
+            if (this.over_pending_reviews)
+            {
+                MessageBox.Show("Tiene mas de tres compras o subastas sin calificar. Califiquelas para poder hacer una nueva operacion",
+                                "Limite de operaciones pnedientes de calificar excedido",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                this.fill_list();
+                /* TODO: Hacer SP */
+                this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.", this.button3,
+                                                    this.button4, "HARDCOR.", this.label3, 10);
+                // this.paginator.set_max_page_number();
+            }
+
         }
 
         private void fill_list()
@@ -44,6 +57,23 @@ namespace WindowsFormsApplication1.ComprarOfertar
             }
 
             Utils.populate(this.checkedListBox1, items);
+        }
+
+        private bool has_too_much_pending_reviews(string username)
+        {
+            /*
+            using(var connection = DBConnection.getInstance().getConnection())
+            {
+                // TODO: Hacer SP - Decir si un usuario tiene mas de tres operaciones sin calificar
+                SqlCommand query = new SqlCommand("HARDCOR.", connection);
+                query.CommandType = CommandType.StoredProcedure;
+                query.Parameters.Add(new SqlParameter("@usuario", username));
+
+                return Int32.Parse(query.ExecuteScalar().ToString()) == 1;
+            }
+            */
+
+            return false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -122,6 +152,15 @@ namespace WindowsFormsApplication1.ComprarOfertar
 
             this.Hide();
             (new ConfirmarCompraOferta(this, this.username, publication_code, min, max)).Show();
+        }
+
+        private void ComprarOfertar_Load(object sender, EventArgs e)
+        {
+            if (this.over_pending_reviews)
+            {
+                this.Close();
+                this.parent.Show();
+            }
         }
     }
 }
