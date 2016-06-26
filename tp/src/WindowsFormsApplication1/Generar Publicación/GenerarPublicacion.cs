@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -54,6 +55,9 @@ namespace WindowsFormsApplication1.Generar_Publicación
             Utils.populate(this.comboBox1, publication_types);
             Utils.populate(this.comboBox2, bussines);
             Utils.populate(this.comboBox3, visibilities);
+
+            this.dateTimePicker1.MinDate = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
+            this.dateTimePicker1.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
