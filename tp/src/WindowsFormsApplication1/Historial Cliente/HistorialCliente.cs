@@ -26,11 +26,11 @@ namespace WindowsFormsApplication1.Historial_Cliente
             this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.", this.button1,
                                            this.button2, "HARDCOR.", this.label1, 10);
             //this.paginator.set_max_page_number();
-            this.fill_data_sets(username);
+            this.fill_data_set(username);
             this.fill_labels(username);
         }
 
-        private void fill_data_sets(string username)
+        private void fill_data_set(string username)
         {
             /*
             using(var connection = DBConnection.getInstance().getConnection())
@@ -45,38 +45,9 @@ namespace WindowsFormsApplication1.Historial_Cliente
 
                 //Lleno el dataset y lo seteo como source del dataGridView
                 DataTable table = new DataTable();
+                connection.Open();
                 adapter.Fill(table);
                 this.dataGridView1.DataSource = table;
-                this.dataGridView1.ReadOnly = true;
-
-
-                // TODO: Hacer SP - Ultimas 5 publicaciones calificadas
-                SqlCommand query2 = new SqlCommand("HARDCOR.", connection);
-                query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@usuario", username));
-
-                //Creo el adapter usando el select_query
-                SqlDataAdapter adapter2 = new SqlDataAdapter(query);
-
-                //Lleno el dataset y lo seteo como source del dataGridView
-                DataTable table2 = new DataTable();
-                adapter.Fill(table2);
-                this.dataGridView1.DataSource = table2;
-                this.dataGridView1.ReadOnly = true;
-
-
-                // TODO: Hacer SP - Ultimas operaciones pendientes de calificar
-                SqlCommand query3 = new SqlCommand("HARDCOR.", connection);
-                query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@usuario", username));
-
-                //Creo el adapter usando el select_query
-                SqlDataAdapter adapter3 = new SqlDataAdapter(query);
-
-                //Lleno el dataset y lo seteo como source del dataGridView
-                DataTable table3 = new DataTable();
-                adapter.Fill(table3);
-                this.dataGridView1.DataSource = table3;
                 this.dataGridView1.ReadOnly = true;
             }
             */

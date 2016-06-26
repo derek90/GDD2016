@@ -53,7 +53,7 @@ namespace WindowsFormsApplication1.Menu_principal
             this.form_mapping.Add(5, () => new Generar_Publicación.GenerarPublicacion(this));
             this.form_mapping.Add(6, () => new ComprarOfertar.ComprarOfertar(this, this.username));
             this.form_mapping.Add(7, () => new Historial_Cliente.HistorialCliente(this, this.username));
-            this.form_mapping.Add(8, () => new Calificar.Form1());
+            this.form_mapping.Add(8, () => new Calificar.Calificar(this, this.username));
             this.form_mapping.Add(9, () => new Listado_Estadistico.Form1());
         }
 

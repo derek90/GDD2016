@@ -114,11 +114,17 @@
     <Compile Include="ABM Visibilidad\AltaVisibilidad.Designer.cs">
       <DependentUpon>AltaVisibilidad.cs</DependentUpon>
     </Compile>
-    <Compile Include="Calificar\Form1.cs">
+    <Compile Include="Calificar\Calificar.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Calificar\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Calificar\Calificar.Designer.cs">
+      <DependentUpon>Calificar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Calificar\DarCalificacion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Calificar\DarCalificacion.Designer.cs">
+      <DependentUpon>DarCalificacion.cs</DependentUpon>
     </Compile>
     <Compile Include="ComprarOfertar\ComprarOfertar.cs">
       <SubType>Form</SubType>
@@ -211,6 +217,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ABM Visibilidad\AltaVisibilidad.resx">
       <DependentUpon>AltaVisibilidad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Calificar\Calificar.resx">
+      <DependentUpon>Calificar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Calificar\DarCalificacion.resx">
+      <DependentUpon>DarCalificacion.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ComprarOfertar\ComprarOfertar.resx">
       <DependentUpon>ComprarOfertar.cs</DependentUpon>
