@@ -57,5 +57,15 @@ namespace WindowsFormsApplication1.Generar_Publicación
         {
             this.numericUpDown3.Enabled = ((ComboBox)sender).SelectedIndex == 1;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            /* TODO: sp para cargar la nueva pubicacion */
+            DialogResult result = MessageBox.Show("Su publicacion fue creada con exito en estado 'Borrador'. Desea activar su publicacion?",
+                                                  "Activar publicacion",
+                                                  MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result.ToString() == "Yes")
+                ;/* TODO: Activar publicacion */
+        }
     }
-}
+} 
