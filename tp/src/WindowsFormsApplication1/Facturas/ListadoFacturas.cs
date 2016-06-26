@@ -15,16 +15,31 @@ namespace WindowsFormsApplication1.Facturas
     public partial class ListadoFacturas : Form
     {
         Form parent;
+        Paginator paginator;
 
         public ListadoFacturas(Form parent)
         {
             this.parent = parent;
             InitializeComponent();
+
+            // Seteo los minimos y maximos de algunos de los filtros
             this.dateTimePicker1.MinDate = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
             this.dateTimePicker1.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
             this.dateTimePicker2.MinDate = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
             this.dateTimePicker2.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
             this.numericUpDown2.Maximum = int.MaxValue;
+
+            // Creo un paginador
+            List<KeyValuePair<string, object>> query_params = new List<KeyValuePair<string, object>>();
+            query_params.Add(new KeyValuePair<string, object>("@razon_social", this.textBox2.Text));
+            query_params.Add(new KeyValuePair<string, object>("@fecha_desde", this.dateTimePicker1.Value));
+            query_params.Add(new KeyValuePair<string, object>("@fecha_hasta", this.dateTimePicker2.Value));
+            query_params.Add(new KeyValuePair<string, object>("@importe_desde", this.numericUpDown1.Value));
+            query_params.Add(new KeyValuePair<string, object>("@importe_hasta", this.numericUpDown2.Value));
+            query_params.Add(new KeyValuePair<string, object>("@descripcion", this.textBox1.Text));
+
+            this.paginator = new Paginator(this.numericUpDown3, this.dataGridView1, "HARDCOR.",
+                                           this.button5, this.button4, "HARDCOR.", this.label7, 10, query_params);
         }
 
         private void button3_Click(object sender, EventArgs e)
