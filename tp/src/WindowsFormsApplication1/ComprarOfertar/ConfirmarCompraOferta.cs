@@ -14,12 +14,14 @@ namespace WindowsFormsApplication1.ComprarOfertar
     public partial class ConfirmarCompraOferta : Form
     {
         int publication_code;
+        string username;
         ComprarOfertar parent;
 
-        public ConfirmarCompraOferta(ComprarOfertar parent, int publication_code, int min, int max)
+        public ConfirmarCompraOferta(ComprarOfertar parent, string username, int publication_code, int min, int max)
         {
             this.publication_code = publication_code;
             this.parent = parent;
+            this.username = username;
             InitializeComponent();
             this.numericUpDown1.Minimum = min;
             this.numericUpDown1.Maximum = max;
@@ -38,6 +40,7 @@ namespace WindowsFormsApplication1.ComprarOfertar
 
                 //Agrego los parámetros
                 query.Parameters.Add(new SqlParameter("@codigo_publicacion", this.publication_code));
+                query.Parameters.Add(new SqlParameter("@usuario", this.username));
 
                 SqlDataReader reader = query.ExecuteReader();
 

@@ -15,21 +15,22 @@ namespace WindowsFormsApplication1.Historial_Cliente
     {
         Form parent;
         Paginator paginator;
+        string username;
 
-        public HistorialCliente(Form parent)
+        public HistorialCliente(Form parent, string username)
         {
             this.parent = parent;
+            this.username = username;
             InitializeComponent();
             /* TODO: Hacer sp */
             this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.", this.button1,
                                            this.button2, "HARDCOR.", this.label1, 10);
             //this.paginator.set_max_page_number();
-            /* TODO: pasarle el codigo de usuario */
-            this.fill_data_sets(1);
-            this.fill_labels(1);
+            this.fill_data_sets(username);
+            this.fill_labels(username);
         }
 
-        private void fill_data_sets(int user_code)
+        private void fill_data_sets(string username)
         {
             /*
             using(var connection = DBConnection.getInstance().getConnection())
@@ -37,7 +38,7 @@ namespace WindowsFormsApplication1.Historial_Cliente
                 // TODO: Hacer SP - Compras y subastas por cliente
                 SqlCommand query = new SqlCommand("HARDCOR.", connection);
                 query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@usuario", user_code));
+                query.Parameters.Add(new SqlParameter("@usuario", username));
 
                 //Creo el adapter usando el select_query
                 SqlDataAdapter adapter = new SqlDataAdapter(query);
@@ -52,7 +53,7 @@ namespace WindowsFormsApplication1.Historial_Cliente
                 // TODO: Hacer SP - Ultimas 5 publicaciones calificadas
                 SqlCommand query2 = new SqlCommand("HARDCOR.", connection);
                 query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@usuario", user_code));
+                query.Parameters.Add(new SqlParameter("@usuario", username));
 
                 //Creo el adapter usando el select_query
                 SqlDataAdapter adapter2 = new SqlDataAdapter(query);
@@ -67,7 +68,7 @@ namespace WindowsFormsApplication1.Historial_Cliente
                 // TODO: Hacer SP - Ultimas operaciones pendientes de calificar
                 SqlCommand query3 = new SqlCommand("HARDCOR.", connection);
                 query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@usuario", user_code));
+                query.Parameters.Add(new SqlParameter("@usuario", username));
 
                 //Creo el adapter usando el select_query
                 SqlDataAdapter adapter3 = new SqlDataAdapter(query);
@@ -81,7 +82,7 @@ namespace WindowsFormsApplication1.Historial_Cliente
             */
         }
 
-        private void fill_labels(int user_code)
+        private void fill_labels(string username)
         {
             /*
             string stars_given_average, publication_reviewed;
@@ -91,14 +92,14 @@ namespace WindowsFormsApplication1.Historial_Cliente
                 // TODO: Hacer SP - Promedio de estrellas dadas
                 SqlCommand query = new SqlCommand("HARDCOR.", connection);
                 query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@usuario", user_code));
+                query.Parameters.Add(new SqlParameter("@usuario", username));
 
                 stars_given_average = query.ExecuteScalar().ToString();
 
                 // TODO: Hacer SP - Cantidad de publicaciones puntuadas
                 query = new SqlCommand("HARDCOR.", connection);
                 query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@usuario", user_code));
+                query.Parameters.Add(new SqlParameter("@usuario", username));
 
                 publication_reviewed = query.ExecuteScalar().ToString();
             }

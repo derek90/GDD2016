@@ -68,7 +68,6 @@ namespace WindowsFormsApplication1
             using (var connection = DBConnection.getInstance().getConnection())
             {
                 // Pido la cantidad de paginas totales
-                // TODO: Hacer sp
                 SqlCommand query = new SqlCommand(this.page_count_query, connection);
                 query.CommandType = CommandType.StoredProcedure;
                 query.Parameters.Add(new SqlParameter("@tamanio_pagina", page_size));

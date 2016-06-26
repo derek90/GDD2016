@@ -15,11 +15,13 @@ namespace WindowsFormsApplication1.Menu_principal
     {
         Dictionary<int, Func<Form>> form_mapping;
         Form login_form;
+        string username;
 
-        public MainMenu(Form login_form, int role_code)
+        public MainMenu(Form login_form, int role_code, string username)
         {
             InitializeComponent();
             this.login_form = login_form;
+            this.username = username;
             this.initialize_form_mapping();
             this.fill_list(role_code);
         }
@@ -49,8 +51,8 @@ namespace WindowsFormsApplication1.Menu_principal
             this.form_mapping.Add(3, () => new ABM_Rubro.AbmRubro());
             this.form_mapping.Add(4, () => new ABM_Visibilidad.AbmVisibilidad(this));
             this.form_mapping.Add(5, () => new Generar_Publicación.GenerarPublicacion(this));
-            this.form_mapping.Add(6, () => new ComprarOfertar.ComprarOfertar(this));
-            this.form_mapping.Add(7, () => new Historial_Cliente.HistorialCliente(this));
+            this.form_mapping.Add(6, () => new ComprarOfertar.ComprarOfertar(this, this.username));
+            this.form_mapping.Add(7, () => new Historial_Cliente.HistorialCliente(this, this.username));
             this.form_mapping.Add(8, () => new Calificar.Form1());
             this.form_mapping.Add(9, () => new Listado_Estadistico.Form1());
         }

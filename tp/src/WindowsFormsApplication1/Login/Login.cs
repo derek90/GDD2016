@@ -52,9 +52,9 @@ namespace WindowsFormsApplication1.Login
             if (role_codes.Count > 0)
                 this.Hide();
             if (role_codes.Count == 1)
-                (new Menu_principal.MainMenu(this, Int32.Parse(role_codes[0].Key.ToString()))).Show();
+                (new Menu_principal.MainMenu(this, Int32.Parse(role_codes[0].Key.ToString()), this.textBox1.Text)).Show();
             if (role_codes.Count > 1) 
-                (new EleccionRoles(this, role_codes)).Show();
+                (new EleccionRoles(this, this.textBox1.Text, role_codes)).Show();
 
             this.textBox2.Clear();
         }

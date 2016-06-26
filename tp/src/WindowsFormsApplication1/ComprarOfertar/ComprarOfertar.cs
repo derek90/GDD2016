@@ -15,11 +15,13 @@ namespace WindowsFormsApplication1.ComprarOfertar
     {
         Form parent;
         Paginator paginator;
+        string username;
 
-        public ComprarOfertar(Form parent)
+        public ComprarOfertar(Form parent, string username)
         {
             InitializeComponent();
             this.parent = parent;
+            this.username = username;
             this.fill_list();
             /* TODO: Hacer SP */
             this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.", this.button3,
@@ -119,7 +121,7 @@ namespace WindowsFormsApplication1.ComprarOfertar
             }
 
             this.Hide();
-            (new ConfirmarCompraOferta(this, publication_code, min, max)).Show();
+            (new ConfirmarCompraOferta(this, this.username, publication_code, min, max)).Show();
         }
     }
 }
