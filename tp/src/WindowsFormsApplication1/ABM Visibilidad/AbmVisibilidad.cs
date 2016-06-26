@@ -22,7 +22,7 @@ namespace WindowsFormsApplication1.ABM_Visibilidad
             this.fill_data_set();
         }
 
-        private void fill_data_set ()
+        public void fill_data_set ()
         {
             var connection = DBConnection.getInstance().getConnection();
             /* TODO: Hacer SP */
@@ -53,6 +53,23 @@ namespace WindowsFormsApplication1.ABM_Visibilidad
         {
             this.Close();
             this.parent.Show();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if(this.dataGridView1.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Seleccione un rol");
+                return;
+            }
+            this.Hide();
+            (new AltaVisibilidad(this.dataGridView1.SelectedRows[0], this)).Show();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            (new AltaVisibilidad(this)).Show();
         }
     }
 }
