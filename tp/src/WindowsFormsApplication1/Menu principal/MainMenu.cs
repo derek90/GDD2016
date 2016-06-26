@@ -47,7 +47,7 @@ namespace WindowsFormsApplication1.Menu_principal
             this.form_mapping.Add(1, () => new ABM_Rol.AbmRol());
             this.form_mapping.Add(2, () => new ABM_Usuario.AbmUsuario());
             this.form_mapping.Add(3, () => new ABM_Rubro.AbmRubro());
-            this.form_mapping.Add(4, () => new ABM_Visibilidad.AbmVisibilidad());
+            this.form_mapping.Add(4, () => new ABM_Visibilidad.AbmVisibilidad(this));
             this.form_mapping.Add(5, () => new Generar_Publicación.GenerarPublicacion(this));
             this.form_mapping.Add(6, () => new ComprarOfertar.Form1());
             this.form_mapping.Add(7, () => new Historial_Cliente.Form1());
