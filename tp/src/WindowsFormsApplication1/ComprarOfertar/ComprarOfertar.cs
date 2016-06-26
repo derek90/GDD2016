@@ -34,7 +34,9 @@ namespace WindowsFormsApplication1.ComprarOfertar
             else
             {
                 this.fill_list();
-                /* TODO: Hacer SP */
+                /* TODO: Hacer SP - Uno que diga el total de paginas que tiene la consulta
+                 * otro que traiga todas las publicaciones de una pagina en particular ordenadas por visibilidad 
+                 */
                 this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.", this.button3,
                                                     this.button4, "HARDCOR.", this.label3, 10);
                 // this.paginator.set_max_page_number();
@@ -81,7 +83,7 @@ namespace WindowsFormsApplication1.ComprarOfertar
             /*
             using (var connection = DBConnection.getInstance().getConnection())
             {
-                // TODO: Hacer sp
+                // TODO: Hacer sp - Filtrar publicaciones por rubros y descripcion ordenados por visibilidad
                 SqlCommand query = new SqlCommand("HARDCOR.", connection);
 
                 //Seteo que sea un stored procedure
@@ -123,7 +125,8 @@ namespace WindowsFormsApplication1.ComprarOfertar
 
         private void button2_Click(object sender, EventArgs e)
         {
-            this.checkedListBox1.ClearSelected();
+            while (this.checkedListBox1.CheckedIndices.Count > 0)
+                this.checkedListBox1.SetItemChecked(this.checkedListBox1.CheckedIndices[0], false);
             this.textBox1.Clear();
         }
 
