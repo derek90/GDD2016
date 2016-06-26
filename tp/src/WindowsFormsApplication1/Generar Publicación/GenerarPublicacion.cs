@@ -13,9 +13,12 @@ namespace WindowsFormsApplication1.Generar_Publicación
 {
     public partial class GenerarPublicacion : Form
     {
-        public GenerarPublicacion()
+        Form parent;
+
+        public GenerarPublicacion(Form parent)
         {
             InitializeComponent();
+            this.parent = parent;
             this.fill_components();
         }
 
@@ -66,6 +69,12 @@ namespace WindowsFormsApplication1.Generar_Publicación
                                                   MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result.ToString() == "Yes")
                 ;/* TODO: Activar publicacion */
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            this.parent.Show();
         }
     }
 } 

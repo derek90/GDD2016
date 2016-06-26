@@ -6,9 +6,12 @@ namespace WindowsFormsApplication1.Login
 {
     public partial class EleccionRoles : Form
     {
-        public EleccionRoles(List<KeyValuePair<int, string>> roles)
+        Form login_form;
+
+        public EleccionRoles(Form login_form, List<KeyValuePair<int, string>> roles)
         {
             InitializeComponent();
+            this.login_form = login_form;
             Utils.populate(this.comboBox1, roles);
         }
 
@@ -21,7 +24,7 @@ namespace WindowsFormsApplication1.Login
         private void button1_Click(object sender, EventArgs e)
         {
             int selected_value = ((KeyValuePair<int, string>)this.comboBox1.SelectedItem).Key;
-            (new Menu_principal.MainMenu(selected_value)).Show();
+            (new Menu_principal.MainMenu(this.login_form, selected_value)).Show();
             this.Close();
         }
     }

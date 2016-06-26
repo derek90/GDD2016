@@ -13,11 +13,13 @@ namespace WindowsFormsApplication1.Menu_principal
 {
     public partial class MainMenu : Form
     {
-        Dictionary<int, Form> form_mapping;
+        Dictionary<int, Func<Form>> form_mapping;
+        Form login_form;
 
-        public MainMenu(int role_code)
+        public MainMenu(Form login_form, int role_code)
         {
             InitializeComponent();
+            this.login_form = login_form;
             this.initialize_form_mapping();
             this.fill_list(role_code);
         }
@@ -41,22 +43,23 @@ namespace WindowsFormsApplication1.Menu_principal
 
         private void initialize_form_mapping()
         {
-            this.form_mapping = new Dictionary<int, Form>();
-            this.form_mapping.Add(1, new ABM_Rol.AbmRol());
-            this.form_mapping.Add(2, new ABM_Usuario.AbmUsuario());
-            this.form_mapping.Add(3, new ABM_Rubro.AbmRubro());
-            this.form_mapping.Add(4, new ABM_Visibilidad.AbmVisibilidad());
-            this.form_mapping.Add(5, new Generar_Publicación.GenerarPublicacion());
-            this.form_mapping.Add(6, new ComprarOfertar.Form1());
-            this.form_mapping.Add(7, new Historial_Cliente.Form1());
-            this.form_mapping.Add(8, new Calificar.Form1());
-            this.form_mapping.Add(9, new Facturas.Form1());
-            this.form_mapping.Add(10, new Listado_Estadistico.Form1());
+            this.form_mapping = new Dictionary<int, Func<Form>>();
+            this.form_mapping.Add(1, () => new ABM_Rol.AbmRol());
+            this.form_mapping.Add(2, () => new ABM_Usuario.AbmUsuario());
+            this.form_mapping.Add(3, () => new ABM_Rubro.AbmRubro());
+            this.form_mapping.Add(4, () => new ABM_Visibilidad.AbmVisibilidad());
+            this.form_mapping.Add(5, () => new Generar_Publicación.GenerarPublicacion(this));
+            this.form_mapping.Add(6, () => new ComprarOfertar.Form1());
+            this.form_mapping.Add(7, () => new Historial_Cliente.Form1());
+            this.form_mapping.Add(8, () => new Calificar.Form1());
+            this.form_mapping.Add(9, () => new Facturas.Form1());
+            this.form_mapping.Add(10, () => new Listado_Estadistico.Form1());
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             this.Close();
+            this.login_form.Show();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -66,7 +69,7 @@ namespace WindowsFormsApplication1.Menu_principal
                 return;
 
             this.Hide();
-            (this.form_mapping[selected_functionality_code]).Show();
+            (this.form_mapping[selected_functionality_code])().Show();
         }
     }
 }
