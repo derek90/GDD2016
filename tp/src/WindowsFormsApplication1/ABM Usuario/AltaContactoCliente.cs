@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -122,8 +123,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             create.Parameters.Add(new SqlParameter("@telefono", this.textBox5.Text));
             create.Parameters.Add(new SqlParameter("@mail", this.textBox6.Text));
             create.Parameters.Add(new SqlParameter("@fecha_nacimiento", this.dateTimePicker1.Value));
-            /* TODO: Agregar las fechas en el archivo de configuracion*/
-            create.Parameters.Add(new SqlParameter("@fecha_creacion", this.dateTimePicker1.Value));
+            create.Parameters.Add(new SqlParameter("@fecha_creacion", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
             create.Parameters.Add(new SqlParameter("@direccion_calle", this.textBox8.Text));
             create.Parameters.Add(new SqlParameter("@direccion_numero", this.textBox9.Text));
             create.Parameters.Add(new SqlParameter("@direccion_piso", this.textBox10.Text));
@@ -160,7 +160,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
 
         private void dateTimePicker1_Validating(object sender, CancelEventArgs e)
         {
-            if(this.dateTimePicker1.Value >= DateTime.Now)
+            if(this.dateTimePicker1.Value >= DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString()))
             {
                 this.errorProvider1.SetError(this.dateTimePicker1, "La fecha de nacimiento no puede ser mayor a la fecha actual");
                 this.button1.Enabled = false;

@@ -106,6 +106,9 @@ IF (OBJECT_ID ('HARDCOR.listar_empresas') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.listar_clientes') IS NOT NULL)
   DROP PROCEDURE HARDCOR.listar_clientes
 
+IF (OBJECT_ID ('HARDCOR.obtener_roles') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.obtener_roles
+
 IF (OBJECT_ID ('HARDCOR.obtener_cliente') IS NOT NULL)
   DROP PROCEDURE HARDCOR.obtener_cliente
 
@@ -574,7 +577,7 @@ CREATE PROCEDURE HARDCOR.listar_clientes (@nombre NVARCHAR(255), @apellido NVARC
 END
 GO
 
-CREATE PROCEDURE HARDCOR.get_roles AS BEGIN
+CREATE PROCEDURE HARDCOR.obtener_roles AS BEGIN
   SELECT *
     FROM HARDCOR.Rol
    WHERE habilitado = 1

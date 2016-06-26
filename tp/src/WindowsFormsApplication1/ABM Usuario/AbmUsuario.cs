@@ -12,8 +12,10 @@ namespace WindowsFormsApplication1.ABM_Usuario
 {
     public partial class AbmUsuario : Form
     {
-        public AbmUsuario()
+        Form parent;
+        public AbmUsuario(Form parent)
         {
+            this.parent = parent;
             InitializeComponent();
         }
 
@@ -35,6 +37,12 @@ namespace WindowsFormsApplication1.ABM_Usuario
         private void button8_Click(object sender, EventArgs e)
         {
             (new ModificacionEmpresa()).Show();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            this.parent.Show();
         }
     }
 }

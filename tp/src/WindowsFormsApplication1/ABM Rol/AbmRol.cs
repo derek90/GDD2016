@@ -11,13 +11,14 @@ using System.Windows.Forms;
 
 namespace WindowsFormsApplication1.ABM_Rol
 {
+
     public partial class AbmRol : Form
     {
-        string select_query = "SELECT * FROM HARDCOR.Rol";
-        SqlDataAdapter adapter;
+        Form parent;
 
-        public AbmRol()
+        public AbmRol(Form parent)
         {
+            this.parent = parent;
             InitializeComponent();
             this.fill_data_set();
         }
@@ -31,11 +32,12 @@ namespace WindowsFormsApplication1.ABM_Rol
             var connection = DBConnection.getInstance().getConnection();
 
             //Creo el adapter usando el select_query
-            this.adapter = new SqlDataAdapter(this.select_query, connection);
+            // TODO: Hacer este string un SP
+            SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM HARDCOR.Rol", connection);
 
             //Lleno el dataset y lo seteo como source del dataGridView
             DataTable table = new DataTable();
-            this.adapter.Fill(table);
+            adapter.Fill(table);
             this.dataGridView1.DataSource = table;
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -61,6 +63,12 @@ namespace WindowsFormsApplication1.ABM_Rol
         private void button1_Click(object sender, EventArgs e)
         {
             (new ModificacionRol(this)).Show();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            this.parent.Show();
         }
     }
 }
