@@ -27,8 +27,8 @@ namespace WindowsFormsApplication1.ComprarOfertar
             List<KeyValuePair<int, string>> items = new List<KeyValuePair<int, string>>();
             using (var connection = DBConnection.getInstance().getConnection())
             {
-                /* TODO: hacer sp */
-                SqlCommand command = new SqlCommand("SELECT cod_rubro, rubro_desc_corta FROM HARDCOR.Rubro", connection);
+                SqlCommand command = new SqlCommand("HARDCOR.obtener_rubros", connection);
+                command.CommandType = CommandType.StoredProcedure;
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
