@@ -37,7 +37,7 @@ namespace WindowsFormsApplication1.ComprarOfertar
                 query.CommandType = CommandType.StoredProcedure;
 
                 //Agrego los parámetros
-                query.Parameters.Add(new SqlParameter("@codigo_publicacion", this.publication_code);
+                query.Parameters.Add(new SqlParameter("@codigo_publicacion", this.publication_code));
 
                 SqlDataReader reader = query.ExecuteReader();
 

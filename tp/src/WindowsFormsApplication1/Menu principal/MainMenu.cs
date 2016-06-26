@@ -52,8 +52,7 @@ namespace WindowsFormsApplication1.Menu_principal
             this.form_mapping.Add(6, () => new ComprarOfertar.ComprarOfertar(this));
             this.form_mapping.Add(7, () => new Historial_Cliente.Form1());
             this.form_mapping.Add(8, () => new Calificar.Form1());
-            this.form_mapping.Add(9, () => new Facturas.Form1());
-            this.form_mapping.Add(10, () => new Listado_Estadistico.Form1());
+            this.form_mapping.Add(9, () => new Listado_Estadistico.Form1());
         }
 
         private void button2_Click(object sender, EventArgs e)
