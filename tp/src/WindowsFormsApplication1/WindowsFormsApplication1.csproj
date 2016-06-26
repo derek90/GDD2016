@@ -175,11 +175,11 @@
     <Compile Include="Historial Cliente\HistorialCliente.Designer.cs">
       <DependentUpon>HistorialCliente.cs</DependentUpon>
     </Compile>
-    <Compile Include="Listado Estadistico\Form1.cs">
+    <Compile Include="Listado Estadistico\ListadoEstadistico.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Listado Estadistico\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Listado Estadistico\ListadoEstadistico.Designer.cs">
+      <DependentUpon>ListadoEstadistico.cs</DependentUpon>
     </Compile>
     <Compile Include="Menu principal\MainMenu.cs">
       <SubType>Form</SubType>
@@ -247,6 +247,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Historial Cliente\HistorialCliente.resx">
       <DependentUpon>HistorialCliente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Listado Estadistico\ListadoEstadistico.resx">
+      <DependentUpon>ListadoEstadistico.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Login\EleccionRoles.resx">
       <DependentUpon>EleccionRoles.cs</DependentUpon>
