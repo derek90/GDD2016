@@ -120,11 +120,11 @@
     <Compile Include="Calificar\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="ComprarOfertar\Form1.cs">
+    <Compile Include="ComprarOfertar\ComprarOfertar.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ComprarOfertar\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="ComprarOfertar\ComprarOfertar.Designer.cs">
+      <DependentUpon>ComprarOfertar.cs</DependentUpon>
     </Compile>
     <Compile Include="DBConnection.cs" />
     <Compile Include="Facturas\Form1.cs">
@@ -204,6 +204,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ABM Visibilidad\AltaVisibilidad.resx">
       <DependentUpon>AltaVisibilidad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ComprarOfertar\ComprarOfertar.resx">
+      <DependentUpon>ComprarOfertar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Generar Publicación\GenerarPublicacion.resx">
       <DependentUpon>GenerarPublicacion.cs</DependentUpon>
