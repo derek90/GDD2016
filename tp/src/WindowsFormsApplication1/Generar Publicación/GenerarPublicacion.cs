@@ -35,7 +35,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
                 SqlDataReader reader = query.ExecuteReader();
                 while (reader.Read())
                     bussines.Add(new KeyValuePair<int, string>(Int32.Parse(reader["cod_rubro"].ToString()),
-                                                                reader["rubro_desc_corta"].ToString()));
+                                                               reader["rubro_desc_corta"].ToString()));
             }
 
             using (var connection = DBConnection.getInstance().getConnection())
@@ -51,6 +51,11 @@ namespace WindowsFormsApplication1.Generar_Publicación
             Utils.populate(this.comboBox1, publication_types);
             Utils.populate(this.comboBox2, bussines);
             Utils.populate(this.comboBox3, visibilities);
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.numericUpDown3.Enabled = ((ComboBox)sender).SelectedIndex == 1;
         }
     }
 }
