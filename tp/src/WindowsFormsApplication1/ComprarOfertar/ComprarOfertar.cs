@@ -14,13 +14,17 @@ namespace WindowsFormsApplication1.ComprarOfertar
     public partial class ComprarOfertar : Form
     {
         Form parent;
+        Paginator paginator;
 
         public ComprarOfertar(Form parent)
         {
             InitializeComponent();
             this.parent = parent;
-            this.set_max_page_number();
             this.fill_list();
+            /* TODO: Hacer SP */
+            this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.", this.button3,
+                                                this.button4, "HARDCOR.", this.label3, 10);
+            // this.paginator.set_max_page_number();
         }
 
         private void fill_list()
@@ -38,53 +42,6 @@ namespace WindowsFormsApplication1.ComprarOfertar
             }
 
             Utils.populate(this.checkedListBox1, items);
-        }
-
-        private void set_max_page_number()
-        {
-            /*
-            int total_pages;
-
-            using (var connection = DBConnection.getInstance().getConnection())
-            {
-                // Pido la cantidad de paginas totales
-                // TODO: Hacer sp
-                SqlCommand query = new SqlCommand("HARDCOR.", connection);
-                query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@tamanio_pagina", 10));
-                total_pages = Int32.Parse(query.ExecuteScalar().ToString());
-            }
-
-            this.label3.Text = "/ " + total_pages.ToString();
-            this.numericUpDown1.Maximum = total_pages;
-            */
-        }
-
-        private void load_page(decimal page)
-        {
-            /*
-            using (var connection = DBConnection.getInstance().getConnection())
-            {
-                // TODO: Hacer sp
-                SqlCommand query = new SqlCommand("HARDCOR.", connection);
-                query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@pagina", page));
-
-                //Creo el adapter usando el select_query
-                SqlDataAdapter adapter = new SqlDataAdapter(query);
-
-                //Lleno el dataset y lo seteo como source del dataGridView
-                DataTable table = new DataTable();
-                adapter.Fill(table);
-                this.dataGridView1.DataSource = table;
-                this.dataGridView1.ReadOnly = true;
-                this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                this.dataGridView1.MultiSelect = false;
-                this.dataGridView1.AllowUserToAddRows = false;
-            }
-            */
-            MessageBox.Show("Cargar pagina " + page);
-
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -136,23 +93,6 @@ namespace WindowsFormsApplication1.ComprarOfertar
         {
             this.checkedListBox1.ClearSelected();
             this.textBox1.Clear();
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            this.numericUpDown1.Value -= 1;
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            this.numericUpDown1.Value += 1;
-        }
-
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
-        {
-            this.load_page(this.numericUpDown1.Value);
-            this.button3.Enabled = !(this.numericUpDown1.Value == this.numericUpDown1.Minimum);
-            this.button4.Enabled = !(this.numericUpDown1.Value == this.numericUpDown1.Maximum);
         }
 
         private void button5_Click(object sender, EventArgs e)
