@@ -51,7 +51,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             reader.Read();
             this.textBox1.Text = reader["cli_nombre"].ToString();
             this.textBox2.Text = reader["cli_apellido"].ToString();
-            // No está migrado el tipo de documento
+            // TODO: No está migrado el tipo de documento
             //this.textBox3.Text = reader[""]
             this.textBox4.Text = reader["cli_dni"].ToString();
             this.textBox5.Text = reader["nro_tel"].ToString();
@@ -65,8 +65,22 @@ namespace WindowsFormsApplication1.ABM_Usuario
             this.textBox13.Text = reader["cod_postal"].ToString();
         }
 
+        public bool there_are_empty_inputs()
+        {
+            List<TextBox> inputs = new List<TextBox> { this.textBox1, this.textBox2, this.textBox3, this.textBox4, this.textBox5,
+                                                       this.textBox6, this.textBox8, this.textBox9, this.textBox10, this.textBox11,
+                                                       this.textBox12, this.textBox13};
+            return inputs.Any((t) => t.Text == "");
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
+            if (this.there_are_empty_inputs())
+            {
+                MessageBox.Show("Complete todos los campos");
+                return;
+            }
+
             SqlConnection connection = DBConnection.getInstance().getConnection();
             bool transaction_was_successful;
 
