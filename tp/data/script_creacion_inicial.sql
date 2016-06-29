@@ -585,22 +585,24 @@ END
 GO
 
 CREATE PROCEDURE HARDCOR.obtener_cliente (@codigo  INT) AS BEGIN
-  SELECT *
-    FROM HARDCOR.Cliente Cl, HARDCOR.Contacto Co
+  SELECT Cl.*, Co.*, U.habilitado
+    FROM HARDCOR.Cliente Cl, HARDCOR.Contacto Co, HARDCOR.Usuario U
    WHERE  Cl.cod_contacto = Co.cod_contacto
      AND  Cl.cod_us = @codigo
+     AND  U.cod_us = @codigo
 END
 GO
 
 CREATE PROCEDURE HARDCOR.obtener_empresa (@codigo  INT) AS BEGIN
-  SELECT *
-    FROM HARDCOR.Empresa E, HARDCOR.Contacto C
+  SELECT E.*, C.*, U.habilitado
+    FROM HARDCOR.Empresa E, HARDCOR.Contacto C, HARDCOR.Usuario U
    WHERE  E.cod_contacto = C.cod_contacto
      AND  E.cod_us = @codigo
+     aND  U.cod_us = @codigo
 END
 GO
 
-CREATE PROCEDURE HARDCOR.crear_usuario (@username NVARCHAR(255), @password VARCHAR(255), @codigo_rol TINYINT) AS BEGIN
+CREATE PROCEDURE HARDCOR.crear_usuario (@username NVARCHAR(255), @password VARCHAR(255), @codigo_rol TINYINT, @habilitado BIT) AS BEGIN
   /* Intenta crear un usuario con los datos especificados
      Para eso debe crear una entrada en la tabla Usuario y una en la table RolXus
      Si alguna de las dos inserciones falla, todo se vuelve para atras
@@ -609,7 +611,7 @@ CREATE PROCEDURE HARDCOR.crear_usuario (@username NVARCHAR(255), @password VARCH
   BEGIN TRY
     BEGIN TRANSACTION
      INSERT INTO HARDCOR.Usuario (username, pass_word, habilitado, intentos)
-           VALUES (@username, HASHBYTES('SHA2_256', @password), 1, 0)
+           VALUES (@username, HASHBYTES('SHA2_256', @password), @habilitado, 0)
 
        DECLARE @nuevo_codigo_usuario INT = (SELECT cod_us
                                             FROM HARDCOR.Usuario
@@ -662,13 +664,14 @@ CREATE PROCEDURE HARDCOR.crear_cliente (@username NVARCHAR(255),
                                         @direccion_piso NUMERIC(18, 0),
                                         @numero_departamento NVARCHAR(50),
                                         @localidad NVARCHAR(255),
-                                        @codigo_postal NVARCHAR(50)) AS BEGIN
+                                        @codigo_postal NVARCHAR(50),
+                                        @habilitado BIT) AS BEGIN
 
   /* Crea un nuevo usuario, un nuevo cliente y un nuevo contacto y los llena con los datos recibidos */
   BEGIN TRY
     BEGIN TRANSACTION
     DECLARE @codigo_usuario INT
-    EXEC @codigo_usuario = HARDCOR.crear_usuario @username, @password, @codigo_rol
+    EXEC @codigo_usuario = HARDCOR.crear_usuario @username, @password, @codigo_rol, @habilitado
 
     IF @codigo_usuario = -1
       RAISERROR('El usuario ya existe', 16, 1)  -- Que salte directamente al CATCH
@@ -701,20 +704,21 @@ CREATE PROCEDURE HARDCOR.crear_empresa (@username NVARCHAR(255),
 										@direccion_piso NUMERIC(18, 0),
 										@numero_departamento NVARCHAR(50),
 										@localidad NVARCHAR(255),
-										@codigo_postal NVARCHAR(50)) AS BEGIN
+										@codigo_postal NVARCHAR(50),
+                                        @habilitado BIT) AS BEGIN
 
   /* Crea un nuevo usuario, una nueva empresa y un nuevo contacto y los llena con los datos recibidos */
   BEGIN TRY
     BEGIN TRANSACTION
       DECLARE @codigo_usuario INT
-      EXEC @codigo_usuario = HARDCOR.crear_usuario @username, @password, @codigo_rol
+      EXEC @codigo_usuario = HARDCOR.crear_usuario @username, @password, @codigo_rol, @habilitado
 
       IF @codigo_usuario = -1
         RAISERROR('El usuario ya existe', 16, 1)  -- Que salte directamente al CATCH
 
       DECLARE @codigo_contacto INT
       EXEC @codigo_contacto = HARDCOR.crear_contacto @telefono, @mail, @direccion_calle, @direccion_numero, @direccion_piso,
-                                                               @numero_departamento, @localidad, @codigo_postal
+                                                     @numero_departamento, @localidad, @codigo_postal
 
       INSERT INTO HARDCOR.Empresa (cod_us, cod_contacto, emp_razon_soc, emp_cuit, emp_ciudad)
       VALUES (@codigo_usuario, @codigo_contacto, @razon_social, @cuit, @ciudad)
@@ -739,7 +743,8 @@ CREATE PROCEDURE HARDCOR.modificar_cliente (@codigo INT,
 											@direccion_piso NUMERIC(18, 0),
 											@numero_departamento NVARCHAR(50),
 											@ciudad NVARCHAR(255),
-											@codigo_postal NVARCHAR(50)) AS BEGIN
+											@codigo_postal NVARCHAR(50),
+                                            @habilitado BIT) AS BEGIN
   BEGIN TRY
     BEGIN TRANSACTION
     UPDATE HARDCOR.Cliente
@@ -747,6 +752,10 @@ CREATE PROCEDURE HARDCOR.modificar_cliente (@codigo INT,
 	        cli_apellido = @apellido,
               cli_nombre = @nombre,
 	             cli_dni = @dni
+     WHERE cod_us = @codigo
+
+    UPDATE HARDCOR.Usuario
+       SET habilitado = @habilitado
      WHERE cod_us = @codigo
 
     UPDATE HARDCOR.Contacto
@@ -780,13 +789,18 @@ CREATE PROCEDURE HARDCOR.modificar_empresa (@codigo INT,
 											@direccion_piso NUMERIC(18, 0),
 											@numero_departamento NVARCHAR(50),
 											@localidad NVARCHAR(255),
-											@codigo_postal NVARCHAR(50)) AS BEGIN
+											@codigo_postal NVARCHAR(50),
+                                            @habilitado BIT) AS BEGIN
   BEGIN TRY
     BEGIN TRANSACTION
     UPDATE HARDCOR.Empresa
        SET emp_razon_soc = @razon_social,
                 emp_cuit = @cuit,
               emp_ciudad = @ciudad
+     WHERE cod_us = @codigo
+
+    UPDATE HARDCOR.Usuario
+       SET habilitado = @habilitado
      WHERE cod_us = @codigo
 
     UPDATE HARDCOR.Contacto

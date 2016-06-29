@@ -53,23 +53,23 @@ namespace WindowsFormsApplication1.ABM_Usuario
             this.textBox2.Text = reader["cli_apellido"].ToString();
             // TODO: No está migrado el tipo de documento
             //this.textBox3.Text = reader[""]
-            this.textBox4.Text = reader["cli_dni"].ToString();
+            this.numericUpDown1.Text = reader["cli_dni"].ToString();
             this.textBox5.Text = reader["nro_tel"].ToString();
             this.textBox6.Text = reader["mail"].ToString();
             this.dateTimePicker1.Text = reader["cli_fecha_Nac"].ToString();
             this.textBox8.Text = reader["dom_calle"].ToString();
-            this.textBox9.Text = reader["nro_calle"].ToString();
-            this.textBox10.Text = reader["nro_piso"].ToString();
+            this.numericUpDown2.Value = Int32.Parse(reader["nro_calle"].ToString());
+            this.numericUpDown3.Value = Int32.Parse(reader["nro_piso"].ToString());
             this.textBox11.Text = reader["nro_dpto"].ToString();
             this.textBox12.Text = reader["localidad"].ToString();
             this.textBox13.Text = reader["cod_postal"].ToString();
+            this.checkBox1.Checked = (bool) reader["habilitado"];
         }
 
         public bool there_are_empty_inputs()
         {
-            List<TextBox> inputs = new List<TextBox> { this.textBox1, this.textBox2, this.textBox3, this.textBox4, this.textBox5,
-                                                       this.textBox6, this.textBox8, this.textBox9, this.textBox10, this.textBox11,
-                                                       this.textBox12, this.textBox13};
+            List<TextBox> inputs = new List<TextBox> { this.textBox1, this.textBox2, this.textBox3, this.textBox5, this.textBox6,
+                                                       this.textBox8, this.textBox11, this.textBox12, this.textBox13 };
             return inputs.Any((t) => t.Text == "");
         }
 
@@ -100,16 +100,17 @@ namespace WindowsFormsApplication1.ABM_Usuario
             update.Parameters.Add(new SqlParameter("@codigo", this.client_code));
             update.Parameters.Add(new SqlParameter("@nombre", this.textBox1.Text));
             update.Parameters.Add(new SqlParameter("@apellido", this.textBox2.Text));
-            update.Parameters.Add(new SqlParameter("@dni", Int32.Parse(this.textBox4.Text)));
+            update.Parameters.Add(new SqlParameter("@dni", this.numericUpDown1.Value));
             update.Parameters.Add(new SqlParameter("@telefono", this.textBox5.Text));
             update.Parameters.Add(new SqlParameter("@mail", this.textBox6.Text));
             update.Parameters.Add(new SqlParameter("@fecha_nacimiento", this.dateTimePicker1.Value));
             update.Parameters.Add(new SqlParameter("@direccion_calle", this.textBox8.Text));
-            update.Parameters.Add(new SqlParameter("@direccion_numero", this.textBox9.Text));
-            update.Parameters.Add(new SqlParameter("@direccion_piso", this.textBox10.Text));
+            update.Parameters.Add(new SqlParameter("@direccion_numero",this.numericUpDown2.Value));
+            update.Parameters.Add(new SqlParameter("@direccion_piso", this.numericUpDown3.Value));
             update.Parameters.Add(new SqlParameter("@numero_departamento", this.textBox11.Text));
             update.Parameters.Add(new SqlParameter("@ciudad", this.textBox12.Text));
             update.Parameters.Add(new SqlParameter("@codigo_postal", this.textBox13.Text));
+            update.Parameters.Add(new SqlParameter("@habilitado", this.checkBox1.Checked));
 
             connection.Open();
             bool update_was_ok = update.ExecuteNonQuery() > 0;
@@ -133,17 +134,18 @@ namespace WindowsFormsApplication1.ABM_Usuario
             create.Parameters.Add(new SqlParameter("@codigo_rol", 4));
             create.Parameters.Add(new SqlParameter("@nombre", this.textBox1.Text));
             create.Parameters.Add(new SqlParameter("@apellido", this.textBox2.Text));
-            create.Parameters.Add(new SqlParameter("@dni", Int32.Parse(this.textBox4.Text)));
+            create.Parameters.Add(new SqlParameter("@dni", this.numericUpDown1.Value));
             create.Parameters.Add(new SqlParameter("@telefono", this.textBox5.Text));
             create.Parameters.Add(new SqlParameter("@mail", this.textBox6.Text));
             create.Parameters.Add(new SqlParameter("@fecha_nacimiento", this.dateTimePicker1.Value));
             create.Parameters.Add(new SqlParameter("@fecha_creacion", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
             create.Parameters.Add(new SqlParameter("@direccion_calle", this.textBox8.Text));
-            create.Parameters.Add(new SqlParameter("@direccion_numero", this.textBox9.Text));
-            create.Parameters.Add(new SqlParameter("@direccion_piso", this.textBox10.Text));
+            create.Parameters.Add(new SqlParameter("@direccion_numero", this.numericUpDown2.Value));
+            create.Parameters.Add(new SqlParameter("@direccion_piso", this.numericUpDown3.Value));
             create.Parameters.Add(new SqlParameter("@numero_departamento", this.textBox11.Text));
             create.Parameters.Add(new SqlParameter("@localidad", this.textBox12.Text));
             create.Parameters.Add(new SqlParameter("@codigo_postal", this.textBox13.Text));
+            create.Parameters.Add(new SqlParameter("@habilitado", this.checkBox1.Checked));
 
             connection.Open();
             bool creation_was_ok = create.ExecuteNonQuery() > 0;
@@ -155,21 +157,6 @@ namespace WindowsFormsApplication1.ABM_Usuario
             connection.Close();
 
             return creation_was_ok;
-        }
-
-        private void textBox4_Validating(object sender, CancelEventArgs e)
-        {
-            try
-            {
-                Int32.Parse(this.textBox4.Text);
-                this.errorProvider1.SetError(this.textBox4, "");
-                this.button1.Enabled = true;
-            }
-            catch
-            {
-                this.errorProvider1.SetError(this.textBox4, "El dni no es un número");
-                this.button1.Enabled = false;
-            }
         }
 
         private void dateTimePicker1_Validating(object sender, CancelEventArgs e)

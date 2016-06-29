@@ -75,6 +75,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
                     query.Parameters.Add(new SqlParameter("@username", this.textBox1.Text));
                     query.Parameters.Add(new SqlParameter("@password", this.textBox2.Text));
                     query.Parameters.Add(new SqlParameter("@codigo_rol", selectedItem.Key));
+                    query.Parameters.Add(new SqlParameter("@habilitado", 1));
                     connection.Open();
                     query.ExecuteNonQuery();
                     connection.Close();
