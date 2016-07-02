@@ -1247,9 +1247,8 @@ AS BEGIN
 END
 GO
 
---ACLARAR FECHAS INICIO Y VENCIMIENTO EN LA ESTRATEGIA
 CREATE PROCEDURE HARDCOR.generar_publicacion(@descripcion NVARCHAR(225), @stock NUMERIC(18, 0),
-                                             @precio NUMERIC(18, 2), @costo NUMERIC(18, 2), @rubro NVARCHAR(225),
+                                             @precio NUMERIC(18, 2), @rubro NVARCHAR(225),
                                              @usuario NVARCHAR(225), @visi NVARCHAR(225), @estado NVARCHAR(225),
                                              @tipo NVARCHAR(225), @fecha_venc DATETIME, @envio BIT)
 AS BEGIN
@@ -1261,42 +1260,25 @@ AS BEGIN
             DECLARE @x NVARCHAR(225) = LTRIM(RTRIM(LOWER(@estado)))
             DECLARE @h BIT
 
-            IF @fecha_venc >= GETDATE()
+            SELECT @cod_us = u.cod_us, @h = u.habilitado FROM HARDCOR.Usuario u WHERE u.username = @usuario
+
+            IF @h = 1
             BEGIN
-                IF @stock > 0 AND @precio > 0 AND @costo > 0
+                SELECT @cod_pub = MAX(p.cod_pub) + 1 FROM HARDCOR.Publicacion p
+
+                IF NOT EXISTS (SELECT p.cod_us FROM HARDCOR.Publicacion p WHERE p.cod_us = @cod_us) AND @cod_us > 95
                 BEGIN
-                    IF @x = 'borrador' OR @x = 'activa' OR @x = 'pausada'
-                    BEGIN
-                        SELECT @cod_us = u.cod_us, @h = u.habilitado FROM HARDCOR.Usuario u WHERE u.username = @usuario
-
-                        IF @h = 1
-                        BEGIN
-                            SELECT @cod_pub = MAX(p.cod_pub) + 1 FROM HARDCOR.Publicacion p
-
-                            IF NOT EXISTS (SELECT p.cod_us FROM HARDCOR.Publicacion p WHERE p.cod_us = @cod_us) AND @cod_us > 95
-                            BEGIN
-                                SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = 'Gratis'
-                            END
-                            ELSE
-                                SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @visi
-
-                            INSERT INTO HARDCOR.Publicacion (cod_pub, cod_us, cod_rubro, cod_visi, descripcion, stock,
-                                                            fecha_ini, fecha_fin, precio, estado, cod_tipo, envio)
-                            SELECT @cod_pub, @cod_us, r.cod_rubro, @cod_visi, @descripcion, @stock, GETDATE(),
-                            CASE WHEN @tipo = 'Subasta' THEN @fecha_venc WHEN @tipo = 'Compra Inmediata' THEN NULL END,
-                            @precio, @x, t.cod_tipo, @envio
-                            FROM HARDCOR.Rubro r, HARDCOR.Tipo t WHERE r.rubro_desc_corta = @rubro AND t.descripcion = @tipo
-
-                        END
-                        ELSE
-                            RAISERROR('', 16, 1)
-                    END
-
-                    ELSE
-                        RAISERROR('', 16, 1)
+                    SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = 'Gratis'
                 END
                 ELSE
-                    RAISERROR('', 16, 1)
+                    SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @visi
+
+                INSERT INTO HARDCOR.Publicacion (cod_pub, cod_us, cod_rubro, cod_visi, descripcion, stock,
+                                                fecha_ini, fecha_fin, precio, estado, cod_tipo, envio)
+                SELECT @cod_pub, @cod_us, r.cod_rubro, @cod_visi, @descripcion, @stock, GETDATE(),
+                CASE WHEN @tipo = 'Subasta' THEN @fecha_venc WHEN @tipo = 'Compra Inmediata' THEN NULL END,
+                @precio, @x, t.cod_tipo, @envio
+                FROM HARDCOR.Rubro r, HARDCOR.Tipo t WHERE r.rubro_desc_corta = @rubro AND t.descripcion = @tipo
             END
             ELSE
                 RAISERROR('', 16, 1)
@@ -1306,32 +1288,14 @@ AS BEGIN
     BEGIN CATCH
         ROLLBACK TRANSACTION
 
-        IF @fecha_venc < GETDATE()
-        BEGIN
-            PRINT 'La fecha debe ser posterior al dia de la fecha.'
-            RETURN -1
-        END
-
-        IF @stock <= 0 OR @precio <= 0 OR @costo <= 0
-        BEGIN
-            PRINT 'Los datos de precio, stock y costo deben ser OBLIGATORIAMENTE valores positivos.'
-            RETURN -2
-        END
-
-        IF @x <> 'borrador' AND @x <> 'activa' AND @x <> 'pausada'
-        BEGIN
-            PRINT 'Los posibles estados iniciales de una publicacion son pausada, borrador o activa'
-            RETURN -3
-        END
-
         IF @h <> 1
         BEGIN
             PRINT 'El usuario esta inhabilitado.'
-            RETURN -4
+            SELECT -1
         END
     END CATCH
 
-    RETURN 1
+    SELECT @cod_pub
 END
 GO
 

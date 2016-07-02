@@ -9,11 +9,13 @@ namespace WindowsFormsApplication1.Generar_Publicación
     public partial class GenerarPublicacion : Form
     {
         Form parent;
+        string username;
 
-        public GenerarPublicacion(Form parent)
+        public GenerarPublicacion(Form parent, string username)
         {
             InitializeComponent();
             this.parent = parent;
+            this.username = username;
             this.fill_components();
         }
 
@@ -23,7 +25,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
             var bussines = new List<KeyValuePair<int, string>>();
             var visibilities = new List<KeyValuePair<int, string>>();
 
-            publication_types.Add(new KeyValuePair<int, string>(1, "Compra inmediata"));
+            publication_types.Add(new KeyValuePair<int, string>(1, "Compra Inmediata"));
             publication_types.Add(new KeyValuePair<int, string>(2, "Subasta"));
 
             using (var connection = DBConnection.getInstance().getConnection())
@@ -61,17 +63,46 @@ namespace WindowsFormsApplication1.Generar_Publicación
 
         private void button1_Click(object sender, EventArgs e)
         {
-            /* TODO: sp para cargar la nueva pubicacion */
+            int new_publication_code;
+            using(var connection = DBConnection.getInstance().getConnection())
+            {
+                SqlCommand query = new SqlCommand("HARDCOR.generar_publicacion", connection);
+                query.CommandType = System.Data.CommandType.StoredProcedure;
+                query.Parameters.Add(new SqlParameter("@descripcion", this.textBox1.Text));
+                query.Parameters.Add(new SqlParameter("@stock", this.numericUpDown1.Value));
+                query.Parameters.Add(new SqlParameter("@precio", this.numericUpDown3.Value));
+                query.Parameters.Add(new SqlParameter("@rubro", ((KeyValuePair<int, string>) this.comboBox2.SelectedItem).Value));
+                query.Parameters.Add(new SqlParameter("@usuario", this.username));
+                query.Parameters.Add(new SqlParameter("@visi", ((KeyValuePair<int, string>) this.comboBox3.SelectedItem).Value));
+                query.Parameters.Add(new SqlParameter("@estado", "activa"));
+                query.Parameters.Add(new SqlParameter("@tipo", ((KeyValuePair<int, string>) this.comboBox1.SelectedItem).Value));
+                query.Parameters.Add(new SqlParameter("@fecha_venc", this.dateTimePicker1.Value));
+                query.Parameters.Add(new SqlParameter("@envio", this.checkBox1.Checked));
+
+                connection.Open();
+                new_publication_code = (int) query.ExecuteScalar();
+            }
+
             DialogResult result = MessageBox.Show("Su publicacion fue creada con exito en estado 'Borrador'. Desea activar su publicacion?",
-                                                  "Activar publicacion",
-                                                  MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                                                  "Activar publicacion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result.ToString() == "Yes")
-                ;/* TODO: Activar publicacion */
+            {
+                using (var connection = DBConnection.getInstance().getConnection())
+                {
+                    SqlCommand query = new SqlCommand("HARDCOR.cambiar_estado_publ", connection);
+                    query.CommandType = System.Data.CommandType.StoredProcedure;
+                    query.Parameters.Add(new SqlParameter("@usuario", this.username));
+                    query.Parameters.Add(new SqlParameter("@cod_pub", new_publication_code));
+                    query.Parameters.Add(new SqlParameter("@nuevo_estado", "activo"));
+                }
+            }
+
+            this.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            this.Close();
             this.parent.Show();
         }
     }
