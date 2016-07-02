@@ -1,107 +1,152 @@
 USE GD1C2016;
 GO
 
+
+/* Eliminación de los objetos preexistentes */
+
 IF OBJECT_ID('HARDCOR.Oferta','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Oferta;
-    END;
+    DROP TABLE HARDCOR.Oferta;
 
 IF OBJECT_ID('HARDCOR.Compra','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Compra;
-    END;
+    DROP TABLE HARDCOR.Compra;
 
 IF OBJECT_ID('HARDCOR.Calificacion','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Calificacion;
-    END;
+    DROP TABLE HARDCOR.Calificacion;
 
 IF OBJECT_ID('HARDCOR.Detalle','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Detalle;
-    END;
+    DROP TABLE HARDCOR.Detalle;
 
 IF OBJECT_ID('HARDCOR.Factura','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Factura;
-    END;
+    DROP TABLE HARDCOR.Factura;
 
 IF OBJECT_ID('HARDCOR.Publicacion','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Publicacion;
-    END;
+    DROP TABLE HARDCOR.Publicacion;
+
+IF OBJECT_ID('HARDCOR.Tipo','U') IS NOT NULL
+    DROP TABLE HARDCOR.Tipo;
 
 IF OBJECT_ID('HARDCOR.Visibilidad','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Visibilidad;
-    END;
-
-IF OBJECT_ID('HARDCOR.RubroXempresa','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.RubroXempresa;
-    END;
+    DROP TABLE HARDCOR.Visibilidad;
 
 IF OBJECT_ID('HARDCOR.Empresa','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Empresa;
-    END;
+    DROP TABLE HARDCOR.Empresa;
 
 IF OBJECT_ID('HARDCOR.Rubro','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Rubro;
-    END;
+    DROP TABLE HARDCOR.Rubro;
 
 IF OBJECT_ID('HARDCOR.Cliente','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Cliente;
-    END;
+    DROP TABLE HARDCOR.Cliente;
 
 IF OBJECT_ID('HARDCOR.Contacto','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Contacto;
-    END;
+    DROP TABLE HARDCOR.Contacto;
 
 IF OBJECT_ID('HARDCOR.RolXus','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.RolXus;
-    END;
+    DROP TABLE HARDCOR.RolXus;
 
 IF OBJECT_ID('HARDCOR.Usuario','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Usuario;
-    END;
+    DROP TABLE HARDCOR.Usuario;
 
 IF OBJECT_ID('HARDCOR.RolXfunc','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.RolXfunc;
-    END;
+    DROP TABLE HARDCOR.RolXfunc;
 
 IF OBJECT_ID('HARDCOR.Funcionalidad','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Funcionalidad;
-    END;
+    DROP TABLE HARDCOR.Funcionalidad;
 
 IF OBJECT_ID('HARDCOR.Rol','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Rol;
-    END;
+    DROP TABLE HARDCOR.Rol;
 
 IF OBJECT_ID('HARDCOR.Inconsistencias','U') IS NOT NULL
-    BEGIN
-        DROP TABLE HARDCOR.Inconsistencias;
-    END;
+    DROP TABLE HARDCOR.Inconsistencias;
 
-IF (OBJECT_ID ('HARDCOR.tr_calificacion_af_ins') IS NOT NULL)  
-	DROP TRIGGER HARDCOR.tr_calificacion_af_ins
+IF OBJECT_ID ('HARDCOR.tr_visibilidad_af_ins') IS NOT NULL
+    DROP TRIGGER HARDCOR.tr_visibilidad_af_ins
 
-IF (OBJECT_ID ('HARDCOR.tr_visibilidad_af_ins') IS NOT NULL)  
-	DROP TRIGGER HARDCOR.tr_visibilidad_af_ins
+IF OBJECT_ID('HARDCOR.generar_publicacion') IS NOT NULL
+    DROP PROCEDURE HARDCOR.generar_publicacion
+
+IF OBJECT_ID('HARDCOR.cambiar_estado_publ') IS NOT NULL
+    DROP PROCEDURE HARDCOR.cambiar_estado_publ
+
+IF OBJECT_ID('HARDCOR.modif_publ_borrador') IS NOT NULL
+    DROP PROCEDURE HARDCOR.modif_publ_borrador
+
+IF OBJECT_ID ('HARDCOR.tr_finalizar_pub_compra_au') IS NOT NULL
+    DROP TRIGGER HARDCOR.tr_finalizar_pub_compra_au
+
+IF OBJECT_ID ('HARDCOR.comprar_ofertar') IS NOT NULL
+    DROP PROCEDURE HARDCOR.comprar_ofertar
+
+IF OBJECT_ID ('HARDCOR.facturar') IS NOT NULL
+    DROP PROCEDURE HARDCOR.facturar
+
+IF OBJECT_ID ('HARDCOR.alta_vis') IS NOT NULL
+    DROP PROCEDURE HARDCOR.alta_vis
+
+IF OBJECT_ID ('HARDCOR.mod_vis') IS NOT NULL
+    DROP PROCEDURE HARDCOR.mod_vis
+
+IF OBJECT_ID ('HARDCOR.baja_vis') IS NOT NULL
+    DROP PROCEDURE HARDCOR.baja_vis
+
+IF OBJECT_ID ('HARDCOR.baja_rol') IS NOT NULL
+    DROP PROCEDURE HARDCOR.baja_rol
+
+IF OBJECT_ID('HARDCOR.calificar_vta') IS NOT NULL
+    DROP PROCEDURE HARDCOR.calificar_vta;
+
+IF OBJECT_ID('HARDCOR.lista_sin_calif') IS NOT NULL
+    DROP PROCEDURE HARDCOR.lista_sin_calif;
+
+IF OBJECT_ID('HARDCOR.tr_update_calif') IS NOT NULL
+    DROP TRIGGER HARDCOR.tr_update_calif;
+
+IF OBJECT_ID('HARDCOR.List_fact') IS NOT NULL
+    DROP VIEW HARDCOR.List_fact;
+
+IF OBJECT_ID ('HARDCOR.Consulta_fact_xVendedor') IS NOT NULL
+    DROP PROCEDURE HARDCOR.Consulta_fact_xVendedor
+
+IF OBJECT_ID ('HARDCOR.Consulta_fact_xDetalle') IS NOT NULL
+    DROP PROCEDURE HARDCOR.Consulta_fact_xDetalle
+
+IF OBJECT_ID ('HARDCOR.Consulta_fact_xImporte') IS NOT NULL
+    DROP PROCEDURE HARDCOR.Consulta_fact_xImporte
+
+IF OBJECT_ID ('HARDCOR.Consulta_fact_xFecha') IS NOT NULL
+    DROP PROCEDURE HARDCOR.Consulta_fact_xFecha
+
+IF OBJECT_ID ('HARDCOR.list_vendedor_mayorCantProdSinVta') IS NOT NULL
+    DROP PROCEDURE HARDCOR.list_vendedor_mayorCantProdSinVta
+
+IF OBJECT_ID ('HARDCOR.list_cli_mayorCantProdCompr') IS NOT NULL
+    DROP PROCEDURE HARDCOR.list_cli_mayorCantProdCompr
+
+IF OBJECT_ID ('HARDCOR.list_vend_mayorCantFact') IS NOT NULL
+    DROP PROCEDURE HARDCOR.list_vend_mayorCantFact
+
+IF OBJECT_ID ('HARDCOR.list_vend_mayorMontoFact') IS NOT NULL
+    DROP PROCEDURE HARDCOR.list_vend_mayorMontoFact
+
+IF OBJECT_ID ('HARDCOR.listados') IS NOT NULL
+    DROP PROCEDURE HARDCOR.listados
+
+IF OBJECT_ID ('HARDCOR.Emp_Categ') IS NOT NULL
+    DROP FUNCTION HARDCOR.Emp_Categ
+
+IF OBJECT_ID ('HARDCOR.fact_oferta') IS NOT NULL
+    DROP PROCEDURE HARDCOR.fact_oferta
+
+IF OBJECT_ID ('HARDCOR.finalizar_oferta') IS NOT NULL
+    DROP PROCEDURE HARDCOR.finalizar_oferta
+
+IF OBJECT_ID ('HARDCOR.tr_fact_of_au') IS NOT NULL
+    DROP TRIGGER HARDCOR.tr_fact_of_au
 
 IF (OBJECT_ID ('HARDCOR.login') IS NOT NULL)
-	DROP PROCEDURE HARDCOR.login
+    DROP PROCEDURE HARDCOR.login
 
 IF (OBJECT_ID ('HARDCOR.listar_empresas') IS NOT NULL)
-	DROP PROCEDURE HARDCOR.listar_empresas
+    DROP PROCEDURE HARDCOR.listar_empresas
 
 IF (OBJECT_ID ('HARDCOR.listar_clientes') IS NOT NULL)
   DROP PROCEDURE HARDCOR.listar_clientes
@@ -158,44 +203,46 @@ IF (OBJECT_ID ('HARDCOR.obtener_visibilidades') IS NOT NULL)
   DROP PROCEDURE HARDCOR.obtener_visibilidades
 
 IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
-  DROP SCHEMA HARDCOR 
+    DROP SCHEMA HARDCOR
 GO
 
-CREATE SCHEMA HARDCOR AUTHORIZATION gd; 
+
+/* Creación del esquema */
+
+CREATE SCHEMA HARDCOR AUTHORIZATION gd;
 GO
 
-CREATE TABLE HARDCOR.Rol( 
-	cod_rol TINYINT IDENTITY PRIMARY KEY,
+
+/* Creación de las tablas */
+
+CREATE TABLE HARDCOR.Rol(
+    cod_rol TINYINT IDENTITY PRIMARY KEY,
     nombre NVARCHAR(225),
     habilitado BIT);
-GO
 
-CREATE TABLE HARDCOR.Funcionalidad( 
+CREATE TABLE HARDCOR.Funcionalidad(
     cod_fun TINYINT IDENTITY PRIMARY KEY,
     descripcion NVARCHAR(225));
-GO
 
-CREATE TABLE HARDCOR.RolXfunc( 
+CREATE TABLE HARDCOR.RolXfunc(
     cod_rol TINYINT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Rol(cod_rol),
     cod_fun TINYINT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Funcionalidad(cod_fun),
-	PRIMARY KEY (cod_rol, cod_fun));
-GO
+    PRIMARY KEY (cod_rol, cod_fun));
 
-CREATE TABLE HARDCOR.Usuario( 
+CREATE TABLE HARDCOR.Usuario(
     cod_us INT IDENTITY PRIMARY KEY,
     username NVARCHAR(225) UNIQUE,
     pass_word VARBINARY(225),
+    fecha_creacion DATETIME,
     habilitado BIT,
     intentos TINYINT);
-GO
 
-CREATE TABLE HARDCOR.RolXus( 
+CREATE TABLE HARDCOR.RolXus(
     cod_rol TINYINT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Rol(cod_rol),
     cod_us INT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Usuario(cod_us),
-	PRIMARY KEY (cod_rol, cod_us));
-GO
+    PRIMARY KEY (cod_rol, cod_us));
 
-CREATE TABLE HARDCOR.Contacto( 
+CREATE TABLE HARDCOR.Contacto(
     cod_contacto INT IDENTITY PRIMARY KEY,
     mail NVARCHAR(50) UNIQUE,
     cod_postal NVARCHAR(50),
@@ -203,133 +250,121 @@ CREATE TABLE HARDCOR.Contacto(
     nro_piso NUMERIC(18,0),
     nro_dpto NVARCHAR(50),
     nro_calle NUMERIC(18,0),
-	localidad NVARCHAR(225),
-	nro_tel CHAR(8));
-GO
+    localidad NVARCHAR(225),
+    nro_tel CHAR(8));
 
-CREATE TABLE HARDCOR.Cliente( 
+CREATE TABLE HARDCOR.Cliente(
     cod_us INT PRIMARY KEY REFERENCES HARDCOR.Usuario(cod_us),
     cod_contacto INT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Contacto(cod_contacto),
     cli_nombre NVARCHAR(225),
     cli_apellido NVARCHAR(225),
-    cli_dni NUMERIC(18,0) UNIQUE,
+    cli_num_doc NUMERIC(18,0) UNIQUE,
     cli_fecha_Nac DATETIME,
-    cli_fecha_creacion DATETIME,
     cli_calificacion NUMERIC(18,2),
-    cli_ventas INT);
-GO
+    cli_ventas INT,
+    cli_tipo_doc nvarchar(225),
+    cli_fecha_creacion DATETIME);
 
-CREATE TABLE HARDCOR.Rubro( 
+CREATE TABLE HARDCOR.Rubro(
     cod_rubro INT IDENTITY PRIMARY KEY,
     rubro_desc_corta NVARCHAR(225),
-	rubro_desc_larga NVARCHAR(225));
-GO
+    rubro_desc_larga NVARCHAR(225));
 
-CREATE TABLE HARDCOR.Empresa( 
+CREATE TABLE HARDCOR.Empresa(
     cod_us INT PRIMARY KEY REFERENCES HARDCOR.Usuario(cod_us),
     cod_contacto INT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Contacto(cod_contacto),
     emp_razon_soc NVARCHAR(225) UNIQUE,
-    emp_fecha_cracion DATETIME,
     emp_cuit NVARCHAR(50) UNIQUE,
     emp_ciudad NVARCHAR(225),
-	emp_calificacion NUMERIC(18,2),
-    emp_ventas INT);
-GO
+    emp_calificacion NUMERIC(18,2),
+    emp_ventas INT,
+    emp_rubro INT FOREIGN KEY REFERENCES HARDCOR.Rubro(cod_rubro),
+    emp_nom_contacto nvarchar(225));
 
-CREATE TABLE HARDCOR.RubroXempresa( 
-    cod_rubro INT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Rubro(cod_rubro),
-    cod_emp INT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Empresa(cod_us));
-GO
-
-CREATE TABLE HARDCOR.Visibilidad( 
+CREATE TABLE HARDCOR.Visibilidad(
     cod_visi NUMERIC(18,0) PRIMARY KEY,
     visi_desc NVARCHAR(225),
-    comision_por_tipo NUMERIC(18,2),
-    comision_prducto_vendido NUMERIC(18,2),
+    comision_pub NUMERIC(18,2),
+    comision_vta NUMERIC(18,2),
     comision_envio NUMERIC(18,2));
-GO
 
-CREATE TABLE HARDCOR.Publicacion( 
+CREATE TABLE HARDCOR.Tipo(
+    cod_tipo INT IDENTITY(1, 1) PRIMARY KEY,
+    descripcion NVARCHAR(225));
+
+CREATE TABLE HARDCOR.Publicacion(
     cod_pub NUMERIC(18,0) PRIMARY KEY,
     cod_us INT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Usuario(cod_us),
     cod_rubro INT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Rubro(cod_rubro),
     cod_visi NUMERIC(18,0) NOT NULL FOREIGN KEY REFERENCES HARDCOR.Visibilidad(cod_visi),
+    cod_tipo INT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Tipo(cod_tipo),
     descripcion NVARCHAR(225),
     stock NUMERIC(18,0),
     fecha_ini DATETIME,
     fecha_fin DATETIME,
     precio NUMERIC(18,2),
-	costo NUMERIC(18,2),
+    costo NUMERIC(18,2),
     estado NVARCHAR(225),
-    preg_habilitadas BIT,
-    tipo NVARCHAR(225));
-GO
+    envio BIT);
 
-CREATE TABLE HARDCOR.Factura( 
+CREATE TABLE HARDCOR.Factura(
     nro_fact NUMERIC PRIMARY KEY,
     cod_pub NUMERIC(18) NOT NULL FOREIGN KEY REFERENCES HARDCOR.Publicacion(cod_pub),
     cod_us INT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Usuario(cod_us),
     fecha DATETIME,
     total NUMERIC(18,2),
     forma_pago NVARCHAR(225));
-GO
 
-CREATE TABLE HARDCOR.Detalle( 
+CREATE TABLE HARDCOR.Detalle(
     cod_det INT IDENTITY PRIMARY KEY,
     nro_fact NUMERIC(18,0) NOT NULL FOREIGN KEY REFERENCES HARDCOR.Factura(nro_fact),
     item_desc NVARCHAR(225),
     cantidad NUMERIC(18,0),
     importe NUMERIC(18,2));
-GO
 
-/*segun el enunciado, las estrellas van del 1 al 5, pero en la tabla llegan hasta 10*/
-CREATE TABLE HARDCOR.Calificacion( 
+CREATE TABLE HARDCOR.Calificacion(
     cod_calif NUMERIC(18,0) PRIMARY KEY,
     calif_desc NVARCHAR(225),
-    calif_estrellas NUMERIC(18,0) CHECK (calif_estrellas > 0 AND calif_estrellas < 11));
-GO
+    calif_ant_estrellas NUMERIC(18,0) CHECK (calif_ant_estrellas > 0 AND calif_ant_estrellas < 11),
+    calif_estrellas NUMERIC(18,0) CHECK (calif_estrellas > 0 AND calif_estrellas < 6));
 
-CREATE TABLE HARDCOR.Compra( 
+CREATE TABLE HARDCOR.Compra(
     cod_compra INT IDENTITY PRIMARY KEY,
     cod_pub NUMERIC(18,0) NOT NULL FOREIGN KEY REFERENCES HARDCOR.Publicacion(cod_pub),
     cod_us INT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Usuario(cod_us),
-    cod_calif NUMERIC(18,0) NOT NULL FOREIGN KEY REFERENCES HARDCOR.Calificacion(cod_calif),
+    cod_calif NUMERIC(18,0) FOREIGN KEY REFERENCES HARDCOR.Calificacion(cod_calif),
     fecha_compra DATETIME,
     cantidad NUMERIC(18,0),
     monto_compra NUMERIC(18,2));
-GO
 
-CREATE TABLE HARDCOR.Oferta( 
+CREATE TABLE HARDCOR.Oferta(
     cod_of INT IDENTITY PRIMARY KEY,
     cod_pub NUMERIC(18,0) NOT NULL FOREIGN KEY REFERENCES HARDCOR.Publicacion(cod_pub),
     cod_us INT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Usuario(cod_us),
     monto_of NUMERIC(18,2),
     fecha_of DATETIME);
-GO
 
-CREATE INDEX HARDCOR ON HARDCOR.Contacto (mail);
-GO
 
-CREATE INDEX I_Cliente ON HARDCOR.Cliente (cli_nombre, cli_apellido);
-GO
-
-CREATE UNIQUE INDEX I_Empresa ON HARDCOR.Empresa (emp_razon_soc, emp_cuit);
-GO
-
-CREATE INDEX I_Publicacion ON HARDCOR.Publicacion (cod_rubro, descripcion);
-GO
+/* Migración de datos desde la tabla maestra */
 
 SELECT * INTO HARDCOR.Inconsistencias FROM gd_esquema.Maestra WHERE 1 = 2
-GO
 
-INSERT INTO HARDCOR.Rol (nombre, habilitado) 
+CREATE INDEX HARDCOR ON HARDCOR.Contacto (mail);
+
+CREATE INDEX I_Cliente ON HARDCOR.Cliente (cli_nombre, cli_apellido);
+
+CREATE UNIQUE INDEX I_Empresa ON HARDCOR.Empresa (emp_razon_soc, emp_cuit);
+
+CREATE INDEX I_Publicacion ON HARDCOR.Publicacion (cod_rubro, descripcion);
+
+INSERT INTO HARDCOR.Rol (nombre, habilitado)
 VALUES ('Administrador general', 1),
        ('Administrador', 1),
        ('Empresa', 1),
-       ('Cliente', 1)
+       ('Cliente', 1);
 GO
 
-INSERT INTO HARDCOR.Funcionalidad(descripcion) 
+INSERT INTO HARDCOR.Funcionalidad(descripcion)
 VALUES ('ABM Rol'),
        ('ABM Usuarios'),
        ('ABM Rubro'),
@@ -338,175 +373,1269 @@ VALUES ('ABM Rol'),
        ('Comprar/Ofertar'),
        ('Historial cliente'),
        ('Calificar vendedor'),
-       ('Consulta facturas realizadas al vendedor'),
-       ('Listado estadistico')
+       ('Consulta factuaras realizadas al vendedor'),
+       ('Listado estadistico');
 GO
 
---El administrador general posee todas las funcionalidades
-INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun) 
-SELECT 1, f.cod_fun
-  FROM HARDCOR.Funcionalidad f
+INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun)
+SELECT 1, f.cod_fun FROM HARDCOR.Funcionalidad f
+
+INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun)
+SELECT 2, f.cod_fun FROM HARDCOR.Funcionalidad f WHERE f.cod_fun < 5 OR f.cod_fun = 9 OR f.cod_fun = 10
+
+INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun)
+SELECT 3, f.cod_fun FROM HARDCOR.Funcionalidad f WHERE f.cod_fun = 5
+
+INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun)
+SELECT 4, f.cod_fun FROM HARDCOR.Funcionalidad f WHERE f.cod_fun > 4 AND f.cod_fun < 9
 GO
 
-/*El administrador común sólo tiene las funcionalidades
-  1. ABM Rol
-  2. ABM Usuarios
-  3. ABM Rubros
-  4. ABM Visibilidad publicacion
-  5. Consulta facturas realizadas al vendedor
-  6. Listado estadístico
-*/
-INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun) 
-SELECT 2, f.cod_fun
-  FROM HARDCOR.Funcionalidad f
- WHERE f.cod_fun < 5
-    OR f.cod_fun = 9
-    OR f.cod_fun = 10
-GO
-
---La empresa sólo puede generar publicaciones
-INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun) 
-SELECT 3, f.cod_fun
-  FROM HARDCOR.Funcionalidad f
- WHERE f.cod_fun = 5
-GO
-
-/*El cliente tiene las siguientes funcionalidades:
-  1. Generar publicación
-  2. Comprar/Ofertar
-  3. Historial cliente
-  4. Calificar vendedor
-*/
-INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun) 
-SELECT 4, f.cod_fun
-  FROM HARDCOR.Funcionalidad f
- WHERE f.cod_fun > 4
-   AND f.cod_fun < 9
-GO
-
-INSERT INTO HARDCOR.Contacto(mail, cod_postal, dom_calle, nro_piso, nro_dpto, nro_calle) 
-SELECT DISTINCT m.Cli_Mail, m.Cli_Cod_Postal, m.Cli_Dom_Calle, m.Cli_Piso, m.Cli_Depto, m.Cli_Nro_Calle 
+INSERT INTO HARDCOR.Contacto(mail, cod_postal, dom_calle, nro_piso, nro_dpto, nro_calle)
+SELECT DISTINCT m.Cli_Mail AS mail, m.Cli_Cod_Postal, m.Cli_Dom_Calle, m.Cli_Piso, m.Cli_Depto, m.Cli_Nro_Calle
 FROM gd_esquema.Maestra m WHERE m.Cli_Mail IS NOT NULL
-GO
-
-INSERT INTO HARDCOR.Contacto(mail, cod_postal, dom_calle, nro_piso, nro_dpto, nro_calle) 
-SELECT DISTINCT m.Publ_Empresa_Mail, m.Publ_Empresa_Cod_Postal, m.Publ_Empresa_Dom_Calle, m.Publ_Empresa_Piso, 
+UNION ALL
+SELECT DISTINCT m.Publ_Empresa_Mail AS mail, m.Publ_Empresa_Cod_Postal, m.Publ_Empresa_Dom_Calle, m.Publ_Empresa_Piso,
 m.Publ_Empresa_Depto, m.Publ_Empresa_Nro_Calle FROM gd_esquema.Maestra m WHERE m.Publ_Empresa_Mail IS NOT NULL
+ORDER BY mail
 GO
-
 
 DECLARE @hash VARBINARY(225)
 SELECT @hash = HASHBYTES('SHA2_256', 'w23e');
 
-INSERT INTO HARDCOR.Usuario(username, pass_word, habilitado, intentos) 
-SELECT DISTINCT m.Cli_Dni, @hash, 1, 0 FROM gd_esquema.Maestra m WHERE m.Cli_Dni IS NOT NULL 
+/* Inserto el usuario admin */
+INSERT INTO HARDCOR.Usuario(username, pass_word, habilitado, intentos)
+VALUES ('admin', @hash, 1, 0)
+
+INSERT INTO HARDCOR.Usuario(username, pass_word, habilitado, intentos)
+SELECT DISTINCT m.Cli_Dni, @hash, 1, 0 FROM gd_esquema.Maestra m WHERE m.Cli_Dni IS NOT NULL
 ORDER BY m.Cli_Dni
 
-INSERT INTO HARDCOR.Usuario(username, pass_word, habilitado, intentos) 
-SELECT DISTINCT m.Publ_Empresa_Cuit, @hash, 1, 0 
+INSERT INTO HARDCOR.Usuario(username, pass_word, habilitado, intentos, fecha_creacion)
+SELECT DISTINCT m.Publ_Empresa_Cuit, @hash, 1, 0, m.Publ_Empresa_Fecha_Creacion
 FROM gd_esquema.Maestra m WHERE m.Publ_Empresa_Razon_Social IS NOT NULL ORDER BY m.Publ_Empresa_Cuit
 GO
 
---Sacar getdate
-INSERT INTO HARDCOR.Cliente(cod_us, cod_contacto, cli_nombre, cli_apellido, cli_dni, cli_fecha_Nac, cli_fecha_creacion) 
-SELECT DISTINCT u.cod_us, c.cod_contacto, m.Cli_Nombre, m.Cli_Apeliido, m.Cli_Dni, m.Cli_Fecha_Nac, GETDATE()
-FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Contacto c 
-WHERE u.username = (SELECT CAST(m.Cli_Dni AS NVARCHAR(225))) AND c.mail = m.Cli_Mail 
-GO
-
-INSERT INTO HARDCOR.RolXus(cod_rol, cod_us)
-SELECT 4, u.cod_us FROM HARDCOR.Usuario u WHERE u.cod_us IN (select c.cod_us from HARDCOR.Cliente c)
-GO
-
-INSERT INTO HARDCOR.Rubro(rubro_desc_corta, rubro_desc_larga) 
+INSERT INTO HARDCOR.Rubro(rubro_desc_corta, rubro_desc_larga)
 SELECT DISTINCT m.Publicacion_Rubro_Descripcion, m.Publicacion_Rubro_Descripcion FROM gd_esquema.Maestra m
 GO
 
-INSERT INTO HARDCOR.Empresa(cod_us, cod_contacto, emp_razon_soc, emp_fecha_cracion, emp_cuit) 
-SELECT DISTINCT u.cod_us, c.cod_contacto, m.Publ_Empresa_Razon_Social, m.Publ_Empresa_Fecha_Creacion, 
-				m.Publ_Empresa_Cuit FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Contacto c
-WHERE m.Publ_Empresa_Razon_Social = u.username AND c.mail = m.Publ_Empresa_Mail
-GO
-
-INSERT INTO HARDCOR.RolXus(cod_rol, cod_us)
-SELECT 3, u.cod_us FROM HARDCOR.Usuario u WHERE u.cod_us IN (select e.cod_us from HARDCOR.Empresa e)
-GO
-
-INSERT INTO HARDCOR.RubroXempresa(cod_rubro, cod_emp) 
-SELECT DISTINCT r.cod_rubro, e.cod_us FROM HARDCOR.Rubro r, HARDCOR.Empresa e, gd_esquema.Maestra m 
-WHERE e.emp_cuit = m.Publ_Empresa_Cuit AND m.Publicacion_Rubro_Descripcion = r.rubro_desc_corta  
-GO
-
-INSERT INTO HARDCOR.Calificacion(cod_calif, calif_estrellas, calif_desc) 
-SELECT DISTINCT m.Calificacion_Codigo, m.Calificacion_Cant_Estrellas, m.Calificacion_Descripcion 
+INSERT INTO HARDCOR.Calificacion(cod_calif, calif_ant_estrellas, calif_desc, calif_estrellas)
+SELECT DISTINCT m.Calificacion_Codigo, m.Calificacion_Cant_Estrellas,m.Calificacion_Descripcion,
+             case m.Calificacion_Cant_Estrellas
+             when 1 then 1 when 2 then 1 when 3 then 2  when 4 then 2  when 5 then 3 when 6 then 3
+             when 7 then 4 when 8 then 4 when 9 then 5  when 10 then 5 end as calificacion
 FROM gd_esquema.Maestra m WHERE m.Calificacion_Codigo IS NOT NULL
 GO
 
-INSERT INTO HARDCOR.Visibilidad(cod_visi, visi_desc, comision_por_tipo, comision_prducto_vendido, comision_envio) 
-SELECT DISTINCT m.Publicacion_Visibilidad_Cod, m.Publicacion_Visibilidad_Desc, 
-				m.Publicacion_Visibilidad_Precio, m.Publicacion_Visibilidad_Porcentaje, 0.05 
+INSERT INTO HARDCOR.Visibilidad(cod_visi, visi_desc, comision_pub, comision_vta, comision_envio)
+SELECT DISTINCT m.Publicacion_Visibilidad_Cod, m.Publicacion_Visibilidad_Desc,
+                m.Publicacion_Visibilidad_Precio, m.Publicacion_Visibilidad_Porcentaje, 0.05
 FROM gd_esquema.Maestra m
 GO
 
-INSERT INTO HARDCOR.Publicacion (cod_pub, cod_us, cod_rubro, cod_visi, descripcion, stock, fecha_ini, 
-						fecha_fin, precio, estado, preg_habilitadas, tipo)
-SELECT DISTINCT m.Publicacion_Cod, u.cod_us, r.cod_rubro, v.cod_visi, m.Publicacion_Descripcion, 
-				m.Publicacion_Stock, m.Publicacion_Fecha, m.Publicacion_Fecha_Venc, m.Publicacion_Precio, 
-				m.Publicacion_Estado, 1, m.Publicacion_Tipo  
-FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Rubro r, HARDCOR.Visibilidad v
-WHERE (u.username = (SELECT CAST(m.Publ_Cli_Dni AS NVARCHAR(225))) OR u.username = m.Publ_Empresa_Cuit) 
-	  AND r.rubro_desc_corta = m.Publicacion_Rubro_Descripcion AND v.cod_visi = m.Publicacion_Visibilidad_Cod
+INSERT INTO HARDCOR.Tipo(descripcion)
+SELECT DISTINCT m.Publicacion_Tipo FROM gd_esquema.Maestra m
+GO
+
+INSERT INTO HARDCOR.Publicacion (cod_pub, cod_us, cod_rubro, cod_visi, descripcion, stock, fecha_ini,
+                                fecha_fin, precio, estado, cod_tipo, envio)
+SELECT DISTINCT m.Publicacion_Cod, u.cod_us, r.cod_rubro, v.cod_visi, m.Publicacion_Descripcion,
+                m.Publicacion_Stock, m.Publicacion_Fecha, m.Publicacion_Fecha_Venc, m.Publicacion_Precio,
+                m.Publicacion_Estado, t.cod_tipo, 0
+FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Rubro r, HARDCOR.Visibilidad v, HARDCOR.Tipo t
+WHERE (u.username = (SELECT CAST(m.Publ_Cli_Dni AS NVARCHAR(225))) OR u.username = m.Publ_Empresa_Cuit)
+      AND r.rubro_desc_corta = m.Publicacion_Rubro_Descripcion AND v.cod_visi = m.Publicacion_Visibilidad_Cod
+      AND t.descripcion = m.Publicacion_Tipo
+
+UPDATE HARDCOR.Publicacion SET estado = 'finalizado' WHERE cod_tipo = 2 AND fecha_fin < GETDATE()
 GO
 
 INSERT INTO HARDCOR.Factura(nro_fact, cod_pub, cod_us, fecha, total, forma_pago)
-SELECT DISTINCT m.Factura_Nro, p.cod_pub, p.cod_us, m.Factura_Fecha, m.Factura_Total, m.Forma_Pago_Desc  
+SELECT DISTINCT m.Factura_Nro, p.cod_pub, p.cod_us, m.Factura_Fecha, m.Factura_Total, m.Forma_Pago_Desc
 FROM gd_esquema.Maestra m, HARDCOR.Publicacion p WHERE p.cod_pub = m.Publicacion_Cod AND m.Factura_Nro IS NOT NULL
-GO 
+GO
 
 INSERT INTO HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
-SELECT DISTINCT f.nro_fact, (SELECT CAST(v.cod_visi AS NVARCHAR(225))), 1, m.Item_Factura_Monto  
-FROM gd_esquema.Maestra m, HARDCOR.Factura f, HARDCOR.Visibilidad v 
-WHERE m.Factura_Nro = f.nro_fact AND m.Item_Factura_Monto = v.comision_por_tipo
-UNION ALL
-SELECT DISTINCT f.nro_fact, 'Venta producto', m.Item_Factura_Cantidad, m.Item_Factura_Monto  
-FROM gd_esquema.Maestra m, HARDCOR.Factura f WHERE m.Factura_Nro = f.nro_fact ORDER BY nro_fact
-GO
+SELECT f.nro_fact, 'Visibilidad', MIN(m.Item_Factura_Cantidad), MIN(m.Item_Factura_Monto)
+FROM  gd_esquema.Maestra m, HARDCOR.Factura f WHERE m.Factura_Nro = f.nro_fact GROUP BY f.nro_fact
 
-INSERT INTO HARDCOR.Compra(cod_pub, cod_us, cod_calif, fecha_compra, cantidad, monto_compra)
-SELECT DISTINCT f.cod_pub, f.cod_us, c.cod_calif, m.Compra_Fecha, m.Compra_Cantidad, f.total  
-FROM gd_esquema.Maestra m, HARDCOR.Calificacion c, HARDCOR.Factura f 
-WHERE f.cod_pub = m.Publicacion_Cod AND c.cod_calif = m.Calificacion_Codigo ORDER BY f.cod_pub
-GO 
+INSERT INTO HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
+SELECT DISTINCT f.nro_fact, 'Venta producto', m.Item_Factura_Cantidad, m.Item_Factura_Monto
+FROM gd_esquema.Maestra m, HARDCOR.Factura f
+WHERE m.Factura_Nro = f.nro_fact AND
+NOT EXISTS(SELECT d.nro_fact, d.cantidad, d.importe FROM HARDCOR.Detalle d
+WHERE f.nro_fact = d.nro_fact AND m.Item_Factura_Cantidad = d.cantidad AND m.Item_Factura_Monto = d.importe)
+GO
 
 INSERT INTO HARDCOR.Oferta(cod_pub, cod_us, monto_of, fecha_of)
-SELECT DISTINCT p.cod_pub, p.cod_us, m.Oferta_Monto, m.Oferta_Fecha 
-FROM gd_esquema.Maestra m, HARDCOR.Publicacion p 
+SELECT DISTINCT p.cod_pub, p.cod_us, m.Oferta_Monto, m.Oferta_Fecha
+FROM gd_esquema.Maestra m, HARDCOR.Publicacion p
 WHERE p.cod_pub = m.Publicacion_Cod AND m.Oferta_Monto IS NOT NULL ORDER BY p.cod_pub
-GO 
-
-IF (OBJECT_ID ('HARDCOR.tr_calificacion_af_ins') IS NOT NULL)  
-	DROP TRIGGER HARDCOR.tr_calificacion_af_ins
 GO
 
-IF (OBJECT_ID ('HARDCOR.tr_visibilidad_af_ins') IS NOT NULL)  
-	DROP TRIGGER HARDCOR.tr_visibilidad_af_ins
+INSERT INTO HARDCOR.Cliente(cod_us, cod_contacto, cli_nombre, cli_apellido, cli_num_doc, cli_fecha_Nac, cli_tipo_doc)
+SELECT DISTINCT u.cod_us, c.cod_contacto, m.Cli_Nombre, m.Cli_Apeliido, m.Cli_Dni, m.Cli_Fecha_Nac, 'DNI'
+FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Contacto c
+WHERE u.username = (SELECT CAST(m.Cli_Dni AS NVARCHAR(225))) AND c.mail = m.Cli_Mail
 GO
 
-/*ACLARAR ESTO EN LA ESTRATEGIA*/
-CREATE TRIGGER HARDCOR.tr_calificacion_af_ins
-ON HARDCOR.Calificacion
-AFTER INSERT
+INSERT INTO HARDCOR.Empresa(cod_us, cod_contacto, emp_razon_soc, emp_cuit)
+SELECT DISTINCT u.cod_us, c.cod_contacto, m.Publ_Empresa_Razon_Social, m.Publ_Empresa_Cuit
+FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Contacto c
+WHERE m.Publ_Empresa_Cuit = u.username AND c.mail = m.Publ_Empresa_Mail
+GO
+
+CREATE TRIGGER HARDCOR.tr_update_calif
+ON HARDCOR.Compra
+AFTER UPDATE,INSERT
 AS BEGIN
-	UPDATE HARDCOR.Calificacion SET calif_estrellas = calif_estrellas - 5 WHERE calif_estrellas > 5
-	UPDATE HARDCOR.Calificacion SET calif_desc = 'Sin descripcion' WHERE calif_desc = ''
+
+    DECLARE @datos_prom TABLE (cod_us int,vtas int,prom numeric(18,2))
+    DECLARE @total int, @i int=0, @cod_us int, @prom numeric(18,2), @vtas int
+
+    INSERT INTO @datos_prom
+    SELECT p.cod_us, COUNT(*), AVG(c.calif_estrellas) AS promedio
+      FROM  HARDCOR.Publicacion p, HARDCOR.Compra cm, HARDCOR.Calificacion c
+     WHERE p.cod_pub= cm.cod_pub
+       AND cm.cod_calif = c.cod_calif
+       AND p.cod_us IN (SELECT p.cod_us FROM inserted i, HARDCOR.Publicacion p WHERE p.cod_pub = i.cod_pub)
+    GROUP BY p.cod_us
+    ORDER BY p.cod_us
+
+    SELECT @total= COUNT(*) FROM @datos_prom
+
+    WHILE (@i < @total) BEGIN
+       SELECT  @cod_us = dt.cod_us, @prom= dt.prom, @vtas = dt.vtas
+       FROM @datos_prom dt
+       ORDER BY dt.cod_us
+       offset @i rows
+       fetch next 1 rows only
+
+       IF EXISTS (SELECT * FROM HARDCOR.Empresa e WHERE e.cod_us= @cod_us)
+          UPDATE HARDCOR.Empresa SET emp_calificacion = @prom, emp_ventas = @vtas where cod_us= @cod_us
+       ELSE
+          UPDATE HARDCOR.Cliente SET cli_calificacion = @prom, cli_ventas = @vtas  where cod_us= @cod_us
+
+       SET @i= @i+1
+    END
 END
 GO
 
-CREATE TRIGGER HARDCOR.tr_visibilidad_af_ins
-ON HARDCOR.Visibilidad
-AFTER INSERT
+  INSERT INTO HARDCOR.Compra(cod_pub, cod_us, cod_calif, fecha_compra, cantidad, monto_compra)
+  SELECT m.Publicacion_Cod, cl.cod_us, m.Calificacion_Codigo, m.Compra_Fecha, m.Compra_Cantidad,
+         m.Compra_Cantidad * m.Publicacion_Precio
+    FROM gd_esquema.Maestra m, HARDCOR.Cliente cl
+   WHERE m.Compra_Cantidad IS NOT NULL
+     AND m.Cli_Dni = cl.cli_num_doc
+     AND m.Publicacion_Tipo = 'Compra Inmediata'
+      OR m.Publicacion_Tipo = 'Subasta'
+     AND m.Oferta_Monto IS NOT NULL
+     AND m.Publicacion_Estado = 'finalizada'
+ORDER BY m.Publicacion_Cod
+
+
+/*
+INCONSISTENCIAS EN COMPRAS
+
+select m.Publicacion_Estado, m.Publicacion_Tipo, m.Oferta_Monto, m.Publicacion_Fecha_Venc,
+      m.Compra_Cantidad, m.Calificacion_Cant_Estrellas
+from gd_esquema.Maestra m
+where  m.Publicacion_Tipo = 'Subasta' and m.Compra_Cantidad is not null
+
+Si a la fecha de hoy esta vencda, tomamos la mayor oferta como compra aunque en cantidad_comprada sea null?
+si no hay monto cobrado al vendedor no hay compra?
+asi como esta, no se realizo ninguna venta por subasta, aunque incluso hay subastas donde se califico al vendedor
+*/
+
+INSERT INTO HARDCOR.RolXus(cod_rol, cod_us)
+VALUES (1, (SELECT cod_us
+              FROM HARDCOR.Usuario
+             WHERE username = 'admin'))
+
+INSERT INTO HARDCOR.RolXus(cod_rol, cod_us)
+SELECT 3, u.cod_us FROM HARDCOR.Usuario u WHERE u.cod_us IN (SELECT e.cod_us FROM HARDCOR.Empresa e)
+UNION ALL
+SELECT 4, u.cod_us FROM HARDCOR.Usuario u WHERE u.cod_us IN (SELECT c.cod_us FROM HARDCOR.Cliente c)
+GO
+
+CREATE FUNCTION HARDCOR.Emp_Categ (@emp_cuit nvarchar(225) )
+    RETURNS INT
+    BEGIN
+
+        DECLARE @categoria nvarchar(225), @cod_rubro INT
+
+        SELECT @categoria = d.Publicacion_Rubro_Descripcion
+          FROM (  SELECT TOP 1 m.Publicacion_Rubro_Descripcion , COUNT(*) AS cant
+                    FROM gd_esquema.Maestra m
+                   WHERE @emp_cuit = m.Publ_Empresa_Cuit
+                GROUP BY m.Publ_Empresa_Cuit, m.Publicacion_Rubro_Descripcion
+                ORDER BY cant DESC ) d
+
+        SELECT @cod_rubro = r.cod_rubro FROM HARDCOR.Rubro r WHERE r.rubro_desc_corta = @categoria
+
+        RETURN @cod_rubro
+    END
+GO
+
+UPDATE HARDCOR.Empresa
+   SET emp_rubro = HARDCOR.Emp_Categ(e.emp_cuit)
+  FROM HARDCOR.Empresa e
+ WHERE emp_cuit = e.emp_cuit
+GO
+
+
+/* Creación de funciones y procedures para que trabajen los aplicativos clientes */
+
+CREATE PROCEDURE HARDCOR.lista_sin_calif (@cod_us int) AS BEGIN
+   SELECT c.cod_compra, c.cod_pub, p.cod_us AS cod_vendedor, c.fecha_compra,
+          p.descripcion, p.precio, c.cantidad, c.monto_compra
+     FROM HARDCOR.Compra c, HARDCOR.Publicacion p
+    WHERE c.cod_calif IS NULL
+      AND p.cod_pub = c.cod_pub
+      AND c.cod_us = @cod_us
+
+   RETURN 1
+END
+GO
+
+CREATE PROCEDURE HARDCOR.calificar_vta (@cod_compra int,@cod_us int, @estrellas int, @detalle nvarchar(225)) AS BEGIN
+    BEGIN TRY
+        BEGIN TRAN t1
+
+          DECLARE @cod_calif INT, @errorInCalif INT, @errorUpCompra INT
+          SELECT @cod_calif= MAX(c.cod_calif) + 1 FROM HARDCOR.Calificacion c
+
+          INSERT INTO HARDCOR.Calificacion (cod_calif,calif_desc,calif_estrellas)
+          VALUES (@cod_calif, @detalle, @estrellas)
+          SET @errorInCalif = @@ERROR
+
+          UPDATE HARDCOR.Compra SET cod_calif= @cod_calif WHERE cod_compra = @cod_compra
+          SET @errorUpCompra = @@error
+
+          SELECT TOP 5 * FROM HARDCOR.Compra c
+          WHERE c.cod_calif IS NOT NULL AND c.cod_us= @cod_us
+          ORDER BY c.cod_calif DESC
+
+          SELECT cm.cod_us,c.calif_estrellas, COUNT(*) AS cantidad_estrellas
+          FROM HARDCOR.Compra cm
+              LEFT JOIN HARDCOR.Calificacion c
+              ON cm.cod_calif = c.cod_calif
+          WHERE cm.cod_calif IS NOT NULL AND cm.cod_us = @cod_us
+          GROUP BY cm.cod_us,c.calif_estrellas
+          ORDER BY cm.cod_us,c.calif_estrellas
+
+        COMMIT TRAN t1
+    END TRY
+
+    BEGIN CATCH
+
+       ROLLBACK TRANSACTION t1
+
+       IF @errorInCalif <> 0
+           RAISERROR ('No se pudo guardar la calificacion', 16, 1)
+
+       IF @errorUpCompra <> 0
+          RAISERROR ('No se pudo calificar la compra ', 16, 1)
+
+    END CATCH
+
+    RETURN 1
+END
+GO
+
+CREATE VIEW HARDCOR.List_fact AS
+SELECT f.nro_fact AS Nro_Factura,
+       d.cod_det AS Codigo_Detalle,
+       f.cod_us AS Codigo_Vendedor,
+       f.cod_pub AS Codigo_Publicacion,
+       f.fecha,
+       f.total ,
+       f.forma_pago,
+       d.item_desc AS detalle_factura,
+       d.cantidad,
+       d.importe AS importe_item
+  FROM HARDCOR.Factura f
+  LEFT JOIN HARDCOR.Detalle d
+  ON f.nro_fact = d.nro_fact
+GO
+
+CREATE PROCEDURE HARDCOR.Consulta_fact_xFecha (@cod_us int, @fecha_i datetime, @fecha_f datetime)
 AS BEGIN
-	UPDATE HARDCOR.Visibilidad SET comision_envio = 0 WHERE visi_desc = 'Gratis'
+    begin try
+
+       select * from HARDCOR.List_fact lf
+       where lf.Codigo_Vendedor = @cod_us and lf.fecha between @fecha_i and @fecha_f
+       order by lf.Nro_Factura,lf.detalle_factura
+
+    end try
+    begin catch
+
+       DECLARE @ErrorMessage NVARCHAR(4000);
+       DECLARE @ErrorSeverity INT;
+       DECLARE @ErrorState INT;
+
+        SET @ErrorMessage = ERROR_MESSAGE()
+        SET @ErrorSeverity = ERROR_SEVERITY()
+        SET @ErrorState = ERROR_STATE();
+
+       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
+
+    end catch
+   END
+GO
+
+CREATE PROCEDURE HARDCOR.Consulta_fact_xImporte (@cod_us int, @importe_i numeric(18,2), @importe_f numeric(18,2))
+AS BEGIN
+    begin try
+
+       select * from HARDCOR.List_fact lf
+       where lf.Codigo_Vendedor = @cod_us and lf.total between @importe_i and @importe_f
+       order by lf.Nro_Factura,lf.detalle_factura
+
+    end try
+    begin catch
+
+       DECLARE @ErrorMessage NVARCHAR(4000);
+       DECLARE @ErrorSeverity INT;
+       DECLARE @ErrorState INT;
+
+        SET @ErrorMessage = ERROR_MESSAGE()
+        SET @ErrorSeverity = ERROR_SEVERITY()
+        SET @ErrorState = ERROR_STATE();
+
+       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
+
+    end catch
+   END
+GO
+
+CREATE PROCEDURE HARDCOR.Consulta_fact_xDetalle (@cod_us int, @detalle nvarchar(225))
+AS BEGIN
+    begin try
+
+       declare @d_fact nvarchar(225)
+       set @d_fact = '%' + @detalle +'%'
+       select * from HARDCOR.List_fact lf
+       where lf.Codigo_Vendedor = @cod_us and lf.detalle_factura like @d_fact
+       order by lf.Nro_Factura,lf.detalle_factura
+
+    end try
+    begin catch
+
+       DECLARE @ErrorMessage NVARCHAR(4000);
+       DECLARE @ErrorSeverity INT;
+       DECLARE @ErrorState INT;
+
+        SET @ErrorMessage = ERROR_MESSAGE()
+        SET @ErrorSeverity = ERROR_SEVERITY()
+        SET @ErrorState = ERROR_STATE();
+
+       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
+
+    end catch
+   END
+GO
+
+CREATE PROCEDURE HARDCOR.Consulta_fact_xVendedor (@cod_us int)
+AS BEGIN
+    begin try
+
+       select * from HARDCOR.List_fact lf
+       where lf.Codigo_Vendedor = @cod_us
+       order by lf.Nro_Factura,lf.detalle_factura
+
+    end try
+    begin catch
+
+       DECLARE @ErrorMessage NVARCHAR(4000);
+       DECLARE @ErrorSeverity INT;
+       DECLARE @ErrorState INT;
+
+        SET @ErrorMessage = ERROR_MESSAGE()
+        SET @ErrorSeverity = ERROR_SEVERITY()
+        SET @ErrorState = ERROR_STATE();
+
+       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
+
+    end catch
+   END
+
+GO
+
+CREATE PROCEDURE HARDCOR.list_vendedor_mayorCantProdSinVta (@anio int, @nro_trim int, @cod_visi int, @mes int)
+AS BEGIN
+    BEGIN TRY
+       BEGIN TRAN t1
+
+          DECLARE @mes_i int, @j int =0, @mes_f int, @cant_visi int, @min_codVisi int, @flag int
+          DECLARE @datos TABLE (Anio int, Mes int, Codigo_Visibilidad int, Codigo_Vendedor int, Cantidad int)
+
+          select @cant_visi = COUNT(*), @min_codVisi = MIN(cod_visi) from HARDCOR.Visibilidad
+          set @mes_f = @nro_trim * 3+1
+          set @mes_i = @mes_f-3
+
+          if @mes is not null and @mes_i <= @mes and @mes < @mes_f
+          begin
+             set @mes_i = @mes
+             set @mes_f = @mes+1
+          end
+
+          if @mes is not null and not(@mes between @mes_i and @mes_f)
+          begin
+             raiserror('El mes ingresado no pertenece al trimestre seleccionado', 20, -1)
+          end
+
+          if @cod_visi is not null
+             set @flag = 1
+          else
+             set @flag = 0
+
+
+          while (@mes_i < @mes_f)
+          begin
+
+
+             while (@j < @cant_visi)
+             begin
+
+
+                if @flag = 1
+                    set @j = @cant_visi
+                else
+                    set @cod_visi = @min_codVisi + @j
+
+
+                insert into @datos
+                select year(p.fecha_ini) as anio,
+                       month(p.fecha_ini) as mes,
+                      p.cod_visi as visi,
+                      p.cod_us as vendedor,
+                      COUNT(*) as cantidad
+                from HARDCOR.Publicacion p
+                where month(p.fecha_ini) = @mes_i
+                      and p.cod_visi = @cod_visi
+                     and year(p.fecha_ini) = @anio
+                group by year(p.fecha_ini),month(p.fecha_ini), p.cod_visi, p.cod_us
+                order by anio desc, mes desc, visi asc, cantidad desc
+
+                offset 0 rows
+                fetch next 5 rows only
+                set @j = @j +1
+
+             end
+             set @mes_i = @mes_i+1
+             set @j = 0
+          end
+
+          select d.Anio, d.Mes, d.Codigo_Visibilidad, d.Codigo_Vendedor, d.Cantidad,
+                e.emp_razon_soc, emp_cuit, emp_calificacion,
+                c.cli_apellido, c.cli_nombre, c.cli_num_doc,c.cli_calificacion
+          from @datos d
+              left join HARDCOR.Empresa e
+              on e.cod_us = d.Codigo_Vendedor
+              left join HARDCOR.Cliente c
+              on c.cod_us=d.Codigo_Vendedor
+
+
+       COMMIT TRAN t1
+    END TRY
+
+    BEGIN CATCH
+
+        ROLLBACK TRANSACTION t1
+
+        DECLARE @ErrorMessage NVARCHAR(4000);
+        DECLARE @ErrorSeverity INT;
+        DECLARE @ErrorState INT;
+
+        SELECT
+
+         @ErrorMessage = ERROR_MESSAGE(),
+         @ErrorSeverity = ERROR_SEVERITY(),
+         @ErrorState = ERROR_STATE();
+
+        RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+
+    END CATCH
+
+    RETURN 1
+END
+GO
+
+CREATE PROCEDURE HARDCOR.list_cli_mayorCantProdCompr (@anio int, @nro_trim int, @mes int, @desc nvarchar(225))
+AS BEGIN
+    begin try
+
+       DECLARE @datos_cli TABLE (anio int, mes int, rubro nvarchar(225) , codigo_cliente int, cantidad_comprada int)
+       DECLARE @mes_f int, @mes_i int
+
+       set @mes_f = @nro_trim * 3 +1
+       set @mes_i = @mes_f-3
+
+       if @mes is not null and @mes_i <= @mes and @mes < @mes_f
+       begin
+          set @mes_i = @mes
+          set @mes_f = @mes+1
+       end
+
+       if @mes is not null and not(@mes between @mes_i and @mes_f)
+       begin
+          raiserror('El mes ingresado no pertenece al trimestre seleccionado', 20, -1)
+       end
+
+       while (@mes_i < @mes_f)
+       begin
+
+       insert into @datos_cli
+       select top 5
+              year(c.fecha_compra) as anio,
+            month(c.fecha_compra) as mes,
+            r.rubro_desc_corta as rubro,
+            c.cod_us as codigo_cliente,
+            COUNT(*) as cantidad
+       from HARDCOR.Compra c, HARDCOR.Publicacion p, HARDCOR.Rubro r
+       where c.cod_pub=p.cod_pub and
+            p.cod_rubro = r.cod_rubro and
+            r.rubro_desc_corta = @desc and
+            year(c.fecha_compra) = @anio and
+            month(c.fecha_compra) = @mes_i
+       group by year(c.fecha_compra),month(c.fecha_compra), r.rubro_desc_corta, c.cod_us
+       order by anio desc, mes desc, cantidad desc
+
+       set @mes_i = @mes_i+1
+       end
+
+       select dc.*, c.cli_apellido, c.cli_nombre, c.cli_num_doc,c.cli_calificacion
+       from @datos_cli dc
+            left join
+           HARDCOR.Cliente c
+           on dc.codigo_cliente = c.cod_us
+       order by anio desc, mes asc, cantidad_comprada desc
+
+
+
+    end try
+    begin catch
+
+       DECLARE @ErrorMessage NVARCHAR(4000);
+       DECLARE @ErrorSeverity INT;
+       DECLARE @ErrorState INT;
+
+        SET @ErrorMessage = ERROR_MESSAGE()
+        SET @ErrorSeverity = ERROR_SEVERITY()
+        SET @ErrorState = ERROR_STATE();
+
+       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
+
+    end catch
+   END
+GO
+
+CREATE PROCEDURE HARDCOR.list_vend_mayorCantFact (@anio int, @nro_trim int, @mes int)
+AS BEGIN
+    begin try
+
+       DECLARE @datos_vendCantFact TABLE (anio int, mes int, codigo_vendedor int, cantidad_facturas int)
+       DECLARE @mes_f int, @mes_i int
+
+       set @mes_f = @nro_trim * 3 +1
+       set @mes_i = @mes_f-3
+
+       if @mes is not null and @mes_i <= @mes and @mes < @mes_f
+       begin
+          set @mes_i = @mes
+          set @mes_f = @mes+1
+       end
+
+       if @mes is not null and not(@mes between @mes_i and @mes_f)
+       begin
+          raiserror('El mes ingresado no pertenece al trimestre seleccionado', 20, -1)
+       end
+
+       while (@mes_i < @mes_f)
+       begin
+
+       insert into @datos_vendCantFact
+       select top 5
+              year(c.fecha_compra) as anio,
+            month(c.fecha_compra) as mes,
+            p.cod_us as codigo_vendedor,
+            COUNT(*) as cantidad
+       from  HARDCOR.Compra c, HARDCOR.Publicacion p
+       where p.cod_pub = c.cod_pub and
+            year(c.fecha_compra) = @anio and
+            month(c.fecha_compra) = @mes_i
+       group by year(c.fecha_compra),month(c.fecha_compra), p.cod_us
+       order by anio desc, mes asc, cantidad desc
+
+       set @mes_i = @mes_i+1
+       end
+
+       select d.Anio, d.Mes, d.codigo_vendedor, d.cantidad_facturas,
+            e.emp_razon_soc, emp_cuit, emp_calificacion,
+            c.cli_apellido, c.cli_nombre, c.cli_num_doc,c.cli_calificacion
+       from @datos_vendCantFact d
+           left join HARDCOR.Empresa e
+           on e.cod_us = d.Codigo_Vendedor
+           left join HARDCOR.Cliente c
+           on c.cod_us=d.Codigo_Vendedor
+
+
+    end try
+    begin catch
+
+       DECLARE @ErrorMessage NVARCHAR(4000);
+       DECLARE @ErrorSeverity INT;
+       DECLARE @ErrorState INT;
+
+        SET @ErrorMessage = ERROR_MESSAGE()
+        SET @ErrorSeverity = ERROR_SEVERITY()
+        SET @ErrorState = ERROR_STATE();
+
+       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
+
+    end catch
+   END
+GO
+
+CREATE PROCEDURE HARDCOR.list_vend_mayorMontoFact (@anio int, @nro_trim int, @mes int)
+AS BEGIN
+    begin try
+
+       DECLARE @datos_vendMontoFact TABLE (anio int, mes int, codigo_vendedor int, monto_facturado int)
+       DECLARE @mes_f int, @mes_i int
+
+       set @mes_f = @nro_trim * 3 +1
+       set @mes_i = @mes_f-3
+
+       if @mes is not null and @mes_i <= @mes and @mes < @mes_f
+       begin
+          set @mes_i = @mes
+          set @mes_f = @mes+1
+       end
+
+       if @mes is not null and not(@mes between @mes_i and @mes_f)
+       begin
+          raiserror('El mes ingresado no pertenece al trimestre seleccionado', 20, -1)
+       end
+
+       while (@mes_i < @mes_f)
+       begin
+
+       insert into @datos_vendMontoFact
+       select top 5
+              year(c.fecha_compra) as anio,
+            month(c.fecha_compra) as mes,
+            p.cod_us as codigo_vendedor,
+            SUM(c.monto_compra) as monto
+       from  HARDCOR.Compra c, HARDCOR.Publicacion p
+       where p.cod_pub = c.cod_pub and
+            year(c.fecha_compra) = @anio and
+            month(c.fecha_compra) = @mes_i
+       group by year(c.fecha_compra),month(c.fecha_compra), p.cod_us
+       order by anio desc, mes asc, monto desc
+
+       set @mes_i = @mes_i+1
+       end
+
+       select d.Anio, d.Mes, d.codigo_vendedor, d.monto_facturado,
+            e.emp_razon_soc, emp_cuit, emp_calificacion,
+            c.cli_apellido, c.cli_nombre, c.cli_num_doc,c.cli_calificacion
+       from @datos_vendMontoFact d
+           left join HARDCOR.Empresa e
+           on e.cod_us = d.Codigo_Vendedor
+           left join HARDCOR.Cliente c
+           on c.cod_us=d.Codigo_Vendedor
+
+
+    end try
+    begin catch
+
+       DECLARE @ErrorMessage NVARCHAR(4000);
+       DECLARE @ErrorSeverity INT;
+       DECLARE @ErrorState INT;
+
+        SET @ErrorMessage = ERROR_MESSAGE()
+        SET @ErrorSeverity = ERROR_SEVERITY()
+        SET @ErrorState = ERROR_STATE();
+
+       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
+
+    end catch
+   END
+GO
+
+CREATE PROCEDURE HARDCOR.listados (@anio int, @nro_trim int, @tipoListado int, @cod_visi int, @mes int, @desc nvarchar(225))
+AS BEGIN
+
+if @tipoListado = 1
+    exec HARDCOR.list_vendedor_mayorCantProdSinVta @anio, @nro_trim, @cod_visi, @mes
+if @tipoListado = 2
+    exec HARDCOR.list_cli_mayorCantProdCompr @anio, @nro_trim, @mes, @desc
+if @tipoListado = 3
+    exec HARDCOR.list_vend_mayorCantFact @anio, @nro_trim, @mes
+if @tipoListado = 4
+    exec HARDCOR.list_vend_mayorMontoFact @anio, @nro_trim, mes
+END
+GO
+
+CREATE PROCEDURE HARDCOR.fact_oferta(@cod_sub NUMERIC(18, 0))
+AS BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            DECLARE @n_fact NUMERIC(18, 0)
+            DECLARE @total NUMERIC(18, 2)
+            DECLARE @importe NUMERIC(18, 2)
+            DECLARE @usuario INT
+            DECLARE @cant INT
+
+            SELECT @n_fact = MAX(f.nro_fact) + 1 FROM HARDCOR.Factura f
+            IF EXISTS (SELECT o.cod_of FROM HARDCOR.Oferta o WHERE o.cod_pub = @cod_sub)
+            BEGIN
+                SELECT @total = v.comision_pub, @importe = MAX(o.monto_of), @usuario = p.cod_us, @cant = p.stock
+                FROM HARDCOR.Publicacion p, HARDCOR.Oferta o, HARDCOR.Visibilidad v
+                WHERE p.cod_pub = @cod_sub AND p.cod_pub = o.cod_pub AND p.cod_visi = v.cod_visi
+                GROUP BY v.comision_pub, o.monto_of, p.cod_us, p.stock
+
+                INSERT HARDCOR.Factura(nro_fact, cod_pub, cod_us, fecha, total, forma_pago)
+                VALUES(@n_fact, @cod_sub, @usuario, GETDATE(), @total, 'Efectivo')
+
+                INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
+                VALUES(@n_fact, 'Visibilidad', 1, @total)
+
+                INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
+                VALUES(@n_fact, 'Oferta', @cant, @importe)
+
+                UPDATE HARDCOR.Factura SET total = total + @importe WHERE nro_fact = @n_fact
+            END
+        COMMIT TRANSACTION
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+    END CATCH
+
+    RETURN 1
+END
+GO
+
+CREATE TRIGGER HARDCOR.tr_fact_of_au
+ON HARDCOR.Publicacion
+AFTER UPDATE
+AS BEGIN
+    IF UPDATE (estado)
+    BEGIN
+        DECLARE @cod INT
+        DECLARE @cant_sub INT
+        DECLARE @j INT = 0
+        SELECT @cant_sub = COUNT(*) FROM inserted i
+
+        WHILE @cant_sub > @j
+        BEGIN
+            SELECT @cod = i.cod_pub FROM inserted i ORDER BY i.cod_pub OFFSET @j ROWS FETCH NEXT 1 ROWS ONLY
+            EXEC HARDCOR.fact_oferta @cod
+            SET @j = @j + 1
+        END
+    END
+END
+GO
+
+CREATE PROCEDURE HARDCOR.finalizar_oferta(@fecha DATETIME)
+AS BEGIN
+    UPDATE HARDCOR.Publicacion SET estado = 'finalizado' WHERE cod_tipo = 2 AND estado <> 'Publicada' AND fecha_fin < @fecha
+    RETURN 1
+END
+GO
+
+CREATE PROCEDURE HARDCOR.alta_vis(@descripcion NVARCHAR(225), @comision_pub NUMERIC(18, 2),
+                                  @comision_vta NUMERIC(18, 2), @comision_envio NUMERIC(18, 2))
+AS BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            DECLARE @cod_visi NUMERIC(18, 0)
+
+            IF NOT EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @descripcion)
+            BEGIN
+                SELECT @cod_visi = MAX(v.cod_visi) + 1 FROM HARDCOR.Visibilidad v
+
+                INSERT INTO HARDCOR.Visibilidad(cod_visi, visi_desc, comision_pub, comision_vta, comision_envio)
+                VALUES (@cod_visi, @descripcion, @comision_pub, @comision_vta, @comision_envio)
+            END
+            ELSE
+                RAISERROR('', 16, 1)
+        COMMIT TRANSACTION
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+
+        IF EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @descripcion)
+        BEGIN
+            PRINT 'La visibilidad ya existe.'
+            RETURN -1
+        END
+    END CATCH
+
+    RETURN 1
+END
+GO
+
+CREATE PROCEDURE HARDCOR.mod_vis(@cod_visi NUMERIC(18, 0), @descripcion NVARCHAR(225), @comision_pub NUMERIC(18, 2),
+                                 @comision_vta NUMERIC(18, 2), @comision_envio NUMERIC(18, 2))
+AS BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            IF EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.cod_visi = @cod_visi)
+            BEGIN
+                IF NOT EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @descripcion)
+                BEGIN
+                    UPDATE HARDCOR.Visibilidad SET visi_desc = @descripcion, comision_pub = @comision_pub,
+                    comision_vta = @comision_vta, comision_envio = @comision_envio WHERE cod_visi = @cod_visi
+                END
+                ELSE
+                    RAISERROR('', 16, 1)
+            END
+            ELSE
+                RAISERROR('', 16, 1)
+        COMMIT TRANSACTION
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+
+        IF NOT EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.cod_visi = @cod_visi)
+        BEGIN
+            PRINT 'La visibilidad a modificar no existe.'
+            RETURN -1
+        END
+
+        IF EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @descripcion)
+        BEGIN
+            PRINT 'Hay otra visibilidad con la misma descripcion.'
+            RETURN -2
+        END
+    END CATCH
+
+    RETURN 1
+END
+GO
+
+CREATE PROCEDURE HARDCOR.baja_vis(@cod_visi NUMERIC(18, 0))
+AS BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            IF EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.cod_visi = @cod_visi)
+            BEGIN
+                DELETE FROM HARDCOR.Publicacion WHERE cod_visi = @cod_visi
+            END
+            ELSE
+                RAISERROR('', 16, 1)
+        COMMIT TRANSACTION
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+
+        IF NOT EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.cod_visi = @cod_visi)
+        BEGIN
+            PRINT 'La visibilidad no existe.'
+            RETURN -1
+        END
+    END CATCH
+
+    RETURN 1
+END
+GO
+
+--ACLARAR FECHAS INICIO Y VENCIMIENTO EN LA ESTRATEGIA
+CREATE PROCEDURE HARDCOR.generar_publicacion(@descripcion NVARCHAR(225), @stock NUMERIC(18, 0),
+                                             @precio NUMERIC(18, 2), @costo NUMERIC(18, 2), @rubro NVARCHAR(225),
+                                             @usuario NVARCHAR(225), @visi NVARCHAR(225), @estado NVARCHAR(225),
+                                             @tipo NVARCHAR(225), @fecha_venc DATETIME, @envio BIT)
+AS BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            DECLARE @cod_pub INT
+            DECLARE @cod_us INT
+            DECLARE @cod_visi INT
+            DECLARE @x NVARCHAR(225) = LTRIM(RTRIM(LOWER(@estado)))
+            DECLARE @h BIT
+
+            IF @fecha_venc >= GETDATE()
+            BEGIN
+                IF @stock > 0 AND @precio > 0 AND @costo > 0
+                BEGIN
+                    IF @x = 'borrador' OR @x = 'activa' OR @x = 'pausada'
+                    BEGIN
+                        SELECT @cod_us = u.cod_us, @h = u.habilitado FROM HARDCOR.Usuario u WHERE u.username = @usuario
+
+                        IF @h = 1
+                        BEGIN
+                            SELECT @cod_pub = MAX(p.cod_pub) + 1 FROM HARDCOR.Publicacion p
+
+                            IF NOT EXISTS (SELECT p.cod_us FROM HARDCOR.Publicacion p WHERE p.cod_us = @cod_us) AND @cod_us > 95
+                            BEGIN
+                                SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = 'Gratis'
+                            END
+                            ELSE
+                                SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @visi
+
+                            INSERT INTO HARDCOR.Publicacion (cod_pub, cod_us, cod_rubro, cod_visi, descripcion, stock,
+                                                            fecha_ini, fecha_fin, precio, estado, cod_tipo, envio)
+                            SELECT @cod_pub, @cod_us, r.cod_rubro, @cod_visi, @descripcion, @stock, GETDATE(),
+                            CASE WHEN @tipo = 'Subasta' THEN @fecha_venc WHEN @tipo = 'Compra Inmediata' THEN NULL END,
+                            @precio, @x, t.cod_tipo, @envio
+                            FROM HARDCOR.Rubro r, HARDCOR.Tipo t WHERE r.rubro_desc_corta = @rubro AND t.descripcion = @tipo
+
+                        END
+                        ELSE
+                            RAISERROR('', 16, 1)
+                    END
+
+                    ELSE
+                        RAISERROR('', 16, 1)
+                END
+                ELSE
+                    RAISERROR('', 16, 1)
+            END
+            ELSE
+                RAISERROR('', 16, 1)
+        COMMIT TRANSACTION
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+
+        IF @fecha_venc < GETDATE()
+        BEGIN
+            PRINT 'La fecha debe ser posterior al dia de la fecha.'
+            RETURN -1
+        END
+
+        IF @stock <= 0 OR @precio <= 0 OR @costo <= 0
+        BEGIN
+            PRINT 'Los datos de precio, stock y costo deben ser OBLIGATORIAMENTE valores positivos.'
+            RETURN -2
+        END
+
+        IF @x <> 'borrador' AND @x <> 'activa' AND @x <> 'pausada'
+        BEGIN
+            PRINT 'Los posibles estados iniciales de una publicacion son pausada, borrador o activa'
+            RETURN -3
+        END
+
+        IF @h <> 1
+        BEGIN
+            PRINT 'El usuario esta inhabilitado.'
+            RETURN -4
+        END
+    END CATCH
+
+    RETURN 1
+END
+GO
+
+CREATE PROCEDURE HARDCOR.cambiar_estado_publ(@usuario NVARCHAR(225), @cod_pub NUMERIC(18, 0), @nuevo_estado NVARCHAR(225))
+AS BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            DECLARE @x NVARCHAR(225) = LTRIM(RTRIM(LOWER(@nuevo_estado)))
+            DECLARE @estado NVARCHAR(225)
+            DECLARE @tipo NVARCHAR(225)
+            DECLARE @cod_us NVARCHAR(225)
+            DECLARE @h BIT
+
+            SELECT @estado = p.estado, @tipo = t.descripcion, @cod_us = u.username, @h = u.habilitado
+            FROM HARDCOR.Publicacion p, HARDCOR.Usuario u, HARDCOR.Tipo t
+            WHERE p.cod_pub = @cod_pub AND p.cod_us = u.cod_us AND p.cod_tipo = t.cod_tipo
+
+            IF @usuario = @cod_us AND @h = 1
+            BEGIN
+                IF (@x <> 'Finalizado' AND @tipo = 'Subasta') OR @tipo = 'Compra Inmediata'
+                BEGIN
+                    IF @estado <> 'Finalizado'
+                    BEGIN
+                        IF @estado <> @x
+                        BEGIN
+                            UPDATE HARDCOR.Publicacion SET estado = @x WHERE cod_pub = @cod_pub
+                        END
+                        ELSE
+                            RAISERROR('', 16, 1)
+                    END
+                    ELSE
+                        RAISERROR('', 16, 1)
+                END
+                ELSE
+                    RAISERROR('', 16, 1)
+            END
+            ELSE
+                RAISERROR('', 16, 1)
+
+        COMMIT TRANSACTION
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+
+        IF @usuario <> @cod_us OR @h <> 1
+        BEGIN
+            PRINT 'La publicacion que se quiere modificar no le corresponde al usuario ingresado o esta inhabilitado.'
+            RETURN -1
+        END
+
+        IF @x = 'Finalizado' AND @tipo = 'Subasta'
+        BEGIN
+            PRINT 'Las subastas no pueden cambiarse a finalizadas, el sistema lo hace automaticamente.'
+            RETURN -2
+        END
+
+        IF @estado = @nuevo_estado
+        BEGIN
+            PRINT 'La publicacion ya tiene el estado por el que se desea cambiar.'
+            RETURN -3
+        END
+
+        IF @estado = 'Finalizado'
+        BEGIN
+            PRINT 'No se puede cambiar el estado de una publicacion finalizada.'
+            RETURN -4
+        END
+
+    END CATCH
+
+    RETURN 1
+END
+GO
+
+CREATE PROCEDURE HARDCOR.modif_publ_borrador(@cod_pub NUMERIC(18, 0), @descripcion NVARCHAR(225),
+                                             @stock NUMERIC(18, 0), @precio NUMERIC(18, 2),
+                                             @costo NUMERIC(18, 2), @rubro NVARCHAR(225),
+                                             @usuario NVARCHAR(225), @visi NVARCHAR(225),
+                                             @tipo NVARCHAR(225), @fecha_venc DATETIME)
+AS BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            DECLARE @r INT
+            DECLARE @v INT
+            DECLARE @t INT
+            DECLARE @estado NVARCHAR(225)
+            DECLARE @cod_us NVARCHAR(225)
+            DECLARE @h BIT
+
+            SELECT @cod_us = u.username, @estado = p.estado, @h = u.habilitado
+            FROM HARDCOR.Publicacion p, HARDCOR.Usuario u
+            WHERE p.cod_pub = @cod_pub AND p.cod_us = u.cod_us
+
+            IF @usuario = @cod_us AND @h = 1
+            BEGIN
+                IF @estado = 'borrador'
+                BEGIN
+                    IF @stock > 0 AND @precio > 0 AND @costo > 0
+                    BEGIN
+                        IF GETDATE() <= @fecha_venc
+                        BEGIN
+                            SELECT @v = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @visi
+                            SELECT @r = r.cod_rubro FROM HARDCOR.Rubro r WHERE r.rubro_desc_corta = @rubro
+                            SELECT @t = t.cod_tipo FROM HARDCOR.Tipo t WHERE t.descripcion = @tipo
+
+                            UPDATE HARDCOR.Publicacion SET descripcion = @descripcion, stock = @stock,
+                            precio = @precio, costo = @costo, cod_rubro = @r, cod_visi = @v, cod_tipo = @t,
+                            fecha_fin = @fecha_venc WHERE cod_pub = @cod_pub
+                        END
+                        ELSE
+                            RAISERROR('', 16, 1)
+                    END
+                    ELSE
+                        RAISERROR('', 16, 1)
+                END
+                ELSE
+                    RAISERROR('', 16, 1)
+            END
+            ELSE
+                RAISERROR('', 16, 1)
+        COMMIT TRANSACTION
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+
+        IF @usuario <> @cod_us OR @h <> 1
+        BEGIN
+            PRINT 'La publicacion que se quiere modificar no le corresponde al usuario ingresado o esta inhabilitado.'
+            RETURN -1
+        END
+
+        IF @estado <> 'borrador'
+        BEGIN
+            PRINT 'Solo se pueden modificar los datos de las publicaciones en estado pausado.'
+            RETURN -2
+        END
+
+        IF @stock < 0 OR @precio < 0 OR @costo < 0
+        BEGIN
+            PRINT 'Los datos de precio, stock y costo deben ser OBLIGATORIAMENTE valores positivos.'
+            RETURN -3
+        END
+
+        IF GETDATE() > @fecha_venc
+        BEGIN
+            PRINT 'La fecha ingresada es menor al dia de la fecha.'
+            RETURN -4
+        END
+    END CATCH
+
+    RETURN 1
+END
+GO
+
+
+CREATE PROCEDURE HARDCOR.facturar(@cod_pub NUMERIC(18, 0), @cod_us INT, @cantidad NUMERIC(18, 0))
+AS BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            DECLARE @n_fact NUMERIC(18, 0)
+            DECLARE @total NUMERIC(18, 2)
+            DECLARE @importe NUMERIC(18, 2)
+            DECLARE @importe2 NUMERIC(18, 2)
+
+            SELECT @n_fact = MAX(f.nro_fact) + 1 FROM HARDCOR.Factura f
+
+            SELECT @total = v.comision_pub, @importe = v.comision_vta * p.precio
+            FROM HARDCOR.Publicacion p, HARDCOR.Visibilidad v
+            WHERE p.cod_pub = @cod_pub AND p.cod_visi = v.cod_visi
+
+            INSERT HARDCOR.Factura(nro_fact, cod_pub, cod_us, fecha, total, forma_pago)
+            VALUES(@n_fact, @cod_pub, @cod_us, GETDATE(), @total, 'Efectivo')
+
+            INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
+            VALUES(@n_fact, 'Visibilidad', 1, @total)
+
+            INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
+            VALUES(@n_fact, 'Venta producto', @cantidad, @importe)
+
+            UPDATE HARDCOR.Factura SET total = total + @importe WHERE nro_fact = @n_fact
+
+            IF 1 = (SELECT p.envio FROM HARDCOR.Publicacion p WHERE p.cod_pub = @cod_pub)
+            BEGIN
+                SELECT @importe = v.comision_envio * p.precio
+                FROM HARDCOR.Publicacion p, HARDCOR.Visibilidad v
+                WHERE p.cod_pub = @cod_pub AND p.cod_visi = v.cod_visi
+
+                INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
+                VALUES(@n_fact, 'Envio', 1, @importe)
+
+                UPDATE HARDCOR.Factura SET total = total + @importe WHERE nro_fact = @n_fact
+            END
+        COMMIT TRANSACTION
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+    END CATCH
+
+    RETURN 1
+END
+GO
+
+CREATE PROCEDURE HARDCOR.comprar_ofertar(@cod_pub NUMERIC(18, 0), @usuario NVARCHAR(225),
+                                         @cantidad NUMERIC(18, 0), @mont_of NUMERIC(18, 2))
+AS BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            DECLARE @cod_oferta INT
+            DECLARE @usuario2 NVARCHAR(225)
+            DECLARE @cod_us INT
+            DECLARE @monto_actual NUMERIC(18, 2)
+            DECLARE @tipo NVARCHAR(225)
+            DECLARE @h BIT
+
+            IF EXISTS (SELECT p.cod_pub FROM HARDCOR.Publicacion p WHERE p.cod_pub = @cod_pub AND p.estado <> 'finalizado')
+            BEGIN
+                IF @cantidad > 0 AND @cantidad <= (SELECT p.stock FROM HARDCOR.Publicacion p WHERE p.cod_pub = @cod_pub)
+                BEGIN
+                    SELECT @usuario2 = u.username, @h = u.habilitado FROM HARDCOR.Publicacion p, HARDCOR.Usuario u
+                    WHERE p.cod_pub = @cod_pub AND p.cod_us = u.cod_us
+
+                    IF @usuario <> @usuario2 AND @h = 1
+                    BEGIN
+                        SELECT @cod_us = u.cod_us FROM HARDCOR.Usuario u WHERE u.username = @usuario
+                        SELECT @tipo = t.descripcion FROM HARDCOR.Publicacion p, HARDCOR.Tipo t
+                        WHERE p.cod_pub = @cod_pub AND p.cod_tipo = t.cod_tipo
+
+                        IF 'Compra Inmediata' = @tipo
+                        BEGIN
+
+                            INSERT INTO HARDCOR.Compra(cod_pub, cod_us, fecha_compra, cantidad)
+                            VALUES (@cod_pub, @cod_us, GETDATE(), @cantidad)
+
+                            UPDATE HARDCOR.Publicacion SET stock = stock - @cantidad WHERE cod_pub = @cod_pub
+                            EXEC HARDCOR.facturar @cod_pub, @cod_us, @cantidad
+                        END
+                        ELSE BEGIN
+                            SELECT @monto_actual = (CASE WHEN MAX(o.monto_of) IS NOT NULL THEN MAX(o.monto_of)
+                                                         WHEN MAX(o.monto_of) IS NULL THEN 0 END)
+                            FROM HARDCOR.Oferta o WHERE o.cod_pub = @cod_pub
+
+                            IF @monto_actual < FLOOR(@mont_of)
+                            BEGIN
+                                SELECT @cod_oferta = MAX(o.cod_of) + 1 FROM HARDCOR.Oferta o
+
+                                INSERT INTO HARDCOR.Oferta(cod_pub, cod_us, fecha_of, monto_of)
+                                VALUES (@cod_pub, @cod_us, GETDATE(), @mont_of)
+                            END ELSE RAISERROR('', 16, 1)
+                        END
+                    END
+                    ELSE RAISERROR('', 16, 1)
+
+                END
+                ELSE RAISERROR('', 16, 1)
+
+            END
+            ELSE RAISERROR('', 16, 1)
+
+        COMMIT TRANSACTION
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+
+        IF NOT EXISTS (SELECT p.cod_pub FROM HARDCOR.Publicacion p WHERE p.cod_pub = @cod_pub)
+        BEGIN
+            PRINT 'La publicacion no existe o ha finalizado .'
+            RETURN -1
+        END
+
+        IF @cantidad <= 0 OR @cantidad > (SELECT p.stock FROM HARDCOR.Publicacion p WHERE p.cod_pub = @cod_pub)
+        BEGIN
+            PRINT 'La cantidad ingresada es invalida o el stock es insuficiente.'
+            RETURN -2
+        END
+
+        IF @usuario = @usuario2 OR @h <> 1
+        BEGIN
+            PRINT 'Un vendedor no puede auto-comprarse o auto-ofrecerse. O esta inhabilitado el usuario.'
+            RETURN -3
+        END
+
+        IF @monto_actual >= @mont_of
+        BEGIN
+            PRINT 'El monto ofrecido es insuficiente.'
+            RETURN -4
+        END
+    END CATCH
+
+    RETURN 1
+END
+GO
+
+CREATE TRIGGER HARDCOR.tr_finalizar_pub_compra_au
+ON HARDCOR.Publicacion
+AFTER UPDATE
+AS BEGIN
+    IF UPDATE (stock)
+    BEGIN
+        UPDATE HARDCOR.Publicacion SET estado = 'finalizado' WHERE stock = 0
+    END
 END
 GO
 
@@ -573,7 +1702,7 @@ CREATE PROCEDURE HARDCOR.listar_clientes (@nombre NVARCHAR(255), @apellido NVARC
      AND ((@nombre LIKE '') OR (Cl.cli_nombre LIKE '%' + @nombre + '%'))
      AND ((@apellido LIKE '') OR (Cl.cli_apellido LIKE '%' +  @apellido + '%'))
      AND ((@email LIKE '') OR (Co.mail LIKE '%' +  @email + '%'))
-     AND ((@dni = 0) OR (Cl.cli_dni = @dni))
+     AND ((@dni = 0) OR (Cl.cli_num_doc = @dni))
 END
 GO
 
@@ -598,7 +1727,7 @@ CREATE PROCEDURE HARDCOR.obtener_empresa (@codigo  INT) AS BEGIN
     FROM HARDCOR.Empresa E, HARDCOR.Contacto C, HARDCOR.Usuario U
    WHERE  E.cod_contacto = C.cod_contacto
      AND  E.cod_us = @codigo
-     aND  U.cod_us = @codigo
+     AND  U.cod_us = @codigo
 END
 GO
 
@@ -614,11 +1743,11 @@ CREATE PROCEDURE HARDCOR.crear_usuario (@username NVARCHAR(255), @password VARCH
            VALUES (@username, HASHBYTES('SHA2_256', @password), @habilitado, 0)
 
        DECLARE @nuevo_codigo_usuario INT = (SELECT cod_us
-                                            FROM HARDCOR.Usuario
-                                           WHERE username = @username)
+                                              FROM HARDCOR.Usuario
+                                             WHERE username = @username)
 
        INSERT INTO HARDCOR.RolXus (cod_rol, cod_us)
-         VALUES (@codigo_rol, @nuevo_codigo_usuario)
+       VALUES (@codigo_rol, @nuevo_codigo_usuario)
 
     COMMIT TRANSACTION
     RETURN @nuevo_codigo_usuario
@@ -650,9 +1779,9 @@ END
 GO
 
 CREATE PROCEDURE HARDCOR.crear_cliente (@username NVARCHAR(255),
-										@password VARCHAR(255),
-										@codigo_rol TINYINT,
-										@nombre NVARCHAR(255),
+                                        @password VARCHAR(255),
+                                        @codigo_rol TINYINT,
+                                        @nombre NVARCHAR(255),
                                         @apellido NVARCHAR(255),
                                         @dni NUMERIC(18, 0),
                                         @telefono NVARCHAR(255),
@@ -680,7 +1809,7 @@ CREATE PROCEDURE HARDCOR.crear_cliente (@username NVARCHAR(255),
     EXEC @codigo_contacto = HARDCOR.crear_contacto @telefono, @mail, @direccion_calle, @direccion_numero, @direccion_piso,
                                                              @numero_departamento, @localidad, @codigo_postal
 
-    INSERT INTO HARDCOR.Cliente (cod_us, cod_contacto, cli_nombre, cli_apellido, cli_dni, cli_fecha_Nac, cli_fecha_creacion)
+    INSERT INTO HARDCOR.Cliente (cod_us, cod_contacto, cli_nombre, cli_apellido, cli_num_doc, cli_fecha_Nac, cli_fecha_creacion)
     VALUES (@codigo_usuario, @codigo_contacto, @nombre, @apellido, @dni, @fecha_nacimiento, @fecha_creacion)
 
     COMMIT TRANSACTION
@@ -692,19 +1821,19 @@ END
 GO
 
 CREATE PROCEDURE HARDCOR.crear_empresa (@username NVARCHAR(255),
-										@password VARCHAR(255),
-										@codigo_rol TINYINT,
+                                        @password VARCHAR(255),
+                                        @codigo_rol TINYINT,
                                         @razon_social NVARCHAR(255),
                                         @cuit NVARCHAR(50),
-										@ciudad NVARCHAR(255),
-										@telefono NVARCHAR(255),
-										@mail NVARCHAR(50),
-										@direccion_calle NVARCHAR(100),
-										@direccion_numero NUMERIC(18, 0),
-										@direccion_piso NUMERIC(18, 0),
-										@numero_departamento NVARCHAR(50),
-										@localidad NVARCHAR(255),
-										@codigo_postal NVARCHAR(50),
+                                        @ciudad NVARCHAR(255),
+                                        @telefono NVARCHAR(255),
+                                        @mail NVARCHAR(50),
+                                        @direccion_calle NVARCHAR(100),
+                                        @direccion_numero NUMERIC(18, 0),
+                                        @direccion_piso NUMERIC(18, 0),
+                                        @numero_departamento NVARCHAR(50),
+                                        @localidad NVARCHAR(255),
+                                        @codigo_postal NVARCHAR(50),
                                         @habilitado BIT) AS BEGIN
 
   /* Crea un nuevo usuario, una nueva empresa y un nuevo contacto y los llena con los datos recibidos */
@@ -733,25 +1862,25 @@ GO
 
 CREATE PROCEDURE HARDCOR.modificar_cliente (@codigo INT,
                                             @nombre NVARCHAR(255),
-											@apellido NVARCHAR(255),
-											@dni NUMERIC(18, 0),
-											@telefono NVARCHAR(255),
-											@mail NVARCHAR(50),
-											@fecha_nacimiento DATETIME,
-											@direccion_calle NVARCHAR(100),
-											@direccion_numero NUMERIC(18, 0),
-											@direccion_piso NUMERIC(18, 0),
-											@numero_departamento NVARCHAR(50),
-											@ciudad NVARCHAR(255),
-											@codigo_postal NVARCHAR(50),
+                                            @apellido NVARCHAR(255),
+                                            @dni NUMERIC(18, 0),
+                                            @telefono NVARCHAR(255),
+                                            @mail NVARCHAR(50),
+                                            @fecha_nacimiento DATETIME,
+                                            @direccion_calle NVARCHAR(100),
+                                            @direccion_numero NUMERIC(18, 0),
+                                            @direccion_piso NUMERIC(18, 0),
+                                            @numero_departamento NVARCHAR(50),
+                                            @ciudad NVARCHAR(255),
+                                            @codigo_postal NVARCHAR(50),
                                             @habilitado BIT) AS BEGIN
   BEGIN TRY
     BEGIN TRANSACTION
     UPDATE HARDCOR.Cliente
        SET cli_fecha_Nac = @fecha_nacimiento,
-	        cli_apellido = @apellido,
+            cli_apellido = @apellido,
               cli_nombre = @nombre,
-	             cli_dni = @dni
+             cli_num_doc = @dni
      WHERE cod_us = @codigo
 
     UPDATE HARDCOR.Usuario
@@ -760,9 +1889,9 @@ CREATE PROCEDURE HARDCOR.modificar_cliente (@codigo INT,
 
     UPDATE HARDCOR.Contacto
        SET cod_postal = @codigo_postal,
-	        dom_calle = @direccion_calle,
+              dom_calle = @direccion_calle,
             nro_calle = @direccion_numero,
-	        localidad = @ciudad,
+              localidad = @ciudad,
              nro_piso = @direccion_piso,
              nro_dpto = @numero_departamento,
               nro_tel = @telefono,
@@ -770,7 +1899,7 @@ CREATE PROCEDURE HARDCOR.modificar_cliente (@codigo INT,
      WHERE cod_contacto = (SELECT cod_contacto
                              FROM HARDCOR.Cliente
                             WHERE cod_us = @codigo)
-	COMMIT TRANSACTION
+    COMMIT TRANSACTION
   END TRY
   BEGIN CATCH
     ROLLBACK TRANSACTION
@@ -781,15 +1910,15 @@ GO
 CREATE PROCEDURE HARDCOR.modificar_empresa (@codigo INT,
                                             @razon_social NVARCHAR(255),
                                             @cuit NVARCHAR(50),
-											@ciudad NVARCHAR(255),
-											@telefono NVARCHAR(255),
-											@mail NVARCHAR(50),
-											@direccion_calle NVARCHAR(100),
-											@direccion_numero NUMERIC(18, 0),
-											@direccion_piso NUMERIC(18, 0),
-											@numero_departamento NVARCHAR(50),
-											@localidad NVARCHAR(255),
-											@codigo_postal NVARCHAR(50),
+                                            @ciudad NVARCHAR(255),
+                                            @telefono NVARCHAR(255),
+                                            @mail NVARCHAR(50),
+                                            @direccion_calle NVARCHAR(100),
+                                            @direccion_numero NUMERIC(18, 0),
+                                            @direccion_piso NUMERIC(18, 0),
+                                            @numero_departamento NVARCHAR(50),
+                                            @localidad NVARCHAR(255),
+                                            @codigo_postal NVARCHAR(50),
                                             @habilitado BIT) AS BEGIN
   BEGIN TRY
     BEGIN TRANSACTION
