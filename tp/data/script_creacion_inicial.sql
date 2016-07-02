@@ -441,7 +441,7 @@ INSERT INTO HARDCOR.Publicacion (cod_pub, cod_us, cod_rubro, cod_visi, descripci
                                 fecha_fin, precio, estado, cod_tipo, envio)
 SELECT DISTINCT m.Publicacion_Cod, u.cod_us, r.cod_rubro, v.cod_visi, m.Publicacion_Descripcion,
                 m.Publicacion_Stock, m.Publicacion_Fecha, m.Publicacion_Fecha_Venc, m.Publicacion_Precio,
-                m.Publicacion_Estado, t.cod_tipo, 0
+                case when t.cod_tipo = 2 then 'finalizado' end, t.cod_tipo, 0
 FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Rubro r, HARDCOR.Visibilidad v, HARDCOR.Tipo t
 WHERE (u.username = (SELECT CAST(m.Publ_Cli_Dni AS NVARCHAR(225))) OR u.username = m.Publ_Empresa_Cuit)
       AND r.rubro_desc_corta = m.Publicacion_Rubro_Descripcion AND v.cod_visi = m.Publicacion_Visibilidad_Cod
@@ -528,10 +528,11 @@ GO
    WHERE m.Compra_Cantidad IS NOT NULL
      AND m.Cli_Dni = cl.cli_num_doc
      AND m.Publicacion_Tipo = 'Compra Inmediata'
-      OR m.Publicacion_Tipo = 'Subasta'
+      OR (m.Publicacion_Tipo = 'Subasta'
      AND m.Oferta_Monto IS NOT NULL
-     AND m.Publicacion_Estado = 'finalizada'
+     AND m.Publicacion_Estado = 'finalizada')
 ORDER BY m.Publicacion_Cod
+
 
 
 /*
@@ -1068,13 +1069,13 @@ GO
 CREATE PROCEDURE HARDCOR.listados (@anio int, @nro_trim int, @tipoListado int, @cod_visi int, @mes int, @desc nvarchar(225))
 AS BEGIN
 
-if @tipoListado = 1
+if @tipoListado = 0
     exec HARDCOR.list_vendedor_mayorCantProdSinVta @anio, @nro_trim, @cod_visi, @mes
-if @tipoListado = 2
+if @tipoListado = 1
     exec HARDCOR.list_cli_mayorCantProdCompr @anio, @nro_trim, @mes, @desc
-if @tipoListado = 3
+if @tipoListado = 2
     exec HARDCOR.list_vend_mayorCantFact @anio, @nro_trim, @mes
-if @tipoListado = 4
+if @tipoListado = 3
     exec HARDCOR.list_vend_mayorMontoFact @anio, @nro_trim, mes
 END
 GO
@@ -1132,7 +1133,9 @@ AS BEGIN
 
         WHILE @cant_sub > @j
         BEGIN
-            SELECT @cod = i.cod_pub FROM inserted i ORDER BY i.cod_pub OFFSET @j ROWS FETCH NEXT 1 ROWS ONLY
+            SELECT @cod = i.cod_pub FROM inserted i
+		   where i.estado = 'finalizado' and i.cod_tipo = 2 
+		   ORDER BY i.cod_pub OFFSET @j ROWS FETCH NEXT 1 ROWS ONLY
             EXEC HARDCOR.fact_oferta @cod
             SET @j = @j + 1
         END
@@ -1142,10 +1145,12 @@ GO
 
 CREATE PROCEDURE HARDCOR.finalizar_oferta(@fecha DATETIME)
 AS BEGIN
-    UPDATE HARDCOR.Publicacion SET estado = 'finalizado' WHERE cod_tipo = 2 AND estado <> 'Publicada' AND fecha_fin < @fecha
+    UPDATE HARDCOR.Publicacion SET estado = 'finalizado' 
+    WHERE cod_tipo = 2 AND estado <> 'finalizado' AND CONVERT(date,fecha_fin)< CONVERT(date,@fecha) 
     RETURN 1
 END
 GO
+
 
 CREATE PROCEDURE HARDCOR.alta_vis(@descripcion NVARCHAR(225), @comision_pub NUMERIC(18, 2),
                                   @comision_vta NUMERIC(18, 2), @comision_envio NUMERIC(18, 2))
