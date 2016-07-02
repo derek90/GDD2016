@@ -96,8 +96,9 @@ namespace WindowsFormsApplication1.Generar_Publicación
                     query.Parameters.Add(new SqlParameter("@nuevo_estado", "activo"));
                 }
             }
-
+            MessageBox.Show("Publicacion creada con exito", "Publicacion creada", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
             this.Close();
+            this.parent.Show();
         }
 
         private void button2_Click(object sender, EventArgs e)
