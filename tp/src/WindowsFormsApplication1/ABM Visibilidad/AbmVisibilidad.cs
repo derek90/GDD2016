@@ -22,9 +22,6 @@ namespace WindowsFormsApplication1.ABM_Visibilidad
             /* TODO: Hacer SP */
             SqlCommand query = new SqlCommand("SELECT * FROM HARDCOR.Visibilidad", connection);
 
-            //Seteo que sea un stored procedure
-            // query.CommandType = CommandType.StoredProcedure;
-
             //Creo el adapter usando el select_query
             SqlDataAdapter adapter = new SqlDataAdapter(query);
 

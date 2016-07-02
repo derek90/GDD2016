@@ -28,8 +28,8 @@ namespace WindowsFormsApplication1.ABM_Visibilidad
 
             this.visibility_code = Int32.Parse(row.Cells["cod_visi"].Value.ToString());
             this.textBox1.Text = row.Cells["visi_desc"].Value.ToString();
-            this.numericUpDown1.Value = decimal.Parse(row.Cells["comision_por_tipo"].Value.ToString());
-            this.numericUpDown2.Value = decimal.Parse(row.Cells["comision_prducto_vendido"].Value.ToString());
+            this.numericUpDown1.Value = decimal.Parse(row.Cells["comision_pub"].Value.ToString());
+            this.numericUpDown2.Value = decimal.Parse(row.Cells["comision_vta"].Value.ToString());
             this.numericUpDown3.Value = decimal.Parse(row.Cells["comision_envio"].Value.ToString());
         }
 
@@ -41,23 +41,21 @@ namespace WindowsFormsApplication1.ABM_Visibilidad
 
         private void update(object sender, EventArgs e)
         {
-            /* TODO: Hacer el SP
-            var connection = DBConnection.getInstance().getConnection();
-            SqlCommand update_command = new SqlCommand("HARDCOR.", connection);
-            update_command.CommandType = CommandType.StoredProcedure;
-            update_command.Parameters.Add(new SqlParameter("@cod_visi", this.visibility_code));
-
-            connection.Open();
-            if(update_command.ExecuteNonQuery() == 1)
+            using (var connection = DBConnection.getInstance().getConnection())
             {
-                MessageBox.Show("Se modificaron los campos correctamente");
-                this.parent.fill_data_set();  // Para que refresque el data set
+                SqlCommand update_command = new SqlCommand("HARDCOR.mod_vis", connection);
+                update_command.CommandType = CommandType.StoredProcedure;
+                update_command.Parameters.Add(new SqlParameter("@cod_visi", this.visibility_code));
+                update_command.Parameters.Add(new SqlParameter("@descripcion", this.textBox1.Text));
+                update_command.Parameters.Add(new SqlParameter("@comision_pub", this.numericUpDown1.Value));
+                update_command.Parameters.Add(new SqlParameter("@comision_vta", this.numericUpDown2.Value));
+                update_command.Parameters.Add(new SqlParameter("@comision_envio", this.numericUpDown3.Value));
+                connection.Open();
+                update_command.ExecuteNonQuery();
             }
-            else
-                MessageBox.Show("Hubo un error al modificar los datos. Intente nuevamente");
-            connection.Close();
-            */
-            MessageBox.Show("Completar el update");
+            MessageBox.Show("La visibilidad se modifico correctamente", "Modificacion exitosa",
+                            MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+            this.parent.fill_data_set();  // Para refrescar la vista anterior
         }
 
         private void insert(object sender, EventArgs e)
@@ -69,17 +67,28 @@ namespace WindowsFormsApplication1.ABM_Visibilidad
                 return;
             }
 
+            int succesful;
             using (var connection = DBConnection.getInstance().getConnection())
             {
-                SqlCommand insert_command = new SqlCommand("HARDCOR.", connection);
+                SqlCommand insert_command = new SqlCommand("HARDCOR.alta_vis", connection);
                 insert_command.CommandType = CommandType.StoredProcedure;
-                insert_command.Parameters.Add(new SqlParameter("@nombre", this.textBox1.Text));
+                insert_command.Parameters.Add(new SqlParameter("@descripcion", this.textBox1.Text));
+                insert_command.Parameters.Add(new SqlParameter("@comision_pub", this.numericUpDown1.Value));
+                insert_command.Parameters.Add(new SqlParameter("@comision_vta", this.numericUpDown2.Value));
+                insert_command.Parameters.Add(new SqlParameter("@comision_envio", this.numericUpDown3.Value));
 
                 connection.Open();
 
-                /* TODO: Hacer el insert */
-                MessageBox.Show("Hay que hacer el insert!");
+                succesful = insert_command.ExecuteNonQuery();
             }
+            if (succesful == 1)
+            {
+                MessageBox.Show("La visibilidad se creo correctamente", "Alta exitosa", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                this.parent.fill_data_set();  // Para refrescar la vista anterior
+            }
+            else
+                MessageBox.Show("La descripcion de esa visibilidad ya existe, elija otra", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }
