@@ -50,20 +50,16 @@ namespace WindowsFormsApplication1.ABM_Usuario
 
         private void button3_Click(object sender, EventArgs e)
         {
-            int dni;
-            if (this.textBox2.Text == "")
-                dni = 0;
-            else
-                dni = Int32.Parse(this.textBox2.Text);
-
             this.fill_data_set(this.textBox4.Text, this.textBox1.Text,
-                               this.textBox3.Text, dni);
+                               this.textBox3.Text, (int) this.numericUpDown1.Value);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            foreach (TextBox box in (new List<TextBox> { this.textBox1, this.textBox2, this.textBox3, this.textBox4 }))
+            foreach (TextBox box in (new List<TextBox> { this.textBox1, this.textBox3, this.textBox4 }))
                 box.Clear();
+
+            this.numericUpDown1.Value = 0;
         }
 
         private void button4_Click(object sender, EventArgs e)
