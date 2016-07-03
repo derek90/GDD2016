@@ -29,14 +29,20 @@ namespace WindowsFormsApplication1.ComprarOfertar
             else
             {
                 this.fill_list();
-                /* TODO: Hacer SP - Uno que diga el total de paginas que tiene la consulta
-                 * otro que traiga todas las publicaciones de una pagina en particular ordenadas por visibilidad 
-                 */
-                this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.", this.button3,
-                                                    this.button4, "HARDCOR.", this.label3, 10);
-                // this.paginator.set_max_page_number();
+                List<KeyValuePair<string, object>> param = new List<KeyValuePair<string, object>>();
+                param.Add(new KeyValuePair<string, object>("@rubros", ""));
+                param.Add(new KeyValuePair<string, object>("@descripcion", ""));
+                param.Add(new KeyValuePair<string, object>("@username", this.username));
+                this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.listar_publicaciones", this.button3,
+                                               this.button4, "HARDCOR.cantidad_paginas_publicaciones", this.label3, 10, param);
+                this.paginator.set_max_page_number();
             }
 
+        }
+
+        public void refresh()
+        {
+            this.paginator.load_page(0);
         }
 
         private void fill_list()
@@ -75,41 +81,15 @@ namespace WindowsFormsApplication1.ComprarOfertar
 
         private void button1_Click(object sender, EventArgs e)
         {
-            /*
-            using (var connection = DBConnection.getInstance().getConnection())
-            {
-                // TODO: Hacer sp - Filtrar publicaciones por rubros y descripcion ordenados por visibilidad
-                SqlCommand query = new SqlCommand("HARDCOR.", connection);
-
-                //Seteo que sea un stored procedure
-                query.CommandType = CommandType.StoredProcedure;
-
-                //Agrego los parámetros
-                List<int> pks = new List<int>();
-                foreach (var item in this.checkedListBox1.SelectedItems)
-                    pks.Add(((KeyValuePair<int, string>)item).Key);
-                // TODO: averiguar como se le pasa una lista a un sp
-                query.Parameters.Add(new SqlParameter("@rubros", pks));
-                query.Parameters.Add(new SqlParameter("@descripcion", this.textBox1.Text));
-
-                //Creo el adapter usando el select_query
-                SqlDataAdapter adapter = new SqlDataAdapter(query);
-
-                //Lleno el dataset y lo seteo como source del dataGridView
-                DataTable table = new DataTable();
-                adapter.Fill(table);
-                this.dataGridView1.DataSource = table;
-                this.dataGridView1.ReadOnly = true;
-                this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                this.dataGridView1.MultiSelect = false;
-                this.dataGridView1.AllowUserToAddRows = false;
-
-                //Oculto la columna de pk
-                this.dataGridView1.Columns[0].Visible = false;
-            }
-            */
-
-            MessageBox.Show("SP de filtrado todavia no implementado");
+            List<KeyValuePair<string, object>> param = new List<KeyValuePair<string, object>>();
+            List<int> pks = new List<int>();
+            foreach (var item in this.checkedListBox1.SelectedItems)
+                pks.Add(((KeyValuePair<int, string>)item).Key);
+            param.Add(new KeyValuePair<string, object>("@rubros", String.Join(",", pks)));
+            param.Add(new KeyValuePair<string, object>("@descripcion", this.textBox1.Text));
+            param.Add(new KeyValuePair<string, object>("@username", this.username));
+            this.paginator.set_query_params(param);
+            this.paginator.load_page(0);
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -134,22 +114,22 @@ namespace WindowsFormsApplication1.ComprarOfertar
             }
 
             var cells = this.dataGridView1.SelectedRows[0].Cells;
-            int publication_code = Int32.Parse(cells["cod_pub"].ToString());
-            int min, max;
-            if(cells["tipo"].ToString() == "subasta")
+            int publication_code = Int32.Parse(cells["cod_pub"].Value.ToString());
+            decimal min, max;
+            bool is_auction = Int32.Parse(cells["cod_tipo"].Value.ToString()) == 2;
+            if(is_auction) // Es una subasta
             {
-                /* TODO: preguntar bien cual es la columna que tiene esta informacion */
-                min = Int32.Parse(cells["precio"].ToString());
+                min = decimal.Parse(cells["precio"].Value.ToString());
                 max = Int32.MaxValue;
             }
             else
             {
                 min = 1;
-                max = Int32.Parse(cells["stock"].ToString());
+                max = Int32.Parse(cells["stock"].Value.ToString());
             }
 
             this.Hide();
-            (new ConfirmarCompraOferta(this, this.username, publication_code, min, max)).Show();
+            (new ConfirmarCompraOferta(this, this.username, publication_code, is_auction, min, max)).Show();
         }
 
         private void ComprarOfertar_Load(object sender, EventArgs e)

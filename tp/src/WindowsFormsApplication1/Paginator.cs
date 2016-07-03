@@ -32,7 +32,7 @@ namespace WindowsFormsApplication1
             // Para que al cambiar de valor current_page se haga el pedido a la base
             current_page.ValueChanged += (s, e) =>
             {
-                //this.load_page(this.current_page.Value);
+                this.load_page(this.current_page.Value);
                 prev.Enabled = !(this.current_page.Value == this.current_page.Minimum);
                 next.Enabled = !(this.current_page.Value == this.current_page.Maximum);
             };
@@ -54,7 +54,7 @@ namespace WindowsFormsApplication1
             // Para que al cambiar de valor current_page se haga el pedido a la base
             current_page.ValueChanged += (s, e) =>
             {
-                //this.load_page(this.current_page.Value);
+                this.load_page(this.current_page.Value);
                 prev.Enabled = !(this.current_page.Value == this.current_page.Minimum);
                 next.Enabled = !(this.current_page.Value == this.current_page.Maximum);
             };
@@ -67,6 +67,7 @@ namespace WindowsFormsApplication1
                 SqlCommand query = new SqlCommand(this.query, connection);
                 query.CommandType = CommandType.StoredProcedure;
                 query.Parameters.Add(new SqlParameter("@pagina", page));
+                query.Parameters.Add(new SqlParameter("@cantidad_resultados_por_pagina", this.page_size));
                 this.query_params.ForEach((pair) => query.Parameters.Add(new SqlParameter(pair.Key, pair.Value)));
 
                 //Creo el adapter usando el select_query
@@ -93,11 +94,22 @@ namespace WindowsFormsApplication1
                 SqlCommand query = new SqlCommand(this.page_count_query, connection);
                 query.CommandType = CommandType.StoredProcedure;
                 query.Parameters.Add(new SqlParameter("@tamanio_pagina", page_size));
+                connection.Open();
                 total_pages = Int32.Parse(query.ExecuteScalar().ToString());
             }
 
             this.page_count_label.Text = "/ " + total_pages.ToString();
             this.current_page.Maximum = total_pages;
+        }
+
+        public void set_query(string query)
+        {
+            this.query = query;
+        }
+
+        public void set_query_params(List<KeyValuePair<string, object>> query_params)
+        {
+            this.query_params = query_params;
         }
     }
 }

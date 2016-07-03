@@ -202,6 +202,24 @@ IF (OBJECT_ID ('HARDCOR.obtener_rubros') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.obtener_visibilidades') IS NOT NULL)
   DROP PROCEDURE HARDCOR.obtener_visibilidades
 
+IF (OBJECT_ID ('HARDCOR.listar_publicaciones') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.listar_publicaciones
+
+IF (OBJECT_ID ('HARDCOR.calcular_peso_visibilidad') IS NOT NULL)
+  DROP FUNCTION HARDCOR.calcular_peso_visibilidad
+
+IF (OBJECT_ID ('HARDCOR.cantidad_paginas_publicaciones') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.cantidad_paginas_publicaciones
+
+IF (OBJECT_ID ('HARDCOR.split') IS NOT NULL)
+  DROP FUNCTION HARDCOR.split
+
+IF (OBJECT_ID ('HARDCOR.obtener_factura') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.obtener_factura
+
+IF (OBJECT_ID ('HARDCOR.obtener_detalles_factura') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.obtener_detalles_factura
+
 IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
     DROP SCHEMA HARDCOR
 GO
@@ -287,7 +305,7 @@ CREATE TABLE HARDCOR.Visibilidad(
     comision_pub NUMERIC(18,2),
     comision_vta NUMERIC(18,2),
     comision_envio NUMERIC(18,2));
-
+SELECT TOP 1 * FROM gd_esquema.Maestra
 CREATE TABLE HARDCOR.Tipo(
     cod_tipo INT IDENTITY(1, 1) PRIMARY KEY,
     descripcion NVARCHAR(225));
@@ -1076,7 +1094,7 @@ if @tipoListado = 1
 if @tipoListado = 2
     exec HARDCOR.list_vend_mayorCantFact @anio, @nro_trim, @mes
 if @tipoListado = 3
-    exec HARDCOR.list_vend_mayorMontoFact @anio, @nro_trim, mes
+    exec HARDCOR.list_vend_mayorMontoFact @anio, @nro_trim, @mes
 END
 GO
 
@@ -1150,7 +1168,6 @@ AS BEGIN
     RETURN 1
 END
 GO
-
 
 CREATE PROCEDURE HARDCOR.alta_vis(@descripcion NVARCHAR(225), @comision_pub NUMERIC(18, 2),
                                   @comision_vta NUMERIC(18, 2), @comision_envio NUMERIC(18, 2))
@@ -1457,8 +1474,7 @@ AS BEGIN
 END
 GO
 
-
-CREATE PROCEDURE HARDCOR.facturar(@cod_pub NUMERIC(18, 0), @cod_us INT, @cantidad NUMERIC(18, 0))
+CREATE PROCEDURE HARDCOR.facturar(@cod_pub NUMERIC(18, 0), @cod_us INT, @cantidad NUMERIC(18, 0), @fecha DATETIME)
 AS BEGIN
     BEGIN TRY
         BEGIN TRANSACTION
@@ -1474,7 +1490,7 @@ AS BEGIN
             WHERE p.cod_pub = @cod_pub AND p.cod_visi = v.cod_visi
 
             INSERT HARDCOR.Factura(nro_fact, cod_pub, cod_us, fecha, total, forma_pago)
-            VALUES(@n_fact, @cod_pub, @cod_us, GETDATE(), @total, 'Efectivo')
+            VALUES(@n_fact, @cod_pub, @cod_us, @fecha, @total, 'Efectivo')
 
             INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
             VALUES(@n_fact, 'Visibilidad', 1, @total)
@@ -1499,15 +1515,16 @@ AS BEGIN
     END TRY
 
     BEGIN CATCH
+        SET @n_fact = -1
         ROLLBACK TRANSACTION
     END CATCH
 
-    RETURN 1
+    RETURN @n_fact
 END
 GO
 
 CREATE PROCEDURE HARDCOR.comprar_ofertar(@cod_pub NUMERIC(18, 0), @usuario NVARCHAR(225),
-                                         @cantidad NUMERIC(18, 0), @mont_of NUMERIC(18, 2))
+                                         @cantidad NUMERIC(18, 0), @mont_of NUMERIC(18, 2), @fecha DATETIME)
 AS BEGIN
     BEGIN TRY
         BEGIN TRANSACTION
@@ -1517,6 +1534,7 @@ AS BEGIN
             DECLARE @monto_actual NUMERIC(18, 2)
             DECLARE @tipo NVARCHAR(225)
             DECLARE @h BIT
+            DECLARE @ret INT
 
             IF EXISTS (SELECT p.cod_pub FROM HARDCOR.Publicacion p WHERE p.cod_pub = @cod_pub AND p.estado <> 'finalizado')
             BEGIN
@@ -1535,10 +1553,10 @@ AS BEGIN
                         BEGIN
 
                             INSERT INTO HARDCOR.Compra(cod_pub, cod_us, fecha_compra, cantidad)
-                            VALUES (@cod_pub, @cod_us, GETDATE(), @cantidad)
+                            VALUES (@cod_pub, @cod_us, @fecha, @cantidad)
 
                             UPDATE HARDCOR.Publicacion SET stock = stock - @cantidad WHERE cod_pub = @cod_pub
-                            EXEC HARDCOR.facturar @cod_pub, @cod_us, @cantidad
+                            EXEC @ret = HARDCOR.facturar @cod_pub, @cod_us, @cantidad, @fecha
                         END
                         ELSE BEGIN
                             SELECT @monto_actual = (CASE WHEN MAX(o.monto_of) IS NOT NULL THEN MAX(o.monto_of)
@@ -1550,7 +1568,9 @@ AS BEGIN
                                 SELECT @cod_oferta = MAX(o.cod_of) + 1 FROM HARDCOR.Oferta o
 
                                 INSERT INTO HARDCOR.Oferta(cod_pub, cod_us, fecha_of, monto_of)
-                                VALUES (@cod_pub, @cod_us, GETDATE(), @mont_of)
+                                VALUES (@cod_pub, @cod_us, @fecha, @mont_of)
+
+                                SET @ret = 0
                             END ELSE RAISERROR('', 16, 1)
                         END
                     END
@@ -1583,7 +1603,7 @@ AS BEGIN
         IF @usuario = @usuario2 OR @h <> 1
         BEGIN
             PRINT 'Un vendedor no puede auto-comprarse o auto-ofrecerse. O esta inhabilitado el usuario.'
-            RETURN -3
+            SELECT -3
         END
 
         IF @monto_actual >= @mont_of
@@ -1593,7 +1613,7 @@ AS BEGIN
         END
     END CATCH
 
-    RETURN 1
+    SELECT @ret
 END
 GO
 
@@ -1987,5 +2007,62 @@ CREATE PROCEDURE HARDCOR.obtener_visibilidades AS BEGIN
    */
   SELECT *
     FROM HARDCOR.Visibilidad
+END
+GO
+
+CREATE PROCEDURE HARDCOR.listar_publicaciones(@pagina INT, @cantidad_resultados_por_pagina INT,
+                                              @descripcion NVARCHAR(255), @rubros NVARCHAR(255), @username NVARCHAR(255)) AS BEGIN
+  SELECT *
+    FROM HARDCOR.Publicacion P
+   WHERE P.estado = 'activa'
+     AND ((@descripcion LIKE '') OR ( P.descripcion LIKE '%' + @descripcion + '%'))
+     AND ((@rubros LIKE '') OR ( P.cod_rubro IN (SELECT *
+                                                   FROM HARDCOR.split(@rubros))))
+     AND @username <> (SELECT username
+                         FROM HARDCOR.Usuario U
+                        WHERE U.cod_us = P.cod_us)
+   ORDER BY HARDCOR.calcular_peso_visibilidad(cod_visi)
+  OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
+   FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
+END
+GO
+
+CREATE FUNCTION HARDCOR.calcular_peso_visibilidad(@cod_visi INT) RETURNS INT AS BEGIN
+  RETURN (SELECT comision_pub + 2 * comision_vta + comision_envio
+            FROM HARDCOR.Visibilidad
+           WHERE cod_visi = @cod_visi)
+END
+GO
+
+CREATE PROCEDURE HARDCOR.cantidad_paginas_publicaciones(@tamanio_pagina INT) AS BEGIN
+   SELECT COUNT(cod_visi) / @tamanio_pagina
+     FROM HARDCOR.Publicacion
+END
+GO
+
+CREATE FUNCTION HARDCOR.split (@commaSeparatedList NVARCHAR(MAX)) RETURNS @t TABLE (val NVARCHAR(MAX)) AS BEGIN
+  /* Hack horrible para que dado un string de enteros separados por coma me los devuelva listados */
+  DECLARE @xml xml
+  SET @xml = N'<root><r>' + REPLACE(@commaSeparatedList, ',', '</r><r>') + '</r></root>'
+
+  INSERT INTO @t(val)
+  SELECT r.value('.', 'VARCHAR(MAX)') AS item
+    FROM @xml.nodes('//root/r') AS RECORDS(r)
+
+  RETURN
+END
+GO
+
+CREATE PROCEDURE HARDCOR.obtener_factura (@numero NUMERIC) AS BEGIN
+  SELECT *
+    FROM HARDCOR.Factura
+   WHERE nro_fact = @numero
+END
+GO
+
+CREATE PROCEDURE HARDCOR.obtener_detalles_factura (@numero NUMERIC) AS BEGIN
+  SELECT *
+    FROM HARDCOR.Detalle
+   WHERE nro_fact = @numero
 END
 GO

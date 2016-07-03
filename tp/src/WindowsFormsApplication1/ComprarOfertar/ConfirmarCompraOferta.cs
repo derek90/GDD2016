@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Configuration;
 
 namespace WindowsFormsApplication1.ComprarOfertar
 {
@@ -10,12 +11,14 @@ namespace WindowsFormsApplication1.ComprarOfertar
         int publication_code;
         string username;
         ComprarOfertar parent;
+        bool is_auction;
 
-        public ConfirmarCompraOferta(ComprarOfertar parent, string username, int publication_code, int min, int max)
+        public ConfirmarCompraOferta(ComprarOfertar parent, string username, int publication_code, bool is_auction, decimal min, decimal max)
         {
             this.publication_code = publication_code;
             this.parent = parent;
             this.username = username;
+            this.is_auction = is_auction;
             InitializeComponent();
             this.numericUpDown1.Minimum = min;
             this.numericUpDown1.Maximum = max;
@@ -25,31 +28,46 @@ namespace WindowsFormsApplication1.ComprarOfertar
         {
             using (var connection = DBConnection.getInstance().getConnection())
             {
-                // TODO: Hacer sp
-                // Me tiene que devolver la factura para mostrar
-                SqlCommand query = new SqlCommand("HARDCOR.", connection);
+                SqlCommand query = new SqlCommand("HARDCOR.comprar_ofertar", connection);
 
                 //Seteo que sea un stored procedure
                 query.CommandType = CommandType.StoredProcedure;
 
                 //Agrego los parámetros
-                query.Parameters.Add(new SqlParameter("@codigo_publicacion", this.publication_code));
+                query.Parameters.Add(new SqlParameter("@cod_pub", this.publication_code));
                 query.Parameters.Add(new SqlParameter("@usuario", this.username));
+                query.Parameters.Add(new SqlParameter("@fecha",  DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
+                if (is_auction)
+                {
+                    query.Parameters.Add(new SqlParameter("@cantidad", 1));
+                    query.Parameters.Add(new SqlParameter("@mont_of", this.numericUpDown1.Value));
+                }
+                else
+                {
+                    query.Parameters.Add(new SqlParameter("@cantidad", this.numericUpDown1.Value));
+                    query.Parameters.Add(new SqlParameter("@mont_of", this.numericUpDown1.Value));
+                }
 
-                SqlDataReader reader = query.ExecuteReader();
+                connection.Open();
+                int bill_number = Int32.Parse(query.ExecuteScalar().ToString());
 
-                reader.Read();
-                int bill_number = Int32.Parse(reader["nro_fact"].ToString());
-                DateTime date = DateTime.Parse(reader["fecha"].ToString());
-                int total = Int32.Parse(reader["total"].ToString());
-                string payment_type = reader["forma_pago"].ToString();
+                if (!is_auction)
+                {
+                    SqlCommand fetch_bill = new SqlCommand("HARDCOR.obtener_factura", connection);
+                    fetch_bill.CommandType = CommandType.StoredProcedure;
+                    fetch_bill.Parameters.Add(new SqlParameter("@numero", bill_number));
+                    SqlDataReader reader = fetch_bill.ExecuteReader();
+                    reader.Read();
+                    DateTime date = DateTime.Parse(reader["fecha"].ToString());
+                    float total = float.Parse(reader["total"].ToString());
+                    string payment_type = reader["forma_pago"].ToString();
+                    int user_code = Int32.Parse(reader["cod_us"].ToString());
+                    MessageBox.Show("La compra se ha efectuado correctamente", "Compra exitosa", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    this.parent.refresh();
+                    (new Facturas.Factura(this.parent, bill_number, this.publication_code, user_code, date, payment_type, total)).Show();
+                }
 
                 this.Close();
-                /* TODO: Abrir el form para ver las factuas
-                 * pasarle el parent de esta asi puede volver
-                 * pasarle todos los arguementos de arriba mas codigo de publicacion
-                 * y codigo de usuario
-                 */
             }
         }
 
