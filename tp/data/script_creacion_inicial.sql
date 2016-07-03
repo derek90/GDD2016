@@ -384,13 +384,15 @@ INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun)
 SELECT 1, f.cod_fun FROM HARDCOR.Funcionalidad f
 
 INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun)
-SELECT 2, f.cod_fun FROM HARDCOR.Funcionalidad f WHERE f.cod_fun < 5 OR f.cod_fun = 9 OR f.cod_fun = 10
+VALUES (2, 1), (2, 2), (2, 3), (2, 4)
+GO
 
 INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun)
-SELECT 3, f.cod_fun FROM HARDCOR.Funcionalidad f WHERE f.cod_fun = 5
+VALUES (3, 5)
+GO
 
 INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun)
-SELECT 4, f.cod_fun FROM HARDCOR.Funcionalidad f WHERE f.cod_fun > 4 AND f.cod_fun < 9
+VALUES (4, 5), (4, 6), (4, 7), (4, 8)
 GO
 
 INSERT INTO HARDCOR.Contacto(mail, cod_postal, dom_calle, nro_piso, nro_dpto, nro_calle)
@@ -534,7 +536,6 @@ GO
 ORDER BY m.Publicacion_Cod
 
 
-
 /*
 INCONSISTENCIAS EN COMPRAS
 
@@ -549,7 +550,7 @@ asi como esta, no se realizo ninguna venta por subasta, aunque incluso hay subas
 */
 
 INSERT INTO HARDCOR.RolXus(cod_rol, cod_us)
-VALUES (1, (SELECT cod_us
+VALUES (2, (SELECT cod_us
               FROM HARDCOR.Usuario
              WHERE username = 'admin'))
 
