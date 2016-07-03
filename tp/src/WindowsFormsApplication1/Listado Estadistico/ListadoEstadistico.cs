@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Windows.Forms;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace WindowsFormsApplication1.Listado_Estadistico
 {
@@ -16,18 +18,28 @@ namespace WindowsFormsApplication1.Listado_Estadistico
             this.comboBox1.SelectedIndex = 0;
             this.numericUpDown1.Maximum = int.MaxValue;
             this.numericUpDown1.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString()).Year;
+            this.comboBox2.Enabled = false;
+            this.comboBox2.DataSource = getRubrosFromDB();
+
         }
 
-        private Dictionary<int, string> get_query_mappings()
+        private List<string> getRubrosFromDB()
         {
-            Dictionary<int, string> ret = new Dictionary<int, string>();
-            // TODO: estos son los sp que se detallan en el punto 11
-            ret.Add(0, "HARDCOR.");
-            ret.Add(1, "HARDCOR.");
-            ret.Add(2, "HARDCOR.");
-            ret.Add(3, "HARDCOR.");
+            using (var connection = DBConnection.getInstance().getConnection())
+            {
+                connection.Open();
+                SqlCommand query = Utils.create_sp("HARDCOR.obtener_rubros", connection);
+                SqlDataReader reader = query.ExecuteReader();
+                List<string> rubros = new List<string>();
+                while (reader.Read())
+                    rubros.Add(reader["rubro_desc_corta"].ToString());
+                return rubros;
+            }
+        }
 
-            return ret;
+        private void toggleRubrosComboBox(object sender, EventArgs e)
+        {
+            comboBox2.Enabled = (comboBox1.SelectedIndex == 1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -38,11 +50,17 @@ namespace WindowsFormsApplication1.Listado_Estadistico
 
         private void button2_Click(object sender, EventArgs e)
         {
-            /*
+
             using (var connection = DBConnection.getInstance().getConnection())
             {
-                SqlCommand query = new SqlCommand(this.get_query_mappings()[this.comboBox1.SelectedIndex], connection);
+                SqlCommand query = new SqlCommand("HARDCOR.listados", connection);
                 query.CommandType = CommandType.StoredProcedure;
+                query.Parameters.Add(new SqlParameter("@anio", numericUpDown1.Value));
+                query.Parameters.Add(new SqlParameter("@nro_trim", numericUpDown2.Value));
+                query.Parameters.Add(new SqlParameter("@tipoListado", comboBox1.SelectedIndex));
+                query.Parameters.Add(new SqlParameter("@cod_visi", DBNull.Value));
+                query.Parameters.Add(new SqlParameter("@mes", DBNull.Value));
+                query.Parameters.Add(new SqlParameter("@desc", comboBox2.Text));
 
                 connection.Open();
                 SqlDataAdapter adapter = new SqlDataAdapter(query);
@@ -54,8 +72,6 @@ namespace WindowsFormsApplication1.Listado_Estadistico
                 this.dataGridView1.MultiSelect = false;
                 this.dataGridView1.AllowUserToAddRows = false;
             }
-            */
-            MessageBox.Show("SPs no implementados");
         }
     }
 }
