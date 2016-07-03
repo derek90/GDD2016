@@ -63,5 +63,13 @@ namespace WindowsFormsApplication1.Login
         {
             this.Close();
         }
+
+        private void enterPressed(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return )
+            {
+                button1_Click(sender, e);
+            }
+        }
     }
 }

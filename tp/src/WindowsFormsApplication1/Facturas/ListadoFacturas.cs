@@ -15,6 +15,9 @@ namespace WindowsFormsApplication1.Facturas
             this.parent = parent;
             InitializeComponent();
 
+            this.radioButton1.Checked = true;
+            this.textBox3.Enabled = false;
+
             // Seteo los minimos y maximos de algunos de los filtros
             this.dateTimePicker1.MinDate = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
             this.dateTimePicker1.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
@@ -84,6 +87,25 @@ namespace WindowsFormsApplication1.Facturas
                 this.dataGridView1.AllowUserToAddRows = false;
             }
             */
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            Utils.acceptOnlyNumbers(sender, e);
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            this.textBox3.Text = "";
+            this.textBox2.Enabled = true;
+            this.textBox3.Enabled = false;
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            this.textBox2.Text = "";
+            this.textBox2.Enabled = false;
+            this.textBox3.Enabled = true;
         }
     }
 }
