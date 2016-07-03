@@ -103,18 +103,6 @@ IF OBJECT_ID('HARDCOR.tr_update_calif') IS NOT NULL
 IF OBJECT_ID('HARDCOR.List_fact') IS NOT NULL
     DROP VIEW HARDCOR.List_fact;
 
-IF OBJECT_ID ('HARDCOR.Consulta_fact_xVendedor') IS NOT NULL
-    DROP PROCEDURE HARDCOR.Consulta_fact_xVendedor
-
-IF OBJECT_ID ('HARDCOR.Consulta_fact_xDetalle') IS NOT NULL
-    DROP PROCEDURE HARDCOR.Consulta_fact_xDetalle
-
-IF OBJECT_ID ('HARDCOR.Consulta_fact_xImporte') IS NOT NULL
-    DROP PROCEDURE HARDCOR.Consulta_fact_xImporte
-
-IF OBJECT_ID ('HARDCOR.Consulta_fact_xFecha') IS NOT NULL
-    DROP PROCEDURE HARDCOR.Consulta_fact_xFecha
-
 IF OBJECT_ID ('HARDCOR.list_vendedor_mayorCantProdSinVta') IS NOT NULL
     DROP PROCEDURE HARDCOR.list_vendedor_mayorCantProdSinVta
 
@@ -667,108 +655,6 @@ SELECT f.nro_fact AS Nro_Factura,
   FROM HARDCOR.Factura f
   LEFT JOIN HARDCOR.Detalle d
   ON f.nro_fact = d.nro_fact
-GO
-
-CREATE PROCEDURE HARDCOR.Consulta_fact_xFecha (@cod_us int, @fecha_i datetime, @fecha_f datetime)
-AS BEGIN
-    begin try
-
-       select * from HARDCOR.List_fact lf
-       where lf.Codigo_Vendedor = @cod_us and lf.fecha between @fecha_i and @fecha_f
-       order by lf.Nro_Factura,lf.detalle_factura
-
-    end try
-    begin catch
-
-       DECLARE @ErrorMessage NVARCHAR(4000);
-       DECLARE @ErrorSeverity INT;
-       DECLARE @ErrorState INT;
-
-        SET @ErrorMessage = ERROR_MESSAGE()
-        SET @ErrorSeverity = ERROR_SEVERITY()
-        SET @ErrorState = ERROR_STATE();
-
-       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
-
-    end catch
-   END
-GO
-
-CREATE PROCEDURE HARDCOR.Consulta_fact_xImporte (@cod_us int, @importe_i numeric(18,2), @importe_f numeric(18,2))
-AS BEGIN
-    begin try
-
-       select * from HARDCOR.List_fact lf
-       where lf.Codigo_Vendedor = @cod_us and lf.total between @importe_i and @importe_f
-       order by lf.Nro_Factura,lf.detalle_factura
-
-    end try
-    begin catch
-
-       DECLARE @ErrorMessage NVARCHAR(4000);
-       DECLARE @ErrorSeverity INT;
-       DECLARE @ErrorState INT;
-
-        SET @ErrorMessage = ERROR_MESSAGE()
-        SET @ErrorSeverity = ERROR_SEVERITY()
-        SET @ErrorState = ERROR_STATE();
-
-       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
-
-    end catch
-   END
-GO
-
-CREATE PROCEDURE HARDCOR.Consulta_fact_xDetalle (@cod_us int, @detalle nvarchar(225))
-AS BEGIN
-    begin try
-
-       declare @d_fact nvarchar(225)
-       set @d_fact = '%' + @detalle +'%'
-       select * from HARDCOR.List_fact lf
-       where lf.Codigo_Vendedor = @cod_us and lf.detalle_factura like @d_fact
-       order by lf.Nro_Factura,lf.detalle_factura
-
-    end try
-    begin catch
-
-       DECLARE @ErrorMessage NVARCHAR(4000);
-       DECLARE @ErrorSeverity INT;
-       DECLARE @ErrorState INT;
-
-        SET @ErrorMessage = ERROR_MESSAGE()
-        SET @ErrorSeverity = ERROR_SEVERITY()
-        SET @ErrorState = ERROR_STATE();
-
-       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
-
-    end catch
-   END
-GO
-
-CREATE PROCEDURE HARDCOR.Consulta_fact_xVendedor (@cod_us int)
-AS BEGIN
-    begin try
-
-       select * from HARDCOR.List_fact lf
-       where lf.Codigo_Vendedor = @cod_us
-       order by lf.Nro_Factura,lf.detalle_factura
-
-    end try
-    begin catch
-
-       DECLARE @ErrorMessage NVARCHAR(4000);
-       DECLARE @ErrorSeverity INT;
-       DECLARE @ErrorState INT;
-
-        SET @ErrorMessage = ERROR_MESSAGE()
-        SET @ErrorSeverity = ERROR_SEVERITY()
-        SET @ErrorState = ERROR_STATE();
-
-       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
-
-    end catch
-   END
 GO
 
 CREATE PROCEDURE HARDCOR.list_vendedor_mayorCantProdSinVta (@anio int, @nro_trim int, @cod_visi int, @mes int)

@@ -64,6 +64,7 @@
             this.textBox2.PasswordChar = '*';
             this.textBox2.Size = new System.Drawing.Size(100, 20);
             this.textBox2.TabIndex = 15;
+            this.textBox2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.enterPressed);
             // 
             // textBox1
             // 

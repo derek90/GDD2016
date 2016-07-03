@@ -50,5 +50,13 @@ namespace WindowsFormsApplication1
             query.CommandType = CommandType.StoredProcedure;
             return query;
         }
+
+        static public void acceptOnlyNumbers(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
     }
 }
