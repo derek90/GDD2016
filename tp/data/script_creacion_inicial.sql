@@ -984,7 +984,8 @@ CREATE PROCEDURE HARDCOR.finalizar_subastas(@fecha DATETIME) AS BEGIN
   DECLARE subastas_finalizadas CURSOR FOR (SELECT P.cod_pub
                                              FROM HARDCOR.Publicacion P
                                             WHERE CONVERT(DATE, P.fecha_fin) < CONVERT(DATE, @fecha)
-                                              AND P.cod_tipo = 2)
+                                              AND P.cod_tipo = 2
+                                              AND P.estado <> 'finalizado')
    OPEN subastas_finalizadas
   FETCH NEXT FROM subastas_finalizadas
    INTO @codigo
