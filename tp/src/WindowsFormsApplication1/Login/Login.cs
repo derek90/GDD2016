@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
@@ -12,6 +13,21 @@ namespace WindowsFormsApplication1.Login
         public Login()
         {
             InitializeComponent();
+            this.finish_auctions();
+        }
+
+        private void finish_auctions()
+        {
+            using(var connection = DBConnection.getInstance().getConnection())
+            {
+                SqlCommand query = new SqlCommand("HARDCOR.finalizar_subastas", connection);
+                query.CommandType = CommandType.StoredProcedure;
+                query.Parameters.Add(new SqlParameter("@fecha", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
+
+                connection.Open();
+                query.ExecuteNonQuery();
+            }
+
         }
 
         private void button1_Click(object sender, EventArgs e)

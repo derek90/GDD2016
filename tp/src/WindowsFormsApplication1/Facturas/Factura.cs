@@ -26,6 +26,7 @@ namespace WindowsFormsApplication1.Facturas
 
         private string get_full_name(int user_code)
         {
+            /*
             string name, lastname;
             using(var connection = DBConnection.getInstance().getConnection())
             {
@@ -40,6 +41,8 @@ namespace WindowsFormsApplication1.Facturas
                 lastname = reader["cli_apellido"].ToString();
             }
             return lastname + ", " + name;
+            */
+            return "";
         }
 
         private void fill_data_set (int bill_number)

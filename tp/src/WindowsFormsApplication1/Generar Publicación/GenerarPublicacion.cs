@@ -78,6 +78,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
                 query.Parameters.Add(new SqlParameter("@tipo", ((KeyValuePair<int, string>) this.comboBox1.SelectedItem).Value));
                 query.Parameters.Add(new SqlParameter("@fecha_venc", this.dateTimePicker1.Value));
                 query.Parameters.Add(new SqlParameter("@envio", this.checkBox1.Checked));
+                query.Parameters.Add(new SqlParameter("@fecha", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
 
                 connection.Open();
                 new_publication_code = (int) query.ExecuteScalar();
