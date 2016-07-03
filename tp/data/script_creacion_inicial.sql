@@ -373,7 +373,7 @@ VALUES ('ABM Rol'),
        ('Comprar/Ofertar'),
        ('Historial cliente'),
        ('Calificar vendedor'),
-       ('Consulta factuaras realizadas al vendedor'),
+       ('Consulta facturas realizadas al vendedor'),
        ('Listado estadistico');
 GO
 
