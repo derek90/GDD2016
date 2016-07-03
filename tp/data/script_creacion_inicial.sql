@@ -133,14 +133,8 @@ IF OBJECT_ID ('HARDCOR.listados') IS NOT NULL
 IF OBJECT_ID ('HARDCOR.Emp_Categ') IS NOT NULL
     DROP FUNCTION HARDCOR.Emp_Categ
 
-IF OBJECT_ID ('HARDCOR.fact_oferta') IS NOT NULL
-    DROP PROCEDURE HARDCOR.fact_oferta
-
-IF OBJECT_ID ('HARDCOR.finalizar_oferta') IS NOT NULL
-    DROP PROCEDURE HARDCOR.finalizar_oferta
-
-IF OBJECT_ID ('HARDCOR.tr_fact_of_au') IS NOT NULL
-    DROP TRIGGER HARDCOR.tr_fact_of_au
+IF OBJECT_ID ('HARDCOR.finalizar_subastas') IS NOT NULL
+    DROP PROCEDURE HARDCOR.finalizar_subastas
 
 IF (OBJECT_ID ('HARDCOR.login') IS NOT NULL)
     DROP PROCEDURE HARDCOR.login
@@ -305,7 +299,7 @@ CREATE TABLE HARDCOR.Visibilidad(
     comision_pub NUMERIC(18,2),
     comision_vta NUMERIC(18,2),
     comision_envio NUMERIC(18,2));
-SELECT TOP 1 * FROM gd_esquema.Maestra
+
 CREATE TABLE HARDCOR.Tipo(
     cod_tipo INT IDENTITY(1, 1) PRIMARY KEY,
     descripcion NVARCHAR(225));
@@ -391,7 +385,7 @@ VALUES ('ABM Rol'),
        ('Comprar/Ofertar'),
        ('Historial cliente'),
        ('Calificar vendedor'),
-       ('Consulta facturas realizadas al vendedor'),
+       ('Consulta factuaras realizadas al vendedor'),
        ('Listado estadistico');
 GO
 
@@ -464,9 +458,6 @@ FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Rubro r, HARDCOR.Visibilid
 WHERE (u.username = (SELECT CAST(m.Publ_Cli_Dni AS NVARCHAR(225))) OR u.username = m.Publ_Empresa_Cuit)
       AND r.rubro_desc_corta = m.Publicacion_Rubro_Descripcion AND v.cod_visi = m.Publicacion_Visibilidad_Cod
       AND t.descripcion = m.Publicacion_Tipo
-
-UPDATE HARDCOR.Publicacion SET estado = 'finalizado' WHERE cod_tipo = 2 AND fecha_fin < GETDATE()
-GO
 
 INSERT INTO HARDCOR.Factura(nro_fact, cod_pub, cod_us, fecha, total, forma_pago)
 SELECT DISTINCT m.Factura_Nro, p.cod_pub, p.cod_us, m.Factura_Fecha, m.Factura_Total, m.Forma_Pago_Desc
@@ -778,7 +769,6 @@ AS BEGIN
 
     end catch
    END
-
 GO
 
 CREATE PROCEDURE HARDCOR.list_vendedor_mayorCantProdSinVta (@anio int, @nro_trim int, @cod_visi int, @mes int)
@@ -1098,74 +1088,127 @@ if @tipoListado = 3
 END
 GO
 
-CREATE PROCEDURE HARDCOR.fact_oferta(@cod_sub NUMERIC(18, 0))
-AS BEGIN
-    BEGIN TRY
-        BEGIN TRANSACTION
-            DECLARE @n_fact NUMERIC(18, 0)
-            DECLARE @total NUMERIC(18, 2)
-            DECLARE @importe NUMERIC(18, 2)
-            DECLARE @usuario INT
-            DECLARE @cant INT
+CREATE PROCEDURE HARDCOR.finalizar_subastas(@fecha DATETIME) AS BEGIN
+/* Finaliza las subastas que tienen como fecha de final una anterior a la
+   fecha pasada como parametro */
+  DECLARE @codigo INT
+  DECLARE subastas_finalizadas CURSOR FOR (SELECT I.cod_pub
+                                             FROM HARDCOR.Publicacion P
+                                            WHERE CONVERT(DATE, P.fecha_fin) <= CONVERT(DATE, @fecha) - 1
+                                              AND I.cod_tipo = 2)
+   OPEN subastas_finalizadas
+  FETCH NEXT FROM subastas_finalizadas
+   INTO @codigo
 
-            SELECT @n_fact = MAX(f.nro_fact) + 1 FROM HARDCOR.Factura f
-            IF EXISTS (SELECT o.cod_of FROM HARDCOR.Oferta o WHERE o.cod_pub = @cod_sub)
-            BEGIN
-                SELECT @total = v.comision_pub, @importe = MAX(o.monto_of), @usuario = p.cod_us, @cant = p.stock
-                FROM HARDCOR.Publicacion p, HARDCOR.Oferta o, HARDCOR.Visibilidad v
-                WHERE p.cod_pub = @cod_sub AND p.cod_pub = o.cod_pub AND p.cod_visi = v.cod_visi
-                GROUP BY v.comision_pub, o.monto_of, p.cod_us, p.stock
-
-                INSERT HARDCOR.Factura(nro_fact, cod_pub, cod_us, fecha, total, forma_pago)
-                VALUES(@n_fact, @cod_sub, @usuario, GETDATE(), @total, 'Efectivo')
-
-                INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
-                VALUES(@n_fact, 'Visibilidad', 1, @total)
-
-                INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
-                VALUES(@n_fact, 'Oferta', @cant, @importe)
-
-                UPDATE HARDCOR.Factura SET total = total + @importe WHERE nro_fact = @n_fact
-            END
-        COMMIT TRANSACTION
-    END TRY
-
-    BEGIN CATCH
-        ROLLBACK TRANSACTION
-    END CATCH
-
-    RETURN 1
+  /* Facturo la venta de cada subasta que paso a finalizada */
+  WHILE @@FETCH_STATUS = 0
+    EXEC HARDCOR.facturar_venta @codigo, @fecha, 1
 END
 GO
 
-CREATE TRIGGER HARDCOR.tr_fact_of_au
-ON HARDCOR.Publicacion
-AFTER UPDATE
-AS BEGIN
-    IF UPDATE (estado)
-    BEGIN
-        DECLARE @cod INT
-        DECLARE @cant_sub INT
-        DECLARE @j INT = 0
-        SELECT @cant_sub = COUNT(*) FROM inserted i
+CREATE PROCEDURE HARDCOR.facturar_venta(@codigo_publicacion INT, @fecha DATETIME, @cantidad INT) AS BEGIN
+/* Factura una venta, teniendo en cuenta si tiene o no envio
+   Devuelve el numero de factura o -1 si ocurre un error */
+  BEGIN TRY
+    BEGIN TRANSACTION
+    DECLARE @ret INT
+    DECLARE @nuevo_numero_factura NUMERIC(18, 0)
+    DECLARE @comision_venta NUMERIC(18, 2)
+    DECLARE @comision_envio NUMERIC(18, 2)
+    SET @comision_envio = 0  -- Por defecto, no se le cobra el envio
+    SET @ret = -1  -- Cuando se haga realmente todo, seteo esta variable al numero de factura
 
-        WHILE @cant_sub > @j
-        BEGIN
-            SELECT @cod = i.cod_pub FROM inserted i
-		   where i.estado = 'finalizado' and i.cod_tipo = 2 
-		   ORDER BY i.cod_pub OFFSET @j ROWS FETCH NEXT 1 ROWS ONLY
-            EXEC HARDCOR.fact_oferta @cod
-            SET @j = @j + 1
-        END
-    END
+    /* Calculo el nuevo numero de factura */
+    SELECT @nuevo_numero_factura = MAX(F.nro_fact) + 1
+      FROM HARDCOR.Factura F
+
+    /* Calculo la comision de venta */
+    SELECT @comision_venta = V.comision_vta * P.precio * @cantidad
+      FROM HARDCOR.Publicacion P, HARDCOR.Visibilidad V
+     WHERE P.cod_pub = @cod_pub
+       AND P.cod_visi = V.cod_visi
+
+    /* Calculo la comision por envio, si la publicaion la tuviera */ 
+    SELECT @comision_envio = P.comision_envio * P.precio * @cantidad
+      FROM HARDCOR.Publicacion P, HARDCOR.Visibilidad V
+     WHERE P.cod_pub = @codigo_publicacion
+       AND P.envio = 1
+
+    /* Inserto los detalles de la factura */
+    INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
+    VALUES(@nuevo_numero_factura, 'Comision por venta', @cantidad, @comision_venta)
+
+    IF @comision_envio > 0
+      INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
+      VALUES(@nuevo_numero_factura, 'Comision por envio', @cantidad, @comision_envio)
+
+    /* Creo una nueva factura asociada */
+    INSERT HARDCOR.Factura(nro_fact, cod_pub, fecha, forma_pago, total, cod_us)
+    VALUES(@nuevo_numero_factura, @cod_pub, @fecha,
+           'Efectivo', @comision_envio + @comision_venta, (SELECT P.cod_us
+                                                             FROM HARDCOR.Publicacion P
+                                                            WHERE P.cod_pub = @codigo_publicacion))
+
+    COMMIT TRANSACTION
+    SET @ret = @nuevo_numero_factura
+  END TRY
+
+  BEGIN CATCH
+    ROLLBACK TRANSACTION
+  END CATCH
+
+  SELECT @ret
 END
 GO
 
-CREATE PROCEDURE HARDCOR.finalizar_oferta(@fecha DATETIME)
-AS BEGIN
-    UPDATE HARDCOR.Publicacion SET estado = 'finalizado' 
-    WHERE cod_tipo = 2 AND estado <> 'finalizado' AND CONVERT(date,fecha_fin)< CONVERT(date,@fecha) 
-    RETURN 1
+CREATE PROCEDURE HARDCOR.facturar_publicacion(@codigo_publicacion INT, @fecha DATETIME) AS BEGIN
+/* Factura la comision por publicar de una publicacion. Devuelve el numero de factura o -1 */
+  BEGIN TRY
+    BEGIN TRANSACTION
+    DECLARE @ret INT
+    DECLARE @codigo_usuario INT
+    DECLARE @nuevo_numero_factura NUMERIC(18, 0)
+    DECLARE @comision NUMERIC(18, 2)
+    SET @ret = -1
+
+    /* Busco el codigo de usuario */
+    SELECT @codigo_usuario = cod_us
+      FROM HARDCOR.Publicacion
+     WHERE cod_pub = @codigo_publicacion
+
+    SELECT @nuevo_numero_factura = MAX(F.nro_fact) + 1
+      FROM HARDCOR.Factura F
+
+    /* Calculo la comision de publicacion */
+    IF 1 = (SELECT COUNT(cod_pub)
+              FROM HARDCOR.Publicacion
+             WHERE cod_us = @codigo_usuario)
+      SET @comision = 0  -- Es la primer publicacion, es gratis
+    ELSE
+      SELECT @comision = V.comision_pub  -- Ya tiene mas publicaciones, se le cobra
+        FROM HARDCOR.Publicacion P, HARDCOR.Visibilidad V
+       WHERE P.cod_pub = @cod_pub
+         AND P.cod_visi = V.cod_visi
+
+    /* Inserto los detalles de la factura */
+    INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
+    VALUES(@nuevo_numero_factura, 'Comision por publicacion', 1, @comision)
+
+    /* Creo una nueva factura asociada */
+    INSERT HARDCOR.Factura(nro_fact, cod_pub, fecha, forma_pago, total, cod_us)
+    VALUES(@nuevo_numero_factura, @cod_pub, @fecha,
+           'Efectivo', @comision, (SELECT P.cod_us
+                                     FROM HARDCOR.Publicacion P
+                                    WHERE P.cod_pub = @codigo_publicacion))
+    COMMIT TRANSACTION
+    SET @ret = @nuevo_numero_factura
+  END TRY
+
+  BEGIN CATCH
+    ROLLBACK TRANSACTION
+  END CATCH
+
+  SELECT @ret
 END
 GO
 
@@ -1272,7 +1315,7 @@ GO
 CREATE PROCEDURE HARDCOR.generar_publicacion(@descripcion NVARCHAR(225), @stock NUMERIC(18, 0),
                                              @precio NUMERIC(18, 2), @rubro NVARCHAR(225),
                                              @usuario NVARCHAR(225), @visi NVARCHAR(225), @estado NVARCHAR(225),
-                                             @tipo NVARCHAR(225), @fecha_venc DATETIME, @envio BIT)
+                                             @tipo NVARCHAR(225), @fecha_venc DATETIME, @envio BIT, @fecha DATETIME)
 AS BEGIN
     BEGIN TRY
         BEGIN TRANSACTION
@@ -1297,7 +1340,7 @@ AS BEGIN
 
                 INSERT INTO HARDCOR.Publicacion (cod_pub, cod_us, cod_rubro, cod_visi, descripcion, stock,
                                                 fecha_ini, fecha_fin, precio, estado, cod_tipo, envio)
-                SELECT @cod_pub, @cod_us, r.cod_rubro, @cod_visi, @descripcion, @stock, GETDATE(),
+                SELECT @cod_pub, @cod_us, r.cod_rubro, @cod_visi, @descripcion, @stock, @fecha,
                 CASE WHEN @tipo = 'Subasta' THEN @fecha_venc WHEN @tipo = 'Compra Inmediata' THEN NULL END,
                 @precio, @x, t.cod_tipo, @envio
                 FROM HARDCOR.Rubro r, HARDCOR.Tipo t WHERE r.rubro_desc_corta = @rubro AND t.descripcion = @tipo
@@ -1337,13 +1380,14 @@ AS BEGIN
 
             IF @usuario = @cod_us AND @h = 1
             BEGIN
-                IF (@x <> 'Finalizado' AND @tipo = 'Subasta') OR @tipo = 'Compra Inmediata'
+                IF (@x <> 'finalizado' AND @tipo = 'Subasta') OR @tipo = 'Compra Inmediata'
                 BEGIN
                     IF @estado <> 'Finalizado'
                     BEGIN
                         IF @estado <> @x
                         BEGIN
                             UPDATE HARDCOR.Publicacion SET estado = @x WHERE cod_pub = @cod_pub
+                            IF @x = 'activo'
                         END
                         ELSE
                             RAISERROR('', 16, 1)
