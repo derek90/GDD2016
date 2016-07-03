@@ -42,5 +42,13 @@ namespace WindowsFormsApplication1
             parameters.ForEach(pair => query.Parameters.Add(new SqlParameter(pair.Key, pair.Value)));
             return query;
         }
+
+        static public SqlCommand create_sp(string sp_name, SqlConnection conn)
+        {
+            /* Funcion que crea un comando de sql para el sp determinado, con los parametros especificados */
+            SqlCommand query = new SqlCommand(sp_name, conn);
+            query.CommandType = CommandType.StoredProcedure;
+            return query;
+        }
     }
 }
