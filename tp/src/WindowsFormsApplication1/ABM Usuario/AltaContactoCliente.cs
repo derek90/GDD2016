@@ -50,7 +50,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             this.textBox2.Text = reader["cli_apellido"].ToString();
             // TODO: No está migrado el tipo de documento
             //this.textBox3.Text = reader[""]
-            this.numericUpDown1.Text = reader["cli_dni"].ToString();
+            this.numericUpDown1.Value = Int32.Parse(reader["cli_num_doc"].ToString());
             this.textBox5.Text = reader["nro_tel"].ToString();
             this.textBox6.Text = reader["mail"].ToString();
             this.dateTimePicker1.Text = reader["cli_fecha_Nac"].ToString();

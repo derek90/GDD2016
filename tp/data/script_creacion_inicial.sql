@@ -1002,12 +1002,30 @@ CREATE PROCEDURE HARDCOR.finalizar_subastas(@fecha DATETIME) AS BEGIN
                                               AND P.cod_tipo = 2
                                               AND P.estado <> 'finalizado')
    OPEN subastas_finalizadas
-  FETCH NEXT FROM subastas_finalizadas
-   INTO @codigo
+  FETCH NEXT FROM subastas_finalizadas INTO @codigo
 
   /* Facturo la venta de cada subasta que paso a finalizada */
-  WHILE @@FETCH_STATUS = 0
-    EXEC HARDCOR.facturar_venta @codigo, @fecha, 1
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    BEGIN TRY
+      /* Para que el cambio de estado y la facturacion se hagan de manera atomica */
+      BEGIN TRANSACTION
+        /* Facturacion */
+        EXEC HARDCOR.facturar_venta @codigo, @fecha, 1
+
+        /* Cambio de estado */
+        UPDATE HARDCOR.Publicacion
+           SET estado='finalizado'
+         WHERE cod_pub=@codigo
+
+        FETCH NEXT FROM subastas_finalizadas INTO @codigo
+      COMMIT TRANSACTION
+    END TRY
+    BEGIN CATCH
+    END CATCH
+  END
+
+  CLOSE subastas_finalizadas
+  DEALLOCATE subastas_finalizadas
 END
 GO
 
