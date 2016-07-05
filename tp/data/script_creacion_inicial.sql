@@ -553,7 +553,7 @@ asi como esta, no se realizo ninguna venta por subasta, aunque incluso hay subas
 */
 
 INSERT INTO HARDCOR.RolXus(cod_rol, cod_us)
-VALUES (2, (SELECT cod_us
+VALUES (1, (SELECT cod_us
               FROM HARDCOR.Usuario
              WHERE username = 'admin'))
 
