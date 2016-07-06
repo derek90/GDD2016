@@ -199,6 +199,9 @@ IF (OBJECT_ID ('HARDCOR.calcular_peso_visibilidad') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.cantidad_paginas_publicaciones') IS NOT NULL)
   DROP PROCEDURE HARDCOR.cantidad_paginas_publicaciones
 
+IF (OBJECT_ID ('HARDCOR.cantidad_paginas_facturas') IS NOT NULL)
+DROP PROCEDURE HARDCOR.cantidad_paginas_facturas
+
 IF (OBJECT_ID ('HARDCOR.split') IS NOT NULL)
   DROP FUNCTION HARDCOR.split
 
@@ -1967,8 +1970,14 @@ END
 GO
 
 CREATE PROCEDURE HARDCOR.cantidad_paginas_publicaciones(@tamanio_pagina INT) AS BEGIN
-   SELECT COUNT(cod_visi) / @tamanio_pagina
+   SELECT COUNT(cod_pub) / @tamanio_pagina
      FROM HARDCOR.Publicacion
+END
+GO
+
+CREATE PROCEDURE HARDCOR.cantidad_paginas_facturas(@tamanio_pagina INT) AS BEGIN
+   SELECT COUNT(nro_fact) / @tamanio_pagina
+     FROM HARDCOR.Factura
 END
 GO
 
