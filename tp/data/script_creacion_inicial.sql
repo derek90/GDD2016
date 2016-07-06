@@ -648,18 +648,15 @@ CREATE PROCEDURE HARDCOR.calificar_vta (@cod_compra int,@cod_us int, @estrellas 
 END
 GO
 
-CREATE PROCEDURE HARDCOR.consulta_factura (@razon_social_cliente numeric(18), @razon_social_empresa nvarchar(50), @fechai date, @fechaf date, @importei numeric(18,2), @importef numeric(18,2), @descripcion nvarchar(225))
+CREATE PROCEDURE HARDCOR.consulta_factura (@razon_social nvarchar(50), @tipo int, @fechai date, @fechaf date, @importei numeric(18,2), @importef numeric(18,2), @descripcion nvarchar(225))
 AS
 DECLARE @cod_us int
-IF @razon_social_cliente IS NOT NULL
-    BEGIN
-    SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.CLIENTE WHERE cli_num_doc = @razon_social_cliente)
-    END
-IF @razon_social_empresa IS NOT NULL
-    BEGIN
-    SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.Empresa WHERE emp_cuit = @razon_social_empresa)
-    END
-SELECT f.nro_fact AS Nro_Factura,
+IF (@tipo = 0 AND @razon_social <> '')
+	   SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.CLIENTE WHERE cli_num_doc = CONVERT(numeric(18), @razon_social))
+ELSE IF (@tipo = 1 AND @razon_social <> '')
+	   SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.Empresa WHERE emp_cuit = @razon_social)
+ELSE IF (@razon_social = '')
+    SELECT f.nro_fact AS Nro_Factura,
        d.cod_det AS Codigo_Detalle,
        f.cod_us AS Codigo_Vendedor,
        f.cod_pub AS Codigo_Publicacion,
@@ -672,7 +669,22 @@ SELECT f.nro_fact AS Nro_Factura,
   FROM HARDCOR.Factura f
   LEFT JOIN HARDCOR.Detalle d
   ON f.nro_fact = d.nro_fact
-  WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND ((@importei = 0) OR (@importei <= d.importe)) AND ((@importef = 0) OR (@importef >= d.importe))
+  WHERE ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND ((@importei = 0) OR (@importei <= d.importe)) AND ((@importef = 0) OR (@importef >= d.importe))
+ELSE
+    SELECT f.nro_fact AS Nro_Factura,
+	   d.cod_det AS Codigo_Detalle,
+	   f.cod_us AS Codigo_Vendedor,
+	   f.cod_pub AS Codigo_Publicacion,
+	   f.fecha,
+	   f.total, 
+	   f.forma_pago,
+	   d.item_desc AS detalle_factura,
+	   d.cantidad,
+	   d.importe AS importe_item
+    FROM HARDCOR.Factura f
+    LEFT JOIN HARDCOR.Detalle d
+    ON f.nro_fact = d.nro_fact
+    WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND ((@importei = 0) OR (@importei <= d.importe)) AND ((@importef = 0) OR (@importef >= d.importe))
 GO
 
 CREATE PROCEDURE HARDCOR.list_vendedor_mayorCantProdSinVta (@anio int, @nro_trim int, @cod_visi int, @mes int)
