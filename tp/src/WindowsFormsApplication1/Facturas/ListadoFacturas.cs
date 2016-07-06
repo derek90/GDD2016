@@ -131,7 +131,7 @@ namespace WindowsFormsApplication1.Facturas
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            numericUpDown2.Minimum = numericUpDown1.Value;
+            numericUpDown2.Minimum = numericUpDown1.Value + 1;
         }
     }
 }
