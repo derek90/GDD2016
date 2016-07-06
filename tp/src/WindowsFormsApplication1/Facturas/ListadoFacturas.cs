@@ -106,5 +106,10 @@ namespace WindowsFormsApplication1.Facturas
             DateTime fecha = picker.Value;
             dateTimePicker2.MinDate = fecha;
         }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            numericUpDown2.Minimum = numericUpDown1.Value + 1;
+        }
     }
 }
