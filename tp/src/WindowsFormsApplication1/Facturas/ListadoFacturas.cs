@@ -31,17 +31,8 @@ namespace WindowsFormsApplication1.Facturas
             this.numericUpDown2.Maximum = int.MaxValue;
 
             // Creo un paginador
-            List<KeyValuePair<string, object>> query_params = new List<KeyValuePair<string, object>>();
-            query_params.Add(new KeyValuePair<string, object>("@razon_social", getRazonSocial()));
-            query_params.Add(new KeyValuePair<string, object>("@tipo", getTipo()));
-            query_params.Add(new KeyValuePair<string, object>("@fechai", this.dateTimePicker1.Value));
-            query_params.Add(new KeyValuePair<string, object>("@fechaf", this.dateTimePicker2.Value));
-            query_params.Add(new KeyValuePair<string, object>("@importei", this.numericUpDown1.Value));
-            query_params.Add(new KeyValuePair<string, object>("@importef", this.numericUpDown2.Value));
-            query_params.Add(new KeyValuePair<string, object>("@descripcion", this.textBox1.Text));
-
             this.paginator = new Paginator(this.numericUpDown3, this.dataGridView1, "HARDCOR.consulta_factura",
-                                           this.button5, this.button4, "HARDCOR.cantidad_paginas_facturas", this.label7, 10, query_params);
+                                           this.button5, this.button4, "HARDCOR.cantidad_paginas_facturas", this.label7, 10);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -64,31 +55,18 @@ namespace WindowsFormsApplication1.Facturas
 
         private void button1_Click(object sender, EventArgs e)
         {
+            List<KeyValuePair<string, object>> query_params = new List<KeyValuePair<string, object>>();
+            query_params.Add(new KeyValuePair<string, object>("@razon_social", getRazonSocial()));
+            query_params.Add(new KeyValuePair<string, object>("@tipo", getTipo()));
+            query_params.Add(new KeyValuePair<string, object>("@fechai", this.dateTimePicker1.Value));
+            query_params.Add(new KeyValuePair<string, object>("@fechaf", this.dateTimePicker2.Value));
+            query_params.Add(new KeyValuePair<string, object>("@importei", this.numericUpDown1.Value));
+            query_params.Add(new KeyValuePair<string, object>("@importef", this.numericUpDown2.Value));
+            query_params.Add(new KeyValuePair<string, object>("@descripcion", this.textBox1.Text));
 
-            using(var connection = DBConnection.getInstance().getConnection())
-            {
-                // TODO: sp - Buscar facturas por vendedor, con filtro entre fechas, entre importes y contiene descripcion
-                SqlCommand query = new SqlCommand("HARDCOR.consulta_factura", connection);
-                query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@razon_social", getRazonSocial()));
-                query.Parameters.Add(new SqlParameter("@tipo", getTipo()));
-                query.Parameters.Add(new SqlParameter("@fechai", this.dateTimePicker1.Value));
-                query.Parameters.Add(new SqlParameter("@fechaf", this.dateTimePicker2.Value));
-                query.Parameters.Add(new SqlParameter("@importei", this.numericUpDown1.Value));
-                query.Parameters.Add(new SqlParameter("@importef", this.numericUpDown2.Value));
-                query.Parameters.Add(new SqlParameter("@descripcion", this.textBox1.Text));
-
-                connection.Open();
-
-                SqlDataAdapter adapter = new SqlDataAdapter(query);
-                DataTable table = new DataTable();
-                adapter.Fill(table);
-                this.dataGridView1.DataSource = table;
-                this.dataGridView1.ReadOnly = true;
-                this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                this.dataGridView1.MultiSelect = false;
-                this.dataGridView1.AllowUserToAddRows = false;
-            }
+            this.paginator.set_query_params(query_params);
+            this.paginator.load_page(0);
+            this.paginator.set_max_page_number();
         }
 
         private string getRazonSocial()

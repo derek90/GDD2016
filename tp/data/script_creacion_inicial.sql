@@ -651,7 +651,9 @@ CREATE PROCEDURE HARDCOR.calificar_vta (@cod_compra int,@cod_us int, @estrellas 
 END
 GO
 
-CREATE PROCEDURE HARDCOR.consulta_factura (@razon_social nvarchar(50), @tipo int, @fechai date, @fechaf date, @importei numeric(18,2), @importef numeric(18,2), @descripcion nvarchar(225))
+CREATE PROCEDURE HARDCOR.consulta_factura (@razon_social nvarchar(50), @tipo int, @fechai date, @fechaf date,
+                                           @importei numeric(18,2), @importef numeric(18,2), @descripcion nvarchar(225),
+                                           @pagina INT, @cantidad_resultados_por_pagina INT)
 AS
 DECLARE @cod_us int
 IF (@tipo = 0 AND @razon_social <> '')
@@ -673,6 +675,9 @@ ELSE IF (@razon_social = '')
   LEFT JOIN HARDCOR.Detalle d
   ON f.nro_fact = d.nro_fact
   WHERE ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND ((@importei = 0) OR (@importei <= d.importe)) AND ((@importef = 0) OR (@importef >= d.importe))
+   ORDER BY f.nro_fact
+  OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
+   FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
 ELSE
     SELECT f.nro_fact AS Nro_Factura,
 	   d.cod_det AS Codigo_Detalle,
@@ -688,6 +693,9 @@ ELSE
     LEFT JOIN HARDCOR.Detalle d
     ON f.nro_fact = d.nro_fact
     WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND ((@importei = 0) OR (@importei <= d.importe)) AND ((@importef = 0) OR (@importef >= d.importe))
+   ORDER BY f.nro_fact
+  OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
+   FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
 GO
 
 CREATE PROCEDURE HARDCOR.list_vendedor_mayorCantProdSinVta (@anio int, @nro_trim int, @cod_visi int, @mes int)
