@@ -604,18 +604,6 @@ GO
 
 /* Creación de funciones y procedures para que trabajen los aplicativos clientes */
 
-CREATE PROCEDURE HARDCOR.lista_sin_calif (@cod_us int) AS BEGIN
-   SELECT c.cod_compra, c.cod_pub, p.cod_us AS cod_vendedor, c.fecha_compra,
-          p.descripcion, p.precio, c.cantidad, c.monto_compra
-     FROM HARDCOR.Compra c, HARDCOR.Publicacion p
-    WHERE c.cod_calif IS NULL
-      AND p.cod_pub = c.cod_pub
-      AND c.cod_us = @cod_us
-
-   RETURN 1
-END
-GO
-
 CREATE PROCEDURE HARDCOR.calificar_vta (@cod_compra int, @username nvarchar(255), @estrellas int, @detalle nvarchar(225)) AS BEGIN
     BEGIN TRY
         BEGIN TRAN t1
