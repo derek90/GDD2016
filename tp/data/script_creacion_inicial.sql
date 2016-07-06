@@ -211,6 +211,16 @@ IF (OBJECT_ID ('HARDCOR.obtener_factura') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.obtener_detalles_factura') IS NOT NULL)
   DROP PROCEDURE HARDCOR.obtener_detalles_factura
 
+IF (OBJECT_ID ('HARDCOR.calificaciones_por_estrellas') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.calificaciones_por_estrellas
+
+IF (OBJECT_ID ('HARDCOR.operaciones_sin_calificar') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.operaciones_sin_calificar
+
+IF (OBJECT_ID ('HARDCOR.ultimas_operaciones_calificadas') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.ultimas_operaciones_calificadas
+
+
 IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
     DROP SCHEMA HARDCOR
 GO
@@ -606,9 +616,11 @@ CREATE PROCEDURE HARDCOR.lista_sin_calif (@cod_us int) AS BEGIN
 END
 GO
 
-CREATE PROCEDURE HARDCOR.calificar_vta (@cod_compra int,@cod_us int, @estrellas int, @detalle nvarchar(225)) AS BEGIN
+CREATE PROCEDURE HARDCOR.calificar_vta (@cod_compra int, @username nvarchar(255), @estrellas int, @detalle nvarchar(225)) AS BEGIN
     BEGIN TRY
         BEGIN TRAN t1
+          DECLARE @cod_us INT
+          SELECT @cod_us = cod_us FROM HARDCOR.Usuario WHERE username = @username
 
           DECLARE @cod_calif INT, @errorInCalif INT, @errorUpCompra INT
           SELECT @cod_calif= MAX(c.cod_calif) + 1 FROM HARDCOR.Calificacion c
@@ -619,18 +631,6 @@ CREATE PROCEDURE HARDCOR.calificar_vta (@cod_compra int,@cod_us int, @estrellas 
 
           UPDATE HARDCOR.Compra SET cod_calif= @cod_calif WHERE cod_compra = @cod_compra
           SET @errorUpCompra = @@error
-
-          SELECT TOP 5 * FROM HARDCOR.Compra c
-          WHERE c.cod_calif IS NOT NULL AND c.cod_us= @cod_us
-          ORDER BY c.cod_calif DESC
-
-          SELECT cm.cod_us,c.calif_estrellas, COUNT(*) AS cantidad_estrellas
-          FROM HARDCOR.Compra cm
-              LEFT JOIN HARDCOR.Calificacion c
-              ON cm.cod_calif = c.cod_calif
-          WHERE cm.cod_calif IS NOT NULL AND cm.cod_us = @cod_us
-          GROUP BY cm.cod_us,c.calif_estrellas
-          ORDER BY cm.cod_us,c.calif_estrellas
 
         COMMIT TRAN t1
     END TRY
@@ -2013,5 +2013,45 @@ CREATE PROCEDURE HARDCOR.obtener_detalles_factura (@numero NUMERIC) AS BEGIN
   SELECT *
     FROM HARDCOR.Detalle
    WHERE nro_fact = @numero
+END
+GO
+
+CREATE PROCEDURE HARDCOR.calificaciones_por_estrellas (@usuario NVARCHAR(255)) AS BEGIN
+  /* Devuelve una fila por cada calificacion (1-5) y tipo (1-Compra inmediata, 2-subasta)
+     con la cantidad de calificaciones hechas por el usuario a ese tipo de publicacion con esa
+     cantidad de estrellas */
+    SELECT COUNT(*) AS Cantidad, Ca.calif_estrellas AS Calificacion,  P.cod_tipo AS Tipo
+      FROM HARDCOR.Compra Co, HARDCOR.Calificacion Ca, HARDCOR.Publicacion P
+     WHERE Co.cod_us = (SELECT cod_us
+                          FROM HARDCOR.Usuario
+                         WHERE username = @usuario)
+       AND Ca.cod_calif = Co.cod_calif
+       AND P.cod_pub = Co.cod_pub
+  GROUP BY Ca.calif_estrellas, P.cod_tipo
+END
+GO
+
+CREATE PROCEDURE HARDCOR.operaciones_sin_calificar (@usuario NVARCHAR(255)) AS BEGIN
+  SELECT *  -- TODO: Ver que campos mostramos
+    FROM HARDCOR.Compra Co, HARDCOR.Publicacion P
+   WHERE Co.cod_us = (SELECT cod_us
+                        FROM HARDCOR.Usuario
+                       WHERE username = @usuario)
+     AND P.cod_pub = Co.cod_pub
+     AND NOT EXISTS (SELECT cod_calif
+                       FROM HARDCOR.Calificacion Ca
+                      WHERE Ca.cod_calif = Co.cod_calif)
+END
+GO
+
+CREATE PROCEDURE HARDCOR.ultimas_operaciones_calificadas (@usuario NVARCHAR(255)) AS BEGIN
+  SELECT TOP 10 *  --TODO: Ver que campos mostramos
+    FROM HARDCOR.Compra Co, HARDCOR.Calificacion Ca, HARDCOR.Publicacion P
+   WHERE Co.cod_us = (SELECT cod_us
+                        FROM HARDCOR.Usuario
+                       WHERE username = @usuario)
+     AND Ca.cod_calif = Co.cod_calif
+     AND P.cod_pub = Co.cod_pub
+  ORDER BY Co.fecha_compra DESC
 END
 GO

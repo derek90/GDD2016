@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace WindowsFormsApplication1.Calificar
@@ -13,19 +15,22 @@ namespace WindowsFormsApplication1.Calificar
             this.parent = parent;
             this.username = username;
             InitializeComponent();
+            this.refresh();
+        }
+
+        public void refresh ()
+        {
             this.fill_data_sets();
             this.fill_statistics();
         }
 
         private void fill_data_sets()
         {
-            /*
             using(var connection = DBConnection.getInstance().getConnection())
             {
                 connection.Open();
 
-                // TODO: Hacer SP - Ultimas operaciones pendientes de calificar
-                SqlCommand query = new SqlCommand("HARDCOR.", connection);
+                SqlCommand query = new SqlCommand("HARDCOR.operaciones_sin_calificar", connection);
                 query.CommandType = CommandType.StoredProcedure;
                 query.Parameters.Add(new SqlParameter("@usuario", username));
 
@@ -36,10 +41,8 @@ namespace WindowsFormsApplication1.Calificar
                 DataTable table = new DataTable();
                 adapter.Fill(table);
                 this.dataGridView1.DataSource = table;
-                this.dataGridView1.ReadOnly = true;
 
-                // TODO: Hacer SP - Ultimas 5 publicaciones calificadas
-                SqlCommand query2 = new SqlCommand("HARDCOR.", connection);
+                SqlCommand query2 = new SqlCommand("HARDCOR.ultimas_operaciones_calificadas", connection);
                 query2.CommandType = CommandType.StoredProcedure;
                 query2.Parameters.Add(new SqlParameter("@usuario", this.username));
 
@@ -48,30 +51,27 @@ namespace WindowsFormsApplication1.Calificar
 
                 //Lleno el dataset y lo seteo como source del dataGridView
                 DataTable table2 = new DataTable();
-                adapter.Fill(table2);
+                adapter2.Fill(table2);
                 this.dataGridView2.DataSource = table2;
-                this.dataGridView2.ReadOnly = true;
             }
-            */
         }
 
         private void fill_statistics ()
         {
-            /*
             using(var connection = DBConnection.getInstance().getConnection())
             {
-                // TODO: SP - Dar cantidad de ofertas por calificacion, cantidad de subastas por calificacion, total de operaciones
-                SqlCommand query = new SqlCommand("HARDCOR.", connection);
+                SqlCommand query = new SqlCommand("HARDCOR.calificaciones_por_estrellas", connection);
                 query.CommandType = CommandType.StoredProcedure;
                 query.Parameters.Add(new SqlParameter("@usuario", this.username));
 
                 connection.Open();
                 SqlDataReader reader = query.ExecuteReader();
                 Label label_to_modify = this.label13;  // Tengo que darle un valor por defecto para que no chille
+                int total = 0;
                 while (reader.Read())
                 {
-                    if(reader["tipo"].ToString() == "Compra Inmediata")
-                        switch (Int32.Parse(reader["calificacion"].ToString()))
+                    if(Int32.Parse(reader["Tipo"].ToString()) == 1)
+                        switch (Int32.Parse(reader["Calificacion"].ToString()))
                         {
                             case 1:
                                 label_to_modify = this.label13;
@@ -90,7 +90,7 @@ namespace WindowsFormsApplication1.Calificar
                                 break;
                         }
                     else
-                        switch (Int32.Parse(reader["calificacion"].ToString()))
+                        switch (Int32.Parse(reader["Calificacion"].ToString()))
                         {
                             case 1:
                                 label_to_modify = this.label18;
@@ -108,11 +108,11 @@ namespace WindowsFormsApplication1.Calificar
                                 label_to_modify = this.label22;
                                 break;
                         }
-                    label_to_modify.Text = reader["cantidad"].ToString();
-                    this.label21.Text = reader["total"].ToString();
+                    label_to_modify.Text = reader["Cantidad"].ToString();
+                    total += Int32.Parse(reader["Cantidad"].ToString());
                 }
+                this.label24.Text = total.ToString();
             }
-            */
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -128,6 +128,8 @@ namespace WindowsFormsApplication1.Calificar
                 MessageBox.Show("Debe seleccionar una compra o subasta");
                 return;
             }
+            int buy_code = Int32.Parse(this.dataGridView1.SelectedRows[0].Cells["cod_compra"].Value.ToString());
+            (new DarCalificacion(this, buy_code, this.username)).Show();
         }
     }
 }
