@@ -691,19 +691,17 @@ AS BEGIN
     BEGIN TRY
 	   BEGIN TRAN t1
 
-	 --DECLARE @anio int=2015, @nro_trim int =1,@cod_visi int, @mes int
-		  
 		  DECLARE @mes_i int, @mes_f int 
 		  
 		  DECLARE @datos TABLE (Anio int, Mes int, Codigo_Visibilidad int, Codigo_Vendedor int, Cantidad int)
 
-		  set @mes_f = @nro_trim * 3+1
-		  set @mes_i = @mes_f-3
+		  set @mes_f = @nro_trim * 3
+		  set @mes_i = @mes_f-2
 
-		  if @mes is not null and @mes_i <= @mes and @mes < @mes_f 
+		  if @mes is not null and @mes_i <= @mes and @mes <= @mes_f 
 		  begin
 			 set @mes_i = @mes
-			 set @mes_f = @mes+1
+			 set @mes_f = @mes
 		  end
 
 		  if @mes is not null and not(@mes between @mes_i and @mes_f) 
