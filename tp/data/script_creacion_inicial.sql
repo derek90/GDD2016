@@ -462,7 +462,7 @@ INSERT INTO HARDCOR.Publicacion (cod_pub, cod_us, cod_rubro, cod_visi, descripci
                                 fecha_fin, precio, estado, cod_tipo, envio)
 SELECT DISTINCT m.Publicacion_Cod, u.cod_us, r.cod_rubro, v.cod_visi, m.Publicacion_Descripcion,
                 m.Publicacion_Stock, m.Publicacion_Fecha, m.Publicacion_Fecha_Venc, m.Publicacion_Precio,
-                case when t.cod_tipo = 2 then 'finalizado' end, t.cod_tipo, 0
+                case when t.cod_tipo = 2 then 'finalizado' else 'Publicada' end, t.cod_tipo, 0
 FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Rubro r, HARDCOR.Visibilidad v, HARDCOR.Tipo t
 WHERE (u.username = (SELECT CAST(m.Publ_Cli_Dni AS NVARCHAR(225))) OR u.username = m.Publ_Empresa_Cuit)
       AND r.rubro_desc_corta = m.Publicacion_Rubro_Descripcion AND v.cod_visi = m.Publicacion_Visibilidad_Cod
@@ -689,100 +689,77 @@ GO
 CREATE PROCEDURE HARDCOR.list_vendedor_mayorCantProdSinVta (@anio int, @nro_trim int, @cod_visi int, @mes int)
 AS BEGIN
     BEGIN TRY
-       BEGIN TRAN t1
+	   BEGIN TRAN t1
 
-          DECLARE @mes_i int, @j int =0, @mes_f int, @cant_visi int, @min_codVisi int, @flag int
-          DECLARE @datos TABLE (Anio int, Mes int, Codigo_Visibilidad int, Codigo_Vendedor int, Cantidad int)
+	 --DECLARE @anio int=2015, @nro_trim int =1,@cod_visi int, @mes int
+		  
+		  DECLARE @mes_i int, @mes_f int 
+		  
+		  DECLARE @datos TABLE (Anio int, Mes int, Codigo_Visibilidad int, Codigo_Vendedor int, Cantidad int)
 
-          select @cant_visi = COUNT(*), @min_codVisi = MIN(cod_visi) from HARDCOR.Visibilidad
-          set @mes_f = @nro_trim * 3+1
-          set @mes_i = @mes_f-3
+		  set @mes_f = @nro_trim * 3+1
+		  set @mes_i = @mes_f-3
 
-          if @mes is not null and @mes_i <= @mes and @mes < @mes_f
-          begin
-             set @mes_i = @mes
-             set @mes_f = @mes+1
-          end
+		  if @mes is not null and @mes_i <= @mes and @mes < @mes_f 
+		  begin
+			 set @mes_i = @mes
+			 set @mes_f = @mes+1
+		  end
 
-          if @mes is not null and not(@mes between @mes_i and @mes_f)
-          begin
-             raiserror('El mes ingresado no pertenece al trimestre seleccionado', 20, -1)
-          end
+		  if @mes is not null and not(@mes between @mes_i and @mes_f) 
+		  begin
+			 raiserror('El mes ingresado no pertenece al trimestre seleccionado', 20, -1)
+		  end
 
-          if @cod_visi is not null
-             set @flag = 1
-          else
-             set @flag = 0
+				insert into @datos
+				select top 5 year(p.fecha_ini) as anio,
+				       month(p.fecha_ini) as mes,
+					  p.cod_visi as visi, 
+					  p.cod_us as vendedor, 
+					  COUNT(p.stock) as cantidad  
+				from HARDCOR.Publicacion p
+				where (month(p.fecha_ini)= @mes or month(p.fecha_ini) between @mes_i and @mes_f)
+				      and (@cod_visi is null or p.cod_visi = @cod_visi)
+					 and year(p.fecha_ini) = @anio
+					 and p.estado <> 'finalizado'-- aca modificar con la version de fede, fk del der
+				group by year(p.fecha_ini),month(p.fecha_ini), p.cod_visi, p.cod_us
+				order by cantidad desc
 
+		  select d.Anio, d.Mes, v.visi_desc, d.Codigo_Vendedor, d.Cantidad, 
+			    e.emp_razon_soc, emp_cuit, emp_calificacion,
+			    c.cli_apellido, c.cli_nombre, c.cli_num_doc,c.cli_calificacion
+		  from @datos d 
+			  left join HARDCOR.Empresa e 
+			  on e.cod_us = d.Codigo_Vendedor 
+			  left join HARDCOR.Cliente c 
+			  on c.cod_us=d.Codigo_Vendedor
+			  left join HARDCOR.Visibilidad v
+			  on v.cod_visi= d.Codigo_Visibilidad
+		  order by Mes asc, Codigo_Visibilidad 
+  
 
-          while (@mes_i < @mes_f)
-          begin
+	   COMMIT TRAN t1
+	END TRY
 
+	BEGIN CATCH
 
-             while (@j < @cant_visi)
-             begin
+	    ROLLBACK TRANSACTION t1
 
+	    DECLARE @ErrorMessage NVARCHAR(4000);
+	    DECLARE @ErrorSeverity INT;
+	    DECLARE @ErrorState INT;
 
-                if @flag = 1
-                    set @j = @cant_visi
-                else
-                    set @cod_visi = @min_codVisi + @j
-
-
-                insert into @datos
-                select year(p.fecha_ini) as anio,
-                       month(p.fecha_ini) as mes,
-                      p.cod_visi as visi,
-                      p.cod_us as vendedor,
-                      COUNT(*) as cantidad
-                from HARDCOR.Publicacion p
-                where month(p.fecha_ini) = @mes_i
-                      and p.cod_visi = @cod_visi
-                     and year(p.fecha_ini) = @anio
-                group by year(p.fecha_ini),month(p.fecha_ini), p.cod_visi, p.cod_us
-                order by anio desc, mes desc, visi asc, cantidad desc
-
-                offset 0 rows
-                fetch next 5 rows only
-                set @j = @j +1
-
-             end
-             set @mes_i = @mes_i+1
-             set @j = 0
-          end
-
-          select d.Anio, d.Mes, d.Codigo_Visibilidad, d.Codigo_Vendedor, d.Cantidad,
-                e.emp_razon_soc, emp_cuit, emp_calificacion,
-                c.cli_apellido, c.cli_nombre, c.cli_num_doc,c.cli_calificacion
-          from @datos d
-              left join HARDCOR.Empresa e
-              on e.cod_us = d.Codigo_Vendedor
-              left join HARDCOR.Cliente c
-              on c.cod_us=d.Codigo_Vendedor
-
-
-       COMMIT TRAN t1
-    END TRY
-
-    BEGIN CATCH
-
-        ROLLBACK TRANSACTION t1
-
-        DECLARE @ErrorMessage NVARCHAR(4000);
-        DECLARE @ErrorSeverity INT;
-        DECLARE @ErrorState INT;
-
-        SELECT
+	    SELECT 
 
          @ErrorMessage = ERROR_MESSAGE(),
          @ErrorSeverity = ERROR_SEVERITY(),
          @ErrorState = ERROR_STATE();
 
-        RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+	    RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
 
-    END CATCH
+	END CATCH
 
-    RETURN 1
+	RETURN 1
 END
 GO
 
