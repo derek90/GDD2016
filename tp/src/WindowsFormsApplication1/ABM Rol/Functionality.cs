@@ -4,8 +4,8 @@ namespace WindowsFormsApplication1.ABM_Rol
 {
     class Functionality : IEquatable<Functionality>
     {
-        public int code { get; }
-        public string description { get; }
+        public int code { get; private set; }
+        public string description { get; private set; }
 
         public Functionality(int code, string description)
         {
