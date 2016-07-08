@@ -190,6 +190,9 @@ IF (OBJECT_ID ('HARDCOR.obtener_rubros') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.obtener_visibilidades') IS NOT NULL)
   DROP PROCEDURE HARDCOR.obtener_visibilidades
 
+IF (OBJECT_ID ('HARDCOR.obtener_visibilidades_por_usuario') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.obtener_visibilidades_por_usuario
+
 IF (OBJECT_ID ('HARDCOR.listar_publicaciones') IS NOT NULL)
   DROP PROCEDURE HARDCOR.listar_publicaciones
 
@@ -1906,11 +1909,17 @@ CREATE PROCEDURE HARDCOR.obtener_rubros AS BEGIN
 END
 GO
 
-CREATE PROCEDURE HARDCOR.obtener_visibilidades AS BEGIN
+CREATE PROCEDURE HARDCOR.obtener_visibilidades_por_usuario AS BEGIN
   /* Deberia recibir el usuario
      Si ese usuario no tiene publicacion, deberia devolver solo gratis
      Si tiene publicaciones, deberia devolver todos menos gratis
    */
+  SELECT *
+    FROM HARDCOR.Visibilidad
+END
+GO
+
+CREATE PROCEDURE HARDCOR.obtener_visibilidades AS BEGIN
   SELECT *
     FROM HARDCOR.Visibilidad
 END

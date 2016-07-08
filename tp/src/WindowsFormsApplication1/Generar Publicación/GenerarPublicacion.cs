@@ -41,7 +41,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
             using (var connection = DBConnection.getInstance().getConnection())
             {
                 connection.Open();
-                SqlCommand query = Utils.create_sp("HARDCOR.obtener_visibilidades", new List<KeyValuePair<string, object>>(), connection);
+                SqlCommand query = Utils.create_sp("HARDCOR.obtener_visibilidades_por_usuario", new List<KeyValuePair<string, object>>(), connection);
                 SqlDataReader reader = query.ExecuteReader();
                 while (reader.Read())
                     visibilities.Add(new KeyValuePair<int, string> (Int32.Parse(reader["cod_visi"].ToString()),
