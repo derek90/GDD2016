@@ -39,10 +39,7 @@ namespace WindowsFormsApplication1.Listado_Estadistico
                 Dictionary<int, string> rubros = new Dictionary<int, string>();
                 while (reader.Read())
                 {
-                    if (reader["cod_rubro"] != null && reader["rubro_desc_corta"] != null)
-                    {
-                        rubros.Add(Convert.ToInt32(reader["cod_rubro"]), reader["rubro_desc_corta"].ToString());
-                    }
+                    rubros.Add(Convert.ToInt32(reader["cod_rubro"]), reader["rubro_desc_corta"].ToString());
                 }
                 return rubros;
             }
@@ -58,10 +55,7 @@ namespace WindowsFormsApplication1.Listado_Estadistico
                 Dictionary<int, string> visibilidades = new Dictionary<int, string>();
                 while (reader.Read())
                 {
-                    if (reader["cod_visi"] != null && reader["visi_desc"] != null)
-                    {
-                        visibilidades.Add(Convert.ToInt32(reader["cod_visi"]), reader["visi_desc"].ToString());
-                    }
+                    visibilidades.Add(Convert.ToInt32(reader["cod_visi"]), reader["visi_desc"].ToString());
                 }
                 return visibilidades;
             }

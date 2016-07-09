@@ -20,6 +20,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             InitializeComponent();
             this.username = username;
             this.password = password;
+            this.comboBox1.DataSource = getTiposDocFromDB();
         }
 
         public AltaContactoCliente(int client_code)
@@ -29,6 +30,22 @@ namespace WindowsFormsApplication1.ABM_Usuario
             this.set_client(client_code);
             this.Text = "Modifique al cliente";
             this.button1.Text = "Modificar";
+        }
+
+        private List<string> getTiposDocFromDB()
+        {
+            List<string> tiposDoc = new List<string>();
+            using (var connection = DBConnection.getInstance().getConnection())
+            {
+                connection.Open();
+                SqlCommand query = Utils.create_sp("HARDCOR.obtener_tipos_doc", connection);
+                SqlDataReader reader = query.ExecuteReader();
+                while (reader.Read())
+                {
+                    tiposDoc.Add((reader["documento"].ToString()));
+                }
+                return tiposDoc;
+            }
         }
 
         private void set_client(int client_code)
@@ -48,8 +65,6 @@ namespace WindowsFormsApplication1.ABM_Usuario
             reader.Read();
             this.textBox1.Text = reader["cli_nombre"].ToString();
             this.textBox2.Text = reader["cli_apellido"].ToString();
-            // TODO: No está migrado el tipo de documento
-            //this.textBox3.Text = reader[""]
             this.numericUpDown1.Value = Int32.Parse(reader["cli_num_doc"].ToString());
             this.textBox5.Text = reader["nro_tel"].ToString();
             this.textBox6.Text = reader["mail"].ToString();
@@ -65,7 +80,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
 
         public bool there_are_empty_inputs()
         {
-            List<TextBox> inputs = new List<TextBox> { this.textBox1, this.textBox2, this.textBox3, this.textBox5, this.textBox6,
+            List<TextBox> inputs = new List<TextBox> { this.textBox1, this.textBox2, this.textBox5, this.textBox6,
                                                        this.textBox8, this.textBox11, this.textBox12, this.textBox13 };
             return inputs.Any((t) => t.Text == "");
         }
@@ -143,6 +158,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             create.Parameters.Add(new SqlParameter("@localidad", this.textBox12.Text));
             create.Parameters.Add(new SqlParameter("@codigo_postal", this.textBox13.Text));
             create.Parameters.Add(new SqlParameter("@habilitado", this.checkBox1.Checked));
+            create.Parameters.Add(new SqlParameter("@tipo_doc", this.comboBox1.SelectedItem));
 
             connection.Open();
             bool creation_was_ok = create.ExecuteNonQuery() > 0;

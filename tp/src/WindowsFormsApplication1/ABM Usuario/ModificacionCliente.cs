@@ -14,8 +14,25 @@ namespace WindowsFormsApplication1.ABM_Usuario
         public ModificacionCliente()
         {
             InitializeComponent();
+            this.comboBox1.DataSource = getTiposDocFromDB();
         }
-        
+
+        private List<string> getTiposDocFromDB()
+        {
+            List<string> tiposDoc = new List<string>();
+            using (var connection = DBConnection.getInstance().getConnection())
+            {
+                connection.Open();
+                SqlCommand query = Utils.create_sp("HARDCOR.obtener_tipos_doc", connection);
+                SqlDataReader reader = query.ExecuteReader();
+                while (reader.Read())
+                {
+                    tiposDoc.Add((reader["documento"].ToString()));
+                }
+                return tiposDoc;
+            }
+        }
+
         public void fill_data_set(string name, string lastname, string mail, int dni)
         {
             var connection = DBConnection.getInstance().getConnection();
