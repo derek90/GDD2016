@@ -727,7 +727,7 @@ AS BEGIN
 				where (month(p.fecha_ini)= @mes or month(p.fecha_ini) between @mes_i and @mes_f)
 				      and (@cod_visi is null or p.cod_visi = @cod_visi)
 					 and year(p.fecha_ini) = @anio
-					 and p.estado <> 'finalizado'-- aca modificar con la version de fede, fk del der
+					 and p.estado <> 4
 				group by year(p.fecha_ini),month(p.fecha_ini), p.cod_visi, p.cod_us
 				order by cantidad desc
 
@@ -769,70 +769,57 @@ AS BEGIN
 END
 GO
 
-CREATE PROCEDURE HARDCOR.list_cli_mayorCantProdCompr (@anio int, @nro_trim int, @mes int, @desc nvarchar(225))
+CREATE PROCEDURE HARDCOR.list_cli_mayorCantProdCompr (@anio int, @nro_trim int, @cod_rubro int)
 AS BEGIN
     begin try
+	  
+-- MUY IMPORTANTE!!!!-- >Al momento de facturar una subasta, hacer el insert en compras---> NO BORAR ESTE COMENTARIO!!!
+	   
+	   DECLARE @datos_cli TABLE (anio int, mes int, rubro nvarchar(225) , codigo_cliente int, cantidad_comprada int)
+	   DECLARE @mes_f int, @mes_i int
 
-       DECLARE @datos_cli TABLE (anio int, mes int, rubro nvarchar(225) , codigo_cliente int, cantidad_comprada int)
-       DECLARE @mes_f int, @mes_i int
-
-       set @mes_f = @nro_trim * 3 +1
-       set @mes_i = @mes_f-3
-
-       if @mes is not null and @mes_i <= @mes and @mes < @mes_f
-       begin
-          set @mes_i = @mes
-          set @mes_f = @mes+1
-       end
-
-       if @mes is not null and not(@mes between @mes_i and @mes_f)
-       begin
-          raiserror('El mes ingresado no pertenece al trimestre seleccionado', 20, -1)
-       end
-
-       while (@mes_i < @mes_f)
-       begin
-
-       insert into @datos_cli
-       select top 5
-              year(c.fecha_compra) as anio,
-            month(c.fecha_compra) as mes,
-            r.rubro_desc_corta as rubro,
-            c.cod_us as codigo_cliente,
-            COUNT(*) as cantidad
-       from HARDCOR.Compra c, HARDCOR.Publicacion p, HARDCOR.Rubro r
-       where c.cod_pub=p.cod_pub and
-            p.cod_rubro = r.cod_rubro and
-            r.rubro_desc_corta = @desc and
-            year(c.fecha_compra) = @anio and
-            month(c.fecha_compra) = @mes_i
-       group by year(c.fecha_compra),month(c.fecha_compra), r.rubro_desc_corta, c.cod_us
-       order by anio desc, mes desc, cantidad desc
-
-       set @mes_i = @mes_i+1
-       end
-
-       select dc.*, c.cli_apellido, c.cli_nombre, c.cli_num_doc,c.cli_calificacion
-       from @datos_cli dc
-            left join
-           HARDCOR.Cliente c
-           on dc.codigo_cliente = c.cod_us
-       order by anio desc, mes asc, cantidad_comprada desc
+	   set @mes_f = @nro_trim * 3 
+	   set @mes_i = @mes_f-2
 
 
+	   insert into @datos_cli
+	   select top 5
+	          year(c.fecha_compra) as anio,
+			month(c.fecha_compra) as mes, 
+			r.rubro_desc_corta as rubro, 
+			c.cod_us as codigo_cliente, 
+			COUNT(c.cantidad) as cantidad  
+	   from HARDCOR.Compra c, HARDCOR.Publicacion p, HARDCOR.Rubro r
+	   where c.cod_pub=p.cod_pub and 
+		    p.cod_rubro = r.cod_rubro and 
+		    r.cod_rubro = @cod_rubro and
+		    year(c.fecha_compra) = @anio and
+		    month(c.fecha_compra) between @mes_i and @mes_f
+	   group by year(c.fecha_compra),month(c.fecha_compra), r.rubro_desc_corta, c.cod_us
+	   order by cantidad desc
 
+
+	   select dc.*, c.cli_apellido, c.cli_nombre, c.cli_num_doc,c.cli_calificacion
+	   from @datos_cli dc 
+	        left join 
+		   HARDCOR.Cliente c 
+		   on dc.codigo_cliente = c.cod_us
+	   order by anio desc, mes asc, cantidad_comprada desc
+
+
+  
     end try
     begin catch
 
-       DECLARE @ErrorMessage NVARCHAR(4000);
-       DECLARE @ErrorSeverity INT;
-       DECLARE @ErrorState INT;
-
+	   DECLARE @ErrorMessage NVARCHAR(4000);
+	   DECLARE @ErrorSeverity INT;
+	   DECLARE @ErrorState INT;
+	   
         SET @ErrorMessage = ERROR_MESSAGE()
         SET @ErrorSeverity = ERROR_SEVERITY()
         SET @ErrorState = ERROR_STATE();
 
-       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
+	   RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
 
     end catch
    END
@@ -842,64 +829,60 @@ CREATE PROCEDURE HARDCOR.list_vend_mayorCantFact (@anio int, @nro_trim int, @mes
 AS BEGIN
     begin try
 
-       DECLARE @datos_vendCantFact TABLE (anio int, mes int, codigo_vendedor int, cantidad_facturas int)
-       DECLARE @mes_f int, @mes_i int
+	   DECLARE @datos_vendCantFact TABLE (anio int, mes int, codigo_vendedor int, cantidad_facturas int)
+	   DECLARE @mes_f int, @mes_i int
 
-       set @mes_f = @nro_trim * 3 +1
-       set @mes_i = @mes_f-3
+	   set @mes_f = @nro_trim * 3 
+	   set @mes_i = @mes_f-2
 
-       if @mes is not null and @mes_i <= @mes and @mes < @mes_f
-       begin
-          set @mes_i = @mes
-          set @mes_f = @mes+1
-       end
+	   if @mes is not null and @mes_i <= @mes and @mes <= @mes_f 
+	   begin
+		  set @mes_i = @mes
+		  set @mes_f = @mes
+	   end
 
-       if @mes is not null and not(@mes between @mes_i and @mes_f)
-       begin
-          raiserror('El mes ingresado no pertenece al trimestre seleccionado', 20, -1)
-       end
-
-       while (@mes_i < @mes_f)
-       begin
-
-       insert into @datos_vendCantFact
-       select top 5
-              year(c.fecha_compra) as anio,
-            month(c.fecha_compra) as mes,
-            p.cod_us as codigo_vendedor,
-            COUNT(*) as cantidad
-       from  HARDCOR.Compra c, HARDCOR.Publicacion p
-       where p.cod_pub = c.cod_pub and
-            year(c.fecha_compra) = @anio and
-            month(c.fecha_compra) = @mes_i
-       group by year(c.fecha_compra),month(c.fecha_compra), p.cod_us
-       order by anio desc, mes asc, cantidad desc
-
-       set @mes_i = @mes_i+1
-       end
-
-       select d.Anio, d.Mes, d.codigo_vendedor, d.cantidad_facturas,
-            e.emp_razon_soc, emp_cuit, emp_calificacion,
-            c.cli_apellido, c.cli_nombre, c.cli_num_doc,c.cli_calificacion
-       from @datos_vendCantFact d
-           left join HARDCOR.Empresa e
-           on e.cod_us = d.Codigo_Vendedor
-           left join HARDCOR.Cliente c
-           on c.cod_us=d.Codigo_Vendedor
+	   if @mes is not null and not(@mes between @mes_i and @mes_f) 
+	   begin
+		  raiserror('El mes ingresado no pertenece al trimestre seleccionado', 20, -1)
+	   end
 
 
+	   insert into @datos_vendCantFact
+	   select top 5
+	          year(f.fecha) as anio,
+			month(f.fecha) as mes,
+			f.cod_us as codigo_vendedor, 
+			COUNT(*) as cantidad  
+	   from  HARDCOR.Factura f
+	   where  year(f.fecha) = @anio and
+		    (month(f.fecha)= @mes or month(f.fecha) between @mes_i and @mes_f)
+	   group by year(f.fecha),month(f.fecha), f.cod_us
+	   order by  cantidad desc
+
+
+	   select d.Anio, d.Mes, d.codigo_vendedor, d.cantidad_facturas, 
+			e.emp_razon_soc, emp_cuit, emp_calificacion,
+			c.cli_apellido, c.cli_nombre, c.cli_num_doc,c.cli_calificacion
+	   from @datos_vendCantFact d 
+		   left join HARDCOR.Empresa e 
+		   on e.cod_us = d.Codigo_Vendedor 
+		   left join HARDCOR.Cliente c 
+		   on c.cod_us=d.Codigo_Vendedor
+	   order by anio desc, mes asc, cantidad_facturas desc
+
+  
     end try
     begin catch
 
-       DECLARE @ErrorMessage NVARCHAR(4000);
-       DECLARE @ErrorSeverity INT;
-       DECLARE @ErrorState INT;
-
+	   DECLARE @ErrorMessage NVARCHAR(4000);
+	   DECLARE @ErrorSeverity INT;
+	   DECLARE @ErrorState INT;
+	   
         SET @ErrorMessage = ERROR_MESSAGE()
         SET @ErrorSeverity = ERROR_SEVERITY()
         SET @ErrorState = ERROR_STATE();
 
-       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
+	   RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
 
     end catch
    END
@@ -909,80 +892,77 @@ CREATE PROCEDURE HARDCOR.list_vend_mayorMontoFact (@anio int, @nro_trim int, @me
 AS BEGIN
     begin try
 
-       DECLARE @datos_vendMontoFact TABLE (anio int, mes int, codigo_vendedor int, monto_facturado int)
-       DECLARE @mes_f int, @mes_i int
+	   DECLARE @datos_vendMontoFact TABLE (anio int, mes int, codigo_vendedor int, monto_facturado int)
+	   DECLARE @mes_f int, @mes_i int
 
-       set @mes_f = @nro_trim * 3 +1
-       set @mes_i = @mes_f-3
+	   set @mes_f = @nro_trim * 3
+	   set @mes_i = @mes_f-2
 
-       if @mes is not null and @mes_i <= @mes and @mes < @mes_f
-       begin
-          set @mes_i = @mes
-          set @mes_f = @mes+1
-       end
+	   if @mes is not null and @mes_i <= @mes and @mes <= @mes_f 
+	   begin
+		  set @mes_i = @mes
+		  set @mes_f = @mes
+	   end
 
-       if @mes is not null and not(@mes between @mes_i and @mes_f)
-       begin
-          raiserror('El mes ingresado no pertenece al trimestre seleccionado', 20, -1)
-       end
-
-       while (@mes_i < @mes_f)
-       begin
-
-       insert into @datos_vendMontoFact
-       select top 5
-              year(c.fecha_compra) as anio,
-            month(c.fecha_compra) as mes,
-            p.cod_us as codigo_vendedor,
-            SUM(c.monto_compra) as monto
-       from  HARDCOR.Compra c, HARDCOR.Publicacion p
-       where p.cod_pub = c.cod_pub and
-            year(c.fecha_compra) = @anio and
-            month(c.fecha_compra) = @mes_i
-       group by year(c.fecha_compra),month(c.fecha_compra), p.cod_us
-       order by anio desc, mes asc, monto desc
-
-       set @mes_i = @mes_i+1
-       end
-
-       select d.Anio, d.Mes, d.codigo_vendedor, d.monto_facturado,
-            e.emp_razon_soc, emp_cuit, emp_calificacion,
-            c.cli_apellido, c.cli_nombre, c.cli_num_doc,c.cli_calificacion
-       from @datos_vendMontoFact d
-           left join HARDCOR.Empresa e
-           on e.cod_us = d.Codigo_Vendedor
-           left join HARDCOR.Cliente c
-           on c.cod_us=d.Codigo_Vendedor
+	   if @mes is not null and not(@mes between @mes_i and @mes_f) 
+	   begin
+		  raiserror('El mes ingresado no pertenece al trimestre seleccionado', 20, -1)
+	   end
 
 
+	   insert into @datos_vendMontoFact
+	   select top 5
+	          year(f.fecha) as anio,
+			month(f.fecha) as mes,
+			f.cod_us as codigo_vendedor, 
+			SUM(f.total) as monto  
+	   from  HARDCOR.Factura f
+	   where  year(f.fecha) = @anio and
+		    (month(f.fecha)= @mes or month(f.fecha) between @mes_i and @mes_f)
+	   group by year(f.fecha),month(f.fecha), f.cod_us
+	   order by  monto desc
+
+	   
+
+	   select d.Anio, d.Mes, d.codigo_vendedor, d.monto_facturado, 
+			e.emp_razon_soc, emp_cuit, emp_calificacion,
+			c.cli_apellido, c.cli_nombre, c.cli_num_doc,c.cli_calificacion
+	   from @datos_vendMontoFact d 
+		   left join HARDCOR.Empresa e 
+		   on e.cod_us = d.Codigo_Vendedor 
+		   left join HARDCOR.Cliente c 
+		   on c.cod_us=d.Codigo_Vendedor
+        order by anio desc, mes asc, monto_facturado desc
+  
     end try
     begin catch
 
-       DECLARE @ErrorMessage NVARCHAR(4000);
-       DECLARE @ErrorSeverity INT;
-       DECLARE @ErrorState INT;
-
+	   DECLARE @ErrorMessage NVARCHAR(4000);
+	   DECLARE @ErrorSeverity INT;
+	   DECLARE @ErrorState INT;
+	   
         SET @ErrorMessage = ERROR_MESSAGE()
         SET @ErrorSeverity = ERROR_SEVERITY()
         SET @ErrorState = ERROR_STATE();
 
-       RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
+	   RAISERROR (@ErrorMessage, @ErrorSeverity,@ErrorState);
 
     end catch
    END
 GO
 
-CREATE PROCEDURE HARDCOR.listados (@anio int, @nro_trim int, @tipoListado int, @cod_visi int, @mes int, @desc nvarchar(225))
+CREATE PROCEDURE HARDCOR.listados (@anio int, @nro_trim int, @tipoListado int, @cod_visi int, @mes int, @cod_rubro int)
 AS BEGIN
 
 if @tipoListado = 0
-    exec HARDCOR.list_vendedor_mayorCantProdSinVta @anio, @nro_trim, @cod_visi, @mes
+    exec HARDCOR.list_vendedor_mayorCantProdSinVta @anio, @nro_trim, @cod_visi, @mes 
 if @tipoListado = 1
-    exec HARDCOR.list_cli_mayorCantProdCompr @anio, @nro_trim, @mes, @desc
+    exec HARDCOR.list_cli_mayorCantProdCompr @anio, @nro_trim, @cod_rubro 
 if @tipoListado = 2
-    exec HARDCOR.list_vend_mayorCantFact @anio, @nro_trim, @mes
+    exec HARDCOR.list_vend_mayorCantFact @anio, @nro_trim, @mes 
 if @tipoListado = 3
-    exec HARDCOR.list_vend_mayorMontoFact @anio, @nro_trim, @mes
+    exec HARDCOR.list_vend_mayorMontoFact @anio, @nro_trim, @mes 
+
 END
 GO
 
