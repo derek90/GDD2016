@@ -30,6 +30,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             this.set_client(client_code);
             this.Text = "Modifique al cliente";
             this.button1.Text = "Modificar";
+            this.comboBox1.DataSource = getTiposDocFromDB();
         }
 
         private List<string> getTiposDocFromDB()
@@ -112,7 +113,8 @@ namespace WindowsFormsApplication1.ABM_Usuario
             update.Parameters.Add(new SqlParameter("@codigo", this.client_code));
             update.Parameters.Add(new SqlParameter("@nombre", this.textBox1.Text));
             update.Parameters.Add(new SqlParameter("@apellido", this.textBox2.Text));
-            update.Parameters.Add(new SqlParameter("@dni", this.numericUpDown1.Value));
+            update.Parameters.Add(new SqlParameter("@num_doc", this.numericUpDown1.Value));
+            update.Parameters.Add(new SqlParameter("@tipo_doc", this.comboBox1.SelectedItem));
             update.Parameters.Add(new SqlParameter("@telefono", this.textBox5.Text));
             update.Parameters.Add(new SqlParameter("@mail", this.textBox6.Text));
             update.Parameters.Add(new SqlParameter("@fecha_nacimiento", this.dateTimePicker1.Value));
