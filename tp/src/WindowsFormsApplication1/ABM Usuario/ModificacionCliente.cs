@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace WindowsFormsApplication1.ABM_Usuario
@@ -10,30 +11,32 @@ namespace WindowsFormsApplication1.ABM_Usuario
     {
         String select_query =  "HARDCOR.listar_clientes";
         SqlDataAdapter adapter;
+        Dictionary<int, string> tiposDoc;
 
         public ModificacionCliente()
         {
             InitializeComponent();
-            this.comboBox1.DataSource = getTiposDocFromDB();
+            this.tiposDoc = getTiposDocFromDB();
+            this.comboBox1.DataSource = this.tiposDoc.Values.ToList();
         }
 
-        private List<string> getTiposDocFromDB()
+        private Dictionary<int, string> getTiposDocFromDB()
         {
-            List<string> tiposDoc = new List<string>();
             using (var connection = DBConnection.getInstance().getConnection())
             {
                 connection.Open();
                 SqlCommand query = Utils.create_sp("HARDCOR.obtener_tipos_doc", connection);
                 SqlDataReader reader = query.ExecuteReader();
+                Dictionary<int, string> tiposDoc = new Dictionary<int, string>();
                 while (reader.Read())
                 {
-                    tiposDoc.Add((reader["documento"].ToString()));
+                    tiposDoc.Add(Convert.ToInt32(reader["cod_doc"]), reader["documento"].ToString());
                 }
                 return tiposDoc;
             }
         }
 
-        public void fill_data_set(string name, string lastname, string mail, int dni)
+        public void fill_data_set(string name, string lastname, string mail, int dni, int tipoDoc)
         {
             var connection = DBConnection.getInstance().getConnection();
             SqlCommand query = new SqlCommand(this.select_query, connection);
@@ -46,6 +49,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             query.Parameters.Add(new SqlParameter("@apellido", lastname));
             query.Parameters.Add(new SqlParameter("@dni", dni));
             query.Parameters.Add(new SqlParameter("@email", mail));
+            query.Parameters.Add(new SqlParameter("@tipo_doc", tipoDoc));
 
             //Creo el adapter usando el select_query
             this.adapter = new SqlDataAdapter(query);
@@ -68,7 +72,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
         private void button3_Click(object sender, EventArgs e)
         {
             this.fill_data_set(this.textBox4.Text, this.textBox1.Text,
-                               this.textBox3.Text, (int) this.numericUpDown1.Value);
+                               this.textBox3.Text, (int) this.numericUpDown1.Value, (int)tiposDoc.FirstOrDefault(x => x.Value == comboBox1.Text).Key);
         }
 
         private void button2_Click(object sender, EventArgs e)

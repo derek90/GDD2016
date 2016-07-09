@@ -228,6 +228,9 @@ IF (OBJECT_ID ('HARDCOR.operaciones_sin_calificar') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.ultimas_operaciones_calificadas') IS NOT NULL)
   DROP PROCEDURE HARDCOR.ultimas_operaciones_calificadas
 
+IF (OBJECT_ID ('HARDCOR.obtener_tipos_doc') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.obtener_tipos_doc
+
 IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
     DROP SCHEMA HARDCOR
 GO
@@ -1552,14 +1555,14 @@ END
 GO
 
 CREATE PROCEDURE HARDCOR.listar_clientes (@nombre NVARCHAR(255), @apellido NVARCHAR(255),
-                                          @dni NUMERIC(18, 0), @email NVARCHAR(50)) AS BEGIN
+                                          @dni NUMERIC(18, 0), @email NVARCHAR(50), @tipo_doc INT) AS BEGIN
   SELECT *
     FROM HARDCOR.Cliente Cl, HARDCOR.Contacto Co
    WHERE Cl.cod_contacto = Co.cod_contacto
      AND ((@nombre LIKE '') OR (Cl.cli_nombre LIKE '%' + @nombre + '%'))
      AND ((@apellido LIKE '') OR (Cl.cli_apellido LIKE '%' +  @apellido + '%'))
      AND ((@email LIKE '') OR (Co.mail LIKE '%' +  @email + '%'))
-     AND ((@dni = 0) OR (Cl.cli_num_doc = @dni))
+     AND ((@dni = 0) OR (Cl.cli_num_doc = @dni)) AND (Cl.cli_tipo_doc = @tipo_doc)
 END
 GO
 
@@ -1993,5 +1996,10 @@ CREATE PROCEDURE HARDCOR.ultimas_operaciones_calificadas (@usuario NVARCHAR(255)
      AND Ca.cod_calif = Co.cod_calif
      AND P.cod_pub = Co.cod_pub
   ORDER BY Co.fecha_compra DESC
+END
+GO
+
+CREATE PROCEDURE HARDCOR.obtener_tipos_doc AS BEGIN
+SELECT * FROM HARDCOR.Tipo_doc
 END
 GO
