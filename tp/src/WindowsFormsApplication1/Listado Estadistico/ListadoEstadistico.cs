@@ -13,6 +13,7 @@ namespace WindowsFormsApplication1.Listado_Estadistico
         Form parent;
         Dictionary<int, string> visibilidades;
         Dictionary<int, string> rubros;
+        List<string> meses = new List<string>();
 
         public ListadoEstadistico(Form parent)
         {
@@ -26,6 +27,11 @@ namespace WindowsFormsApplication1.Listado_Estadistico
             this.comboBox2.DataSource = this.rubros.Values.ToList();
             this.visibilidades = getVisibilidadesFromDB();
             this.comboBox3.DataSource = this.visibilidades.Values.ToList();
+            this.meses.Add("Todos");
+            this.meses.Add("1");
+            this.meses.Add("2");
+            this.meses.Add("3");
+            this.comboBox4.DataSource = this.meses;
 
         }
 
@@ -68,11 +74,16 @@ namespace WindowsFormsApplication1.Listado_Estadistico
             {
                 comboBox2.Hide();
                 label4.Hide();
+                comboBox4.Show();
+                label6.Show();
             }
             else
             {
                 comboBox2.Show();
                 label4.Show();
+                comboBox4.Hide();
+                label6.Hide();
+                comboBox4.SelectedIndex = 0;
             }
             comboBox3.Enabled = (comboBox1.SelectedIndex == 0);
             if (!comboBox3.Enabled)
@@ -106,7 +117,11 @@ namespace WindowsFormsApplication1.Listado_Estadistico
                 query.Parameters.Add(new SqlParameter("@nro_trim", numericUpDown2.Value));
                 query.Parameters.Add(new SqlParameter("@tipoListado", comboBox1.SelectedIndex));
                 query.Parameters.Add(new SqlParameter("@cod_visi", visibilidadeleccionada));
-                query.Parameters.Add(new SqlParameter("@mes", DBNull.Value));
+                if (comboBox4.SelectedIndex == 0) {
+                    query.Parameters.Add(new SqlParameter("@mes", DBNull.Value));
+                } else {
+                    query.Parameters.Add(new SqlParameter("@mes", comboBox4.SelectedValue));
+                }
                 query.Parameters.Add(new SqlParameter("@cod_rubro", rubroSeleccionado));
 
                 connection.Open();
@@ -118,6 +133,41 @@ namespace WindowsFormsApplication1.Listado_Estadistico
                 this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 this.dataGridView1.MultiSelect = false;
                 this.dataGridView1.AllowUserToAddRows = false;
+            }
+        }
+
+        private void setMeses(object sender, EventArgs e)
+        {
+            switch ((int)numericUpDown2.Value)
+            {
+                case 1:
+                    meses[1] = "1";
+                    meses[2] = "2";
+                    meses[3] = "3";
+                    comboBox4.DataSource = null;
+                    comboBox4.DataSource = meses;
+                    break;
+                case 2:
+                    meses[1] = "4";
+                    meses[2] = "5";
+                    meses[3] = "6";
+                    comboBox4.DataSource = null;
+                    comboBox4.DataSource = meses;
+                    break;
+                case 3:
+                    meses[1] = "7";
+                    meses[2] = "8";
+                    meses[3] = "9";
+                    comboBox4.DataSource = null;
+                    comboBox4.DataSource = meses;
+                    break;
+                case 4:
+                    meses[1] = "10";
+                    meses[2] = "11";
+                    meses[3] = "12";
+                    comboBox4.DataSource = null;
+                    comboBox4.DataSource = meses;
+                    break;
             }
         }
     }
