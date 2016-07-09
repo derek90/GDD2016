@@ -15,6 +15,9 @@ IF OBJECT_ID('HARDCOR.Calificacion','U') IS NOT NULL
 IF OBJECT_ID('HARDCOR.Detalle','U') IS NOT NULL
     DROP TABLE HARDCOR.Detalle;
 
+IF OBJECT_ID('HARDCOR.Tipo_fact','U') IS NOT NULL
+    DROP TABLE HARDCOR.Tipo_fact;
+
 IF OBJECT_ID('HARDCOR.Factura','U') IS NOT NULL
     DROP TABLE HARDCOR.Factura;
 
@@ -344,10 +347,14 @@ CREATE TABLE HARDCOR.Factura(
     total NUMERIC(18,2),
     forma_pago NVARCHAR(225));
 
+CREATE TABLE HARDCOR.Tipo_fact(
+    cod_tipo_fact INT IDENTITY PRIMARY KEY,
+	descripcion NVARCHAR(225));
+
 CREATE TABLE HARDCOR.Detalle(
     cod_det INT IDENTITY PRIMARY KEY,
     nro_fact NUMERIC(18,0) NOT NULL FOREIGN KEY REFERENCES HARDCOR.Factura(nro_fact),
-    item_desc NVARCHAR(225),
+    item_desc INT NOT NULL FOREIGN KEY REFERENCES HARDCOR.Tipo_fact(cod_tipo_fact),
     cantidad NUMERIC(18,0),
     importe NUMERIC(18,2));
 
@@ -496,17 +503,17 @@ SELECT DISTINCT m.Factura_Nro, p.cod_pub, p.cod_us, m.Factura_Fecha, m.Factura_T
 FROM gd_esquema.Maestra m, HARDCOR.Publicacion p WHERE p.cod_pub = m.Publicacion_Cod AND m.Factura_Nro IS NOT NULL
 GO
 
-INSERT INTO HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
-SELECT f.nro_fact, 'Visibilidad', MIN(m.Item_Factura_Cantidad), MIN(m.Item_Factura_Monto)
-FROM  gd_esquema.Maestra m, HARDCOR.Factura f WHERE m.Factura_Nro = f.nro_fact GROUP BY f.nro_fact
+INSERT INTO HARDCOR.Tipo_fact(descripcion)
+VALUES('Visibilidad'),
+	  ('Compra Inmediata'),
+	  ('Subasta'),
+	  ('Envio');
+GO
 
 INSERT INTO HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
-SELECT DISTINCT f.nro_fact, 'Venta producto', m.Item_Factura_Cantidad, m.Item_Factura_Monto
-FROM gd_esquema.Maestra m, HARDCOR.Factura f
-WHERE m.Factura_Nro = f.nro_fact AND
-NOT EXISTS(SELECT d.nro_fact, d.cantidad, d.importe FROM HARDCOR.Detalle d
-WHERE f.nro_fact = d.nro_fact AND m.Item_Factura_Cantidad = d.cantidad AND m.Item_Factura_Monto = d.importe)
-GO
+SELECT f.nro_fact, (CASE WHEN m.Compra_Fecha IS NOT NULL THEN 2 WHEN m.Oferta_Fecha IS NOT NULL THEN 3 ELSE 1 END), 
+m.Item_Factura_Cantidad, m.Item_Factura_Monto
+FROM  gd_esquema.Maestra m, HARDCOR.Factura f WHERE m.Factura_Nro = f.nro_fact
 
 INSERT INTO HARDCOR.Oferta(cod_pub, cod_us, monto_of, fecha_of)
 SELECT DISTINCT p.cod_pub, p.cod_us, m.Oferta_Monto, m.Oferta_Fecha
@@ -577,8 +584,7 @@ SELECT m.Publicacion_Cod, cl.cod_us, m.Calificacion_Codigo, m.Compra_Fecha, m.Co
 FROM gd_esquema.Maestra m, HARDCOR.Cliente cl
 WHERE m.Compra_Cantidad IS NOT NULL AND m.Cli_Dni = cl.cli_num_doc
 AND m.Publicacion_Tipo = 'Compra Inmediata' OR (m.Publicacion_Tipo = 'Subasta'
-AND m.Oferta_Monto IS NOT NULL AND m.Publicacion_Estado = 'Finalizada')
-ORDER BY m.Publicacion_Cod
+AND m.Oferta_Monto IS NOT NULL)
 GO
 
 CREATE FUNCTION HARDCOR.Emp_Categ (@emp_cuit NVARCHAR(225) )
@@ -1013,7 +1019,10 @@ CREATE PROCEDURE HARDCOR.facturar_venta(@codigo_publicacion INT, @fecha DATETIME
 
 		/* Inserto los detalles de la factura */
 		INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
-		VALUES(@nuevo_numero_factura, 'Comision por venta', @cantidad, @comision_venta)
+		VALUES(@nuevo_numero_factura, 
+		(SELECT CASE WHEN P.cod_tipo = 1 THEN 2 ELSE 3 END FROM HARDCOR.Publicacion P WHERE P.cod_pub = @codigo_publicacion), 
+		@cantidad, 
+		@comision_venta)
 
 		IF 2 = (SELECT P.cod_tipo FROM HARDCOR.Publicacion P WHERE P.cod_pub = @codigo_publicacion)  
 		BEGIN
@@ -1029,7 +1038,7 @@ CREATE PROCEDURE HARDCOR.facturar_venta(@codigo_publicacion INT, @fecha DATETIME
 
 		IF @comision_envio > 0
 			INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
-			VALUES(@nuevo_numero_factura, 'Comision por envio', @cantidad, @comision_envio)
+			VALUES(@nuevo_numero_factura, 4, @cantidad, @comision_envio)
 
     COMMIT TRANSACTION
     SET @ret = @nuevo_numero_factura
@@ -1042,8 +1051,6 @@ CREATE PROCEDURE HARDCOR.facturar_venta(@codigo_publicacion INT, @fecha DATETIME
   SELECT @ret
 END
 GO
-SELECT * FROM HARDCOR.Oferta O WHERE O.cod_pub = 66502
-
 
 CREATE PROCEDURE HARDCOR.finalizar_subastas(@fecha DATETIME) AS BEGIN
 /* Finaliza las subastas que tienen como fecha de final una anterior a la
@@ -1106,7 +1113,7 @@ CREATE PROCEDURE HARDCOR.facturar_publicacion(@codigo_publicacion INT, @fecha DA
 
     /* Inserto los detalles de la factura */
     INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
-    VALUES(@nuevo_numero_factura, 'Comision por publicacion', 1, @comision)
+    VALUES(@nuevo_numero_factura, 1, 1, @comision)
 
     COMMIT TRANSACTION
     SET @ret = @nuevo_numero_factura
