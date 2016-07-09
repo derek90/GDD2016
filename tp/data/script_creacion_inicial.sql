@@ -688,7 +688,6 @@ ELSE
    FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
 GO
 
-
  CREATE PROCEDURE HARDCOR.list_vendedor_mayorCantProdSinVta (@anio int, @nro_trim int, @cod_visi int, @mes int)
 AS BEGIN
     BEGIN TRY
@@ -1016,6 +1015,18 @@ CREATE PROCEDURE HARDCOR.facturar_venta(@codigo_publicacion INT, @fecha DATETIME
 		INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
 		VALUES(@nuevo_numero_factura, 'Comision por venta', @cantidad, @comision_venta)
 
+		IF 2 = (SELECT P.cod_tipo FROM HARDCOR.Publicacion P WHERE P.cod_pub = @codigo_publicacion)  
+		BEGIN
+			DECLARE @cod_us INT
+			DECLARE @monto INT
+
+			SELECT @cod_us = O.cod_us, @monto = O.monto_of FROM HARDCOR.Oferta O WHERE O.cod_pub = @codigo_publicacion AND 
+			O.monto_of = (SELECT MAX(O.monto_of) FROM HARDCOR.Oferta O WHERE O.cod_pub = @codigo_publicacion)
+			
+			INSERT INTO HARDCOR.Compra(cod_pub, cod_us, fecha_compra, cantidad, monto_compra)
+			VALUES (@codigo_publicacion, @cod_us, @fecha, @cantidad, @monto)
+		END
+
 		IF @comision_envio > 0
 			INSERT HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
 			VALUES(@nuevo_numero_factura, 'Comision por envio', @cantidad, @comision_envio)
@@ -1031,6 +1042,8 @@ CREATE PROCEDURE HARDCOR.facturar_venta(@codigo_publicacion INT, @fecha DATETIME
   SELECT @ret
 END
 GO
+SELECT * FROM HARDCOR.Oferta O WHERE O.cod_pub = 66502
+
 
 CREATE PROCEDURE HARDCOR.finalizar_subastas(@fecha DATETIME) AS BEGIN
 /* Finaliza las subastas que tienen como fecha de final una anterior a la
@@ -1628,11 +1641,11 @@ CREATE PROCEDURE HARDCOR.crear_contacto (@telefono NVARCHAR(255),
                                          @codigo_postal NVARCHAR(50)) AS BEGIN
 
   /* Crea un nuevo contacto y devuelve su codigo */
+   
+	INSERT INTO HARDCOR.Contacto (mail, nro_tel, dom_calle, nro_calle, nro_piso, nro_dpto, localidad, cod_postal)
+	VALUES (@mail, @telefono, @direccion_calle, @direccion_numero, @direccion_piso, @numero_departamento, @localidad, @codigo_postal)
+	RETURN SCOPE_IDENTITY()
 
-  INSERT INTO HARDCOR.Contacto (mail, nro_tel, dom_calle, nro_calle, nro_piso, nro_dpto, localidad, cod_postal)
-  VALUES (@mail, @telefono, @direccion_calle, @direccion_numero, @direccion_piso, @numero_departamento, @localidad, @codigo_postal)
-
-  RETURN SCOPE_IDENTITY()
 END
 GO
 
