@@ -96,7 +96,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
 
             update.Parameters.Add(new SqlParameter("@codigo", this.company_code));
             update.Parameters.Add(new SqlParameter("@razon_social", this.textBox1.Text));
-            update.Parameters.Add(new SqlParameter("@cuit", this.textBox2.Text));
+            update.Parameters.Add(new SqlParameter("@cuit", this.textBox4.Text));
             update.Parameters.Add(new SqlParameter("@telefono", this.textBox5.Text));
             update.Parameters.Add(new SqlParameter("@mail", this.textBox6.Text));
             update.Parameters.Add(new SqlParameter("@ciudad", this.textBox7.Text));
@@ -129,7 +129,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             create.Parameters.Add(new SqlParameter("@password", this.password));
             create.Parameters.Add(new SqlParameter("@codigo_rol", 3));
             create.Parameters.Add(new SqlParameter("@razon_social", this.textBox1.Text));
-            create.Parameters.Add(new SqlParameter("@cuit", this.textBox2.Text));
+            create.Parameters.Add(new SqlParameter("@cuit", this.textBox4.Text));
             create.Parameters.Add(new SqlParameter("@telefono", this.textBox5.Text));
             create.Parameters.Add(new SqlParameter("@mail", this.textBox6.Text));
             create.Parameters.Add(new SqlParameter("@ciudad", this.textBox7.Text));
