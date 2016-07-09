@@ -20,6 +20,11 @@ namespace WindowsFormsApplication1.ComprarOfertar
             this.username = username;
             this.is_auction = is_auction;
             InitializeComponent();
+            if (is_auction)
+            {
+                this.label1.Text = "Monto a ofertar";
+                this.button1.Text = "Ofertar";
+            }
             this.numericUpDown1.Minimum = min;
             this.numericUpDown1.Maximum = max;
         }
