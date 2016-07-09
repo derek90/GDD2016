@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
@@ -71,6 +72,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
                     query.Parameters.Add(new SqlParameter("@password", this.textBox2.Text));
                     query.Parameters.Add(new SqlParameter("@codigo_rol", selectedItem.Key));
                     query.Parameters.Add(new SqlParameter("@habilitado", 1));
+                    query.Parameters.Add(new SqlParameter("@fecha_creacion", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
                     connection.Open();
                     query.ExecuteNonQuery();
                     connection.Close();
