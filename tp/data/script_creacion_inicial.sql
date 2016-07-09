@@ -514,9 +514,16 @@ VALUES('Visibilidad'),
 GO
 
 INSERT INTO HARDCOR.Detalle(nro_fact, item_desc, cantidad, importe)
-SELECT f.nro_fact, (CASE WHEN m.Compra_Fecha IS NOT NULL THEN 2 WHEN m.Oferta_Fecha IS NOT NULL THEN 3 ELSE 1 END), 
-m.Item_Factura_Cantidad, m.Item_Factura_Monto
+SELECT f.nro_fact, (CASE
+	  WHEN M.Item_Factura_Monto IN (SELECT V.comision_pub FROM HARDCOR.Visibilidad V) 
+	  AND M.Item_Factura_Cantidad = 1 
+	  AND M.Item_Factura_Monto <> M.Publicacion_Visibilidad_Porcentaje * M.Publicacion_Precio THEN 1
+	  WHEN M.Publicacion_Tipo = 'Subasta' THEN 3 
+	  WHEN M.Publicacion_Tipo = 'Compra Inmediata' THEN 2 END),
+	  m.Item_Factura_Cantidad, m.Item_Factura_Monto
 FROM  gd_esquema.Maestra m, HARDCOR.Factura f WHERE m.Factura_Nro = f.nro_fact
+
+
 
 INSERT INTO HARDCOR.Oferta(cod_pub, cod_us, monto_of, fecha_of)
 SELECT DISTINCT p.cod_pub, p.cod_us, m.Oferta_Monto, m.Oferta_Fecha
@@ -581,14 +588,37 @@ AS BEGIN
 END
 GO
 
-INSERT INTO HARDCOR.Compra(cod_pub, cod_us, cod_calif, fecha_compra, cantidad, monto_compra)
-SELECT m.Publicacion_Cod, cl.cod_us, m.Calificacion_Codigo, m.Compra_Fecha, m.Compra_Cantidad,
-       m.Compra_Cantidad * m.Publicacion_Precio
-FROM gd_esquema.Maestra m, HARDCOR.Cliente cl
-WHERE m.Compra_Cantidad IS NOT NULL AND m.Cli_Dni = cl.cli_num_doc
-AND m.Publicacion_Tipo = 'Compra Inmediata' OR (m.Publicacion_Tipo = 'Subasta'
-AND m.Oferta_Monto IS NOT NULL)
-GO
+
+ INSERT INTO HARDCOR.Compra(cod_pub, cod_us, cod_calif, fecha_compra, cantidad, monto_compra)
+ 
+ select m.Publicacion_Cod, cl.cod_us,m.Calificacion_Codigo, m.Compra_Fecha, 
+        m.Compra_Cantidad, m.Compra_Cantidad*m.Publicacion_Precio as monto_compra
+ from gd_esquema.Maestra m, 
+      HARDCOR.Cliente cl 
+ where m.Publicacion_Tipo = 'Compra Inmediata' 
+       and m.Calificacion_Codigo is not null
+	  and cl.cli_num_doc = m.Cli_Dni
+
+
+ INSERT INTO HARDCOR.Compra(cod_pub, cod_us, cod_calif, fecha_compra, cantidad, monto_compra)
+ select m.Publicacion_Cod, 
+        cli.cod_us,
+	   m.Calificacion_Codigo,
+	   m.Compra_Fecha, 
+	   m.Compra_Cantidad,
+        (select MAX(M1.Oferta_Monto)
+	    from gd_esquema.Maestra M1 
+         where M1.Publicacion_Cod= m.Publicacion_Cod
+	          and M1.Cli_Dni = m.Cli_Dni
+			and M1.Oferta_Monto is not null
+	    group by M1.Publicacion_Cod, M1.Cli_Dni) as monto_compra 
+ from gd_esquema.Maestra m, HARDCOR.Cliente cli 
+ where m.Publicacion_Tipo = 'Subasta' 
+ and m.Calificacion_Codigo is not null
+ and cli.cli_num_doc = m.Cli_Dni
+ 
+ GO
+
 
 CREATE FUNCTION HARDCOR.Emp_Categ (@emp_cuit NVARCHAR(225) )
     RETURNS INT
