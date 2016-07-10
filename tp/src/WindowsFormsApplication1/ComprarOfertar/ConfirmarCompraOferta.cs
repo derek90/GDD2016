@@ -71,6 +71,12 @@ namespace WindowsFormsApplication1.ComprarOfertar
                     this.parent.refresh();
                     (new Facturas.Factura(this.parent, bill_number, this.publication_code, user_code, date, payment_type, total)).Show();
                 }
+                else
+                {
+                    MessageBox.Show("Se ha ofertado correctamente", "Oferta exitosa", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    this.parent.refresh();
+                    this.parent.Show();
+                }
 
                 this.Close();
             }

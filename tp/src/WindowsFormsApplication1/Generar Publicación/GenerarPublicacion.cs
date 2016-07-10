@@ -59,7 +59,15 @@ namespace WindowsFormsApplication1.Generar_Publicación
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.numericUpDown3.Enabled = ((ComboBox)sender).SelectedIndex == 1;
+                this.numericUpDown3.Enabled = ((ComboBox)sender).SelectedIndex == 1;
+                this.numericUpDown2.Enabled = !this.numericUpDown3.Enabled;
+            if (this.numericUpDown3.Enabled)
+            {
+                this.numericUpDown2.Value = 0;
+            } else
+            {
+                this.numericUpDown3.Value = 0;
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
