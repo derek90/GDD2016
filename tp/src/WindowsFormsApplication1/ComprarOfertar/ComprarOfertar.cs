@@ -34,8 +34,7 @@ namespace WindowsFormsApplication1.ComprarOfertar
                 param.Add(new KeyValuePair<string, object>("@descripcion", ""));
                 param.Add(new KeyValuePair<string, object>("@username", this.username));
                 this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.listar_publicaciones", this.button3,
-                                               this.button4, "HARDCOR.cantidad_paginas_publicaciones", this.label3, 10, param);
-                this.paginator.set_max_page_number();
+                                               this.button4, this.label3, 10, param);
             }
 
         }

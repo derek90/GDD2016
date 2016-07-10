@@ -698,12 +698,11 @@ GO
 
 CREATE PROCEDURE HARDCOR.consulta_factura (@razon_social nvarchar(50), @tipo int, @fechai date, @fechaf date,
                                            @importei numeric(18,2), @importef numeric(18,2), @descripcion nvarchar(225),
-                                           @pagina INT, @cantidad_resultados_por_pagina INT, @tipo_doc nvarchar(225))
+                                           @pagina INT, @cantidad_resultados_por_pagina INT)
 AS
 DECLARE @cod_us int
-DECLARE @tipo_doc2 INT = (SELECT t.cod_doc FROM HARDCOR.Tipo_doc t WHERE t.documento = @tipo_doc)
 IF (@tipo = 0 AND @razon_social <> '')
-	   SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.CLIENTE WHERE cli_num_doc = CONVERT(numeric(18), @razon_social) AND cli_tipo_doc = @tipo_doc2)
+	   SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.CLIENTE WHERE cli_num_doc = CONVERT(numeric(18), @razon_social))
 ELSE IF (@tipo = 1 AND @razon_social <> '')
 	   SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.Empresa WHERE emp_cuit = @razon_social)
 ELSE IF (@razon_social = '')
@@ -724,8 +723,7 @@ ELSE IF (@razon_social = '')
    ORDER BY f.nro_fact
   OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
    FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
-IF (@razon_social <> '')
-BEGIN
+ELSE
     SELECT f.nro_fact AS Nro_Factura,
 	   d.cod_det AS Codigo_Detalle,
 	   f.cod_us AS Codigo_Vendedor,
@@ -743,7 +741,6 @@ BEGIN
    ORDER BY f.nro_fact
   OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
    FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
-END
 GO
 
  CREATE PROCEDURE HARDCOR.list_vendedor_mayorCantProdSinVta (@anio int, @nro_trim int, @cod_visi int, @mes int)
@@ -1967,18 +1964,6 @@ CREATE FUNCTION HARDCOR.calcular_peso_visibilidad(@cod_visi INT) RETURNS INT AS 
 END
 GO
 
-CREATE PROCEDURE HARDCOR.cantidad_paginas_publicaciones(@tamanio_pagina INT) AS BEGIN
-   SELECT COUNT(cod_pub) / @tamanio_pagina
-     FROM HARDCOR.Publicacion
-END
-GO
-
-CREATE PROCEDURE HARDCOR.cantidad_paginas_facturas(@tamanio_pagina INT) AS BEGIN
-   SELECT COUNT(nro_fact) / @tamanio_pagina
-     FROM HARDCOR.Factura
-END
-GO
-
 CREATE FUNCTION HARDCOR.split (@commaSeparatedList NVARCHAR(MAX)) RETURNS @t TABLE (val NVARCHAR(MAX)) AS BEGIN
   /* Hack horrible para que dado un string de enteros separados por coma me los devuelva listados */
   DECLARE @xml xml
@@ -2103,14 +2088,5 @@ CREATE PROCEDURE HARDCOR.publicaciones_por_usuario(@username NVARCHAR(255), @pag
     ORDER BY fecha_ini
       OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
   FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
-END
-GO
-
-CREATE PROCEDURE HARDCOR.total_publicaciones_por_usuario(@username NVARCHAR(255)) AS BEGIN
-  DECLARE @code INT = HARDCOR.username_to_code(@username)
-
-  SELECT COUNT(cod_pub)
-    FROM HARDCOR.Publicacion
-   WHERE cod_us = @code
 END
 GO

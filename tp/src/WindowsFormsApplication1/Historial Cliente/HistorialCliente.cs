@@ -20,7 +20,7 @@ namespace WindowsFormsApplication1.Historial_Cliente
             List<KeyValuePair<string, object>> param = new List<KeyValuePair<string, object>>();
             param.Add(new KeyValuePair<string, object>("@username", this.username));
             this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.publicaciones_por_usuario", this.button1,
-                                           this.button2, "HARDCOR.total_publicaciones_por_usuario", this.label1, 10, param);
+                                           this.button2, this.label1, 10, param);
             this.paginator.load_page(0);
             this.fill_labels(username);
         }

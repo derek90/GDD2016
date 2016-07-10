@@ -33,7 +33,7 @@ namespace WindowsFormsApplication1.Facturas
 
             // Creo un paginador
             this.paginator = new Paginator(this.numericUpDown3, this.dataGridView1, "HARDCOR.consulta_factura",
-                                           this.button5, this.button4, "HARDCOR.cantidad_paginas_facturas", this.label7, 10);
+                                           this.button5, this.button4, this.label7, 10);
         }
 
         private List<string> getTiposDocFromDB()
@@ -84,7 +84,6 @@ namespace WindowsFormsApplication1.Facturas
 
             this.paginator.set_query_params(query_params);
             this.paginator.load_page(0);
-            this.paginator.set_max_page_number();
         }
 
         private string getRazonSocial()

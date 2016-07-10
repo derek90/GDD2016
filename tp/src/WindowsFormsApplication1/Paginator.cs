@@ -11,18 +11,16 @@ namespace WindowsFormsApplication1
         NumericUpDown current_page;
         DataGridView data_grid;
         string query;
-        string page_count_query;
         Label page_count_label;
         int page_size;
         List<KeyValuePair<string, object>> query_params;
 
         public Paginator (NumericUpDown current_page, DataGridView data_grid, string query, Button prev, Button next,
-                          string page_count_query, Label page_count_label, int page_size)
+                          Label page_count_label, int page_size)
         {
             this.current_page = current_page;
             this.query = query;
             this.data_grid = data_grid;
-            this.page_count_query = page_count_query;
             this.page_count_label = page_count_label;
             this.page_size = page_size;
             this.query_params = new List<KeyValuePair<string, object>>();
@@ -39,12 +37,11 @@ namespace WindowsFormsApplication1
         }
 
         public Paginator (NumericUpDown current_page, DataGridView data_grid, string query, Button prev, Button next,
-                          string page_count_query, Label page_count_label, int page_size, List<KeyValuePair<string, object>> query_params)
+                          Label page_count_label, int page_size, List<KeyValuePair<string, object>> query_params)
         {
             this.current_page = current_page;
             this.query = query;
             this.data_grid = data_grid;
-            this.page_count_query = page_count_query;
             this.page_count_label = page_count_label;
             this.page_size = page_size;
             this.query_params = query_params;
@@ -81,25 +78,14 @@ namespace WindowsFormsApplication1
                 this.data_grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 this.data_grid.MultiSelect = false;
                 this.data_grid.AllowUserToAddRows = false;
+
+                // Para que oculte la columna del COUNT
+                this.data_grid.Columns[0].Visible = false;
+
+                int total_pages = (int) this.data_grid.Rows[0].Cells[0].Value;
+                this.page_count_label.Text = "/ " + total_pages.ToString();
+                this.current_page.Maximum = total_pages;
             }
-        }
-
-        public void set_max_page_number()
-        {
-            int total_pages;
-
-            using (var connection = DBConnection.getInstance().getConnection())
-            {
-                // Pido la cantidad de paginas totales
-                SqlCommand query = new SqlCommand(this.page_count_query, connection);
-                query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@tamanio_pagina", page_size));
-                connection.Open();
-                total_pages = Int32.Parse(query.ExecuteScalar().ToString());
-            }
-
-            this.page_count_label.Text = "/ " + total_pages.ToString();
-            this.current_page.Maximum = total_pages;
         }
 
         public void set_query(string query)
