@@ -83,7 +83,7 @@ namespace WindowsFormsApplication1.ComprarOfertar
         {
             List<KeyValuePair<string, object>> param = new List<KeyValuePair<string, object>>();
             List<int> pks = new List<int>();
-            foreach (var item in this.checkedListBox1.SelectedItems)
+            foreach (var item in this.checkedListBox1.CheckedItems)
                 pks.Add(((KeyValuePair<int, string>)item).Key);
             param.Add(new KeyValuePair<string, object>("@rubros", String.Join(",", pks)));
             param.Add(new KeyValuePair<string, object>("@descripcion", this.textBox1.Text));
