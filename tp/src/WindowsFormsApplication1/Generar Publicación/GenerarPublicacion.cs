@@ -124,5 +124,18 @@ namespace WindowsFormsApplication1.Generar_Publicación
             this.Close();
             this.parent.Show();
         }
+
+        private void visibilidadChanged(object sender, EventArgs e)
+        {
+            if (comboBox3.GetItemText(comboBox3.SelectedItem) == "Gratis")
+            {
+                checkBox1.Checked = false;
+                checkBox1.Enabled = false;
+            }
+            else
+            {
+                checkBox1.Enabled = true;
+            }
+        }
     }
 } 

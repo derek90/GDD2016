@@ -702,6 +702,9 @@ CREATE PROCEDURE HARDCOR.consulta_factura (@razon_social nvarchar(50), @tipo int
 AS
 DECLARE @cod_us INT
 DECLARE @count INT
+DECLARE @tipo_doc2 INT = (SELECT t.cod_doc FROM HARDCOR.Tipo_doc t WHERE t.documento = @tipo_doc)
+IF (@importei = 0)
+    SET @importei = 0.1
 IF (@tipo = 0 AND @razon_social <> '')
 	   SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.CLIENTE WHERE cli_num_doc = CONVERT(numeric(18), @razon_social))
 ELSE IF (@tipo = 1 AND @razon_social <> '')
@@ -728,7 +731,7 @@ ELSE IF (@razon_social = '')
   FROM HARDCOR.Factura f
   LEFT JOIN HARDCOR.Detalle d
   ON f.nro_fact = d.nro_fact
-  WHERE ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND ((@importei = 0) OR (@importei <= d.importe)) AND ((@importef = 0) OR (@importef >= d.importe))
+  WHERE ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= d.importe) AND (@importef >= d.importe)
    ORDER BY f.nro_fact
   OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
    FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
@@ -755,7 +758,7 @@ ELSE
     FROM HARDCOR.Factura f
     LEFT JOIN HARDCOR.Detalle d
     ON f.nro_fact = d.nro_fact
-    WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND ((@importei = 0) OR (@importei <= d.importe)) AND ((@importef = 0) OR (@importef >= d.importe))
+    WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= d.importe) AND (@importef >= d.importe)
    ORDER BY f.nro_fact
   OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
    FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
@@ -1294,7 +1297,7 @@ AS BEGIN
             BEGIN
                 SELECT @cod_pub = MAX(p.cod_pub) + 1 FROM HARDCOR.Publicacion p
 
-                IF NOT EXISTS (SELECT p.cod_us FROM HARDCOR.Publicacion p WHERE p.cod_us = @cod_us) AND @cod_us > 95
+                IF NOT EXISTS (SELECT p.cod_us FROM HARDCOR.Publicacion p WHERE p.cod_us = @cod_us) AND @cod_us > 96
                 BEGIN
                     SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = 'Gratis'
                 END
