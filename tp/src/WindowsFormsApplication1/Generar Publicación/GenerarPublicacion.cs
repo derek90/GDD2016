@@ -16,6 +16,8 @@ namespace WindowsFormsApplication1.Generar_Publicación
             InitializeComponent();
             this.parent = parent;
             this.username = username;
+            this.dateTimePicker1.MinDate = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
+            this.dateTimePicker1.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
             this.fill_components();
         }
 
@@ -53,8 +55,6 @@ namespace WindowsFormsApplication1.Generar_Publicación
             Utils.populate(this.comboBox2, bussines);
             Utils.populate(this.comboBox3, visibilities);
 
-            this.dateTimePicker1.MinDate = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
-            this.dateTimePicker1.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -64,9 +64,13 @@ namespace WindowsFormsApplication1.Generar_Publicación
             if (this.numericUpDown3.Enabled)
             {
                 this.numericUpDown2.Value = 0;
+                this.dateTimePicker1.Enabled = true;
+                this.dateTimePicker1.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
             } else
             {
                 this.numericUpDown3.Value = 0;
+                this.dateTimePicker1.Enabled = false;
+                this.dateTimePicker1.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
             }
         }
 
