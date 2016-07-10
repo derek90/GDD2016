@@ -698,7 +698,7 @@ GO
 
 CREATE PROCEDURE HARDCOR.consulta_factura (@razon_social nvarchar(50), @tipo int, @fechai date, @fechaf date,
                                            @importei numeric(18,2), @importef numeric(18,2), @descripcion nvarchar(225),
-                                           @pagina INT, @cantidad_resultados_por_pagina INT)
+                                           @pagina INT, @cantidad_resultados_por_pagina INT, @tipo_doc nvarchar(225))
 AS
 DECLARE @cod_us INT
 DECLARE @count INT
