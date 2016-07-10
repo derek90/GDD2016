@@ -516,9 +516,18 @@ SELECT DISTINCT m.Publicacion_Cod, u.cod_us, r.cod_rubro, v.cod_visi, m.Publicac
                 m.Publicacion_Stock, m.Publicacion_Fecha, m.Publicacion_Fecha_Venc, m.Publicacion_Precio,
                 CASE WHEN t.cod_tipo = 2 THEN 4 ELSE 5 END, t.cod_tipo, 0
 FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Rubro r, HARDCOR.Visibilidad v, HARDCOR.Tipo t
-WHERE (u.username = (SELECT CAST(m.Publ_Cli_Dni AS NVARCHAR(225))) OR u.username = m.Publ_Empresa_Cuit)
+WHERE u.username = (SELECT CAST(m.Publ_Cli_Dni AS NVARCHAR(225)))
       AND r.rubro_desc_corta = m.Publicacion_Rubro_Descripcion AND v.cod_visi = m.Publicacion_Visibilidad_Cod
       AND t.descripcion = m.Publicacion_Tipo
+UNION ALL
+SELECT DISTINCT m.Publicacion_Cod, u.cod_us, r.cod_rubro, v.cod_visi, m.Publicacion_Descripcion,
+                m.Publicacion_Stock, m.Publicacion_Fecha, m.Publicacion_Fecha_Venc, m.Publicacion_Precio,
+                CASE WHEN t.cod_tipo = 2 THEN 4 ELSE 5 END, t.cod_tipo, 0
+FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Rubro r, HARDCOR.Visibilidad v, HARDCOR.Tipo t
+WHERE u.username = m.Publ_Empresa_Cuit
+      AND r.rubro_desc_corta = m.Publicacion_Rubro_Descripcion AND v.cod_visi = m.Publicacion_Visibilidad_Cod
+      AND t.descripcion = m.Publicacion_Tipo
+ORDER BY m.Publicacion_Cod
 
 INSERT INTO HARDCOR.Factura(nro_fact, cod_pub, cod_us, fecha, total, forma_pago)
 SELECT DISTINCT m.Factura_Nro, p.cod_pub, p.cod_us, m.Factura_Fecha, m.Factura_Total, m.Forma_Pago_Desc
@@ -541,6 +550,8 @@ SELECT f.nro_fact, (CASE
 	  WHEN M.Publicacion_Tipo = 'Compra Inmediata' THEN 2 END),
 	  m.Item_Factura_Cantidad, m.Item_Factura_Monto
 FROM  gd_esquema.Maestra m, HARDCOR.Factura f WHERE m.Factura_Nro = f.nro_fact
+ORDER BY f.nro_fact
+GO
 
 
 
@@ -608,35 +619,18 @@ END
 GO
 
 
- INSERT INTO HARDCOR.Compra(cod_pub, cod_us, cod_calif, fecha_compra, cantidad, monto_compra)
- 
- select m.Publicacion_Cod, cl.cod_us,m.Calificacion_Codigo, m.Compra_Fecha, 
-        m.Compra_Cantidad, m.Compra_Cantidad*m.Publicacion_Precio as monto_compra
- from gd_esquema.Maestra m, 
-      HARDCOR.Cliente cl 
- where m.Publicacion_Tipo = 'Compra Inmediata' 
-       and m.Calificacion_Codigo is not null
-	  and cl.cli_num_doc = m.Cli_Dni
-
-
- INSERT INTO HARDCOR.Compra(cod_pub, cod_us, cod_calif, fecha_compra, cantidad, monto_compra)
- select m.Publicacion_Cod, 
-        cli.cod_us,
-	   m.Calificacion_Codigo,
-	   m.Compra_Fecha, 
-	   m.Compra_Cantidad,
-        (select MAX(M1.Oferta_Monto)
-	    from gd_esquema.Maestra M1 
-         where M1.Publicacion_Cod= m.Publicacion_Cod
-	          and M1.Cli_Dni = m.Cli_Dni
-			and M1.Oferta_Monto is not null
-	    group by M1.Publicacion_Cod, M1.Cli_Dni) as monto_compra 
- from gd_esquema.Maestra m, HARDCOR.Cliente cli 
- where m.Publicacion_Tipo = 'Subasta' 
- and m.Calificacion_Codigo is not null
- and cli.cli_num_doc = m.Cli_Dni
- 
- GO
+INSERT INTO HARDCOR.Compra(cod_pub, cod_us, cod_calif, fecha_compra, cantidad, monto_compra)
+SELECT m.Publicacion_Cod, cl.cod_us,m.Calificacion_Codigo, m.Compra_Fecha, 
+       m.Compra_Cantidad, m.Compra_Cantidad * m.Publicacion_Precio
+FROM gd_esquema.Maestra m, HARDCOR.Cliente cl 
+WHERE m.Publicacion_Tipo = 'Compra Inmediata' AND m.Calificacion_Codigo IS NOT NULL AND cl.cli_num_doc = m.Cli_Dni 
+UNION ALL
+SELECT m.Publicacion_Cod, cli.cod_us, m.Calificacion_Codigo, m.Compra_Fecha, m.Compra_Cantidad,
+       (SELECT MAX(O.monto_of) FROM HARDCOR.Oferta O WHERE O.cod_pub = m.Publicacion_Cod) 
+from gd_esquema.Maestra m, HARDCOR.Cliente cli 
+where m.Publicacion_Tipo = 'Subasta' AND m.Calificacion_Codigo IS NOT NULL AND cli.cli_num_doc = m.Cli_Dni
+ORDER BY m.Publicacion_Cod
+GO
 
 
 CREATE FUNCTION HARDCOR.Emp_Categ (@emp_cuit NVARCHAR(225) )
