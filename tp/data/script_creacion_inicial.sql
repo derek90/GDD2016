@@ -1296,7 +1296,7 @@ CREATE PROCEDURE HARDCOR.cambiar_estado_publ(@usuario NVARCHAR(225), @cod_pub NU
 AS BEGIN
     BEGIN TRY
         BEGIN TRANSACTION
-            DECLARE @estado NVARCHAR(225)
+            DECLARE @estado INT
             DECLARE @tipo NVARCHAR(225)
             DECLARE @cod_us NVARCHAR(225)
             DECLARE @h BIT
@@ -1316,7 +1316,7 @@ AS BEGIN
                         IF @estado <> @cod_estado
                         BEGIN
                             UPDATE HARDCOR.Publicacion SET estado = @cod_estado WHERE cod_pub = @cod_pub
-                            IF @nuevo_estado = 'Activo'
+                            IF @nuevo_estado = 'Activada'
                               EXEC HARDCOR.facturar_publicacion @cod_pub, @fecha 
                         END
                         ELSE

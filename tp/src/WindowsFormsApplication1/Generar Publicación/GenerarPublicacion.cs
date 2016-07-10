@@ -74,7 +74,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
                 query.Parameters.Add(new SqlParameter("@rubro", ((KeyValuePair<int, string>) this.comboBox2.SelectedItem).Value));
                 query.Parameters.Add(new SqlParameter("@usuario", this.username));
                 query.Parameters.Add(new SqlParameter("@visi", ((KeyValuePair<int, string>) this.comboBox3.SelectedItem).Value));
-                query.Parameters.Add(new SqlParameter("@estado", "activa"));
+                query.Parameters.Add(new SqlParameter("@estado", "Borrador"));
                 query.Parameters.Add(new SqlParameter("@tipo", ((KeyValuePair<int, string>) this.comboBox1.SelectedItem).Value));
                 query.Parameters.Add(new SqlParameter("@fecha_venc", this.dateTimePicker1.Value));
                 query.Parameters.Add(new SqlParameter("@envio", this.checkBox1.Checked));
@@ -94,7 +94,11 @@ namespace WindowsFormsApplication1.Generar_Publicación
                     query.CommandType = System.Data.CommandType.StoredProcedure;
                     query.Parameters.Add(new SqlParameter("@usuario", this.username));
                     query.Parameters.Add(new SqlParameter("@cod_pub", new_publication_code));
-                    query.Parameters.Add(new SqlParameter("@nuevo_estado", "activo"));
+                    query.Parameters.Add(new SqlParameter("@nuevo_estado", "Activada"));
+                    query.Parameters.Add(new SqlParameter("@fecha", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
+
+                    connection.Open();
+                    query.ExecuteNonQuery();
                 }
             }
             MessageBox.Show("Publicacion creada con exito", "Publicacion creada", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
