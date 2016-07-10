@@ -20,6 +20,7 @@ namespace WindowsFormsApplication1.Facturas
 
             this.radioButton1.Checked = true;
             this.textBox3.Enabled = false;
+            this.comboBox1.DataSource = getTiposDocFromDB();
 
             // Seteo los minimos y maximos de algunos de los filtros
 
@@ -33,6 +34,22 @@ namespace WindowsFormsApplication1.Facturas
             // Creo un paginador
             this.paginator = new Paginator(this.numericUpDown3, this.dataGridView1, "HARDCOR.consulta_factura",
                                            this.button5, this.button4, "HARDCOR.cantidad_paginas_facturas", this.label7, 10);
+        }
+
+        private List<string> getTiposDocFromDB()
+        {
+            List<string> tiposDoc = new List<string>();
+            using (var connection = DBConnection.getInstance().getConnection())
+            {
+                connection.Open();
+                SqlCommand query = Utils.create_sp("HARDCOR.obtener_tipos_doc", connection);
+                SqlDataReader reader = query.ExecuteReader();
+                while (reader.Read())
+                {
+                    tiposDoc.Add((reader["documento"].ToString()));
+                }
+                return tiposDoc;
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -63,6 +80,7 @@ namespace WindowsFormsApplication1.Facturas
             query_params.Add(new KeyValuePair<string, object>("@importei", this.numericUpDown1.Value));
             query_params.Add(new KeyValuePair<string, object>("@importef", this.numericUpDown2.Value));
             query_params.Add(new KeyValuePair<string, object>("@descripcion", this.textBox1.Text));
+            query_params.Add(new KeyValuePair<string, object>("@tipo_doc", this.comboBox1.Text));
 
             this.paginator.set_query_params(query_params);
             this.paginator.load_page(0);
@@ -91,6 +109,7 @@ namespace WindowsFormsApplication1.Facturas
             this.textBox3.Text = "";
             this.textBox2.Enabled = true;
             this.textBox3.Enabled = false;
+            this.comboBox1.Enabled = true;
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
@@ -98,6 +117,7 @@ namespace WindowsFormsApplication1.Facturas
             this.textBox2.Text = "";
             this.textBox2.Enabled = false;
             this.textBox3.Enabled = true;
+            this.comboBox1.Enabled = false;
         }
 
         private void dateTimePicker1_CloseUp(object sender, EventArgs e)
