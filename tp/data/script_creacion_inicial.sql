@@ -1910,13 +1910,11 @@ CREATE PROCEDURE HARDCOR.obtener_rubros AS BEGIN
 END
 GO
 
-CREATE PROCEDURE HARDCOR.obtener_visibilidades_por_usuario AS BEGIN
-  /* Deberia recibir el usuario
-     Si ese usuario no tiene publicacion, deberia devolver solo gratis
-     Si tiene publicaciones, deberia devolver todos menos gratis
-   */
-  SELECT *
-    FROM HARDCOR.Visibilidad
+CREATE PROCEDURE HARDCOR.obtener_visibilidades_por_usuario (@usuario NVARCHAR(255)) AS BEGIN
+    IF (EXISTS (SELECT cod_pub FROM HARDCOR.Publicacion p, HARDCOR.Usuario u WHERE u.username = @usuario AND p.cod_us = u.cod_us))
+	   SELECT cod_visi, visi_desc FROM HARDCOR.Visibilidad WHERE visi_desc <> 'Gratis'
+    ELSE
+	   SELECT cod_visi, visi_desc FROM HARDCOR.Visibilidad WHERE visi_desc = 'Gratis'
 END
 GO
 

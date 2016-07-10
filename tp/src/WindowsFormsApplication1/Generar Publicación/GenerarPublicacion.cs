@@ -42,6 +42,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
             {
                 connection.Open();
                 SqlCommand query = Utils.create_sp("HARDCOR.obtener_visibilidades_por_usuario", new List<KeyValuePair<string, object>>(), connection);
+                query.Parameters.Add(new SqlParameter("@usuario", this.username));
                 SqlDataReader reader = query.ExecuteReader();
                 while (reader.Read())
                     visibilities.Add(new KeyValuePair<int, string> (Int32.Parse(reader["cod_visi"].ToString()),
