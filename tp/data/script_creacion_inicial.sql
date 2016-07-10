@@ -231,6 +231,25 @@ IF (OBJECT_ID ('HARDCOR.ultimas_operaciones_calificadas') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.obtener_tipos_doc') IS NOT NULL)
   DROP PROCEDURE HARDCOR.obtener_tipos_doc
 
+IF (OBJECT_ID ('HARDCOR.cantidad_publicaciones_calificadas') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.cantidad_publicaciones_calificadas
+
+IF (OBJECT_ID ('HARDCOR.cantidad_publicaciones_sin_calificar') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.cantidad_publicaciones_sin_calificar
+
+IF (OBJECT_ID ('HARDCOR.promedio_estrellas_dadas') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.promedio_estrellas_dadas
+
+IF (OBJECT_ID ('HARDCOR.publicaciones_por_usuario') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.publicaciones_por_usuario
+
+IF (OBJECT_ID ('HARDCOR.total_publicaciones_por_usuario') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.total_publicaciones_por_usuario
+
+IF (OBJECT_ID ('HARDCOR.username_to_code') IS NOT NULL)
+  DROP FUNCTION HARDCOR.username_to_code
+
+
 IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
     DROP SCHEMA HARDCOR
 GO
@@ -648,9 +667,6 @@ GO
 CREATE PROCEDURE HARDCOR.calificar_vta (@cod_compra INT, @username NVARCHAR(255), @estrellas INT, @detalle NVARCHAR(225)) AS BEGIN
     BEGIN TRY
         BEGIN TRAN t1
-          DECLARE @cod_us INT
-          SELECT @cod_us = cod_us FROM HARDCOR.Usuario WHERE username = @username
-
           DECLARE @cod_calif INT, @errorInCalif INT, @errorUpCompra INT
           SELECT @cod_calif= MAX(c.cod_calif) + 1 FROM HARDCOR.Calificacion c
 
@@ -2029,5 +2045,69 @@ GO
 
 CREATE PROCEDURE HARDCOR.obtener_tipos_doc AS BEGIN
 SELECT * FROM HARDCOR.Tipo_doc
+END
+GO
+
+CREATE FUNCTION HARDCOR.username_to_code(@username NVARCHAR(255)) RETURNS INT AS BEGIN
+  /* Como es un patron usado en muchos procedures, esta es una funcion que devuelve
+     el codigo de un usuario cuyo username es @username */
+  DECLARE @ret INT
+  SELECT @ret=cod_us
+   FROM HARDCOR.Usuario
+  WHERE username = @username
+
+  RETURN @ret
+END
+GO
+
+CREATE PROCEDURE HARDCOR.cantidad_publicaciones_calificadas(@username NVARCHAR(255)) AS BEGIN
+  DECLARE @code INT = HARDCOR.username_to_code(@username)
+
+  SELECT COUNT(cod_compra)
+    FROM HARDCOR.Compra
+   WHERE cod_us = @code
+     AND cod_calif IS NOT NULL
+END
+GO
+
+CREATE PROCEDURE HARDCOR.cantidad_publicaciones_sin_calificar(@username NVARCHAR(255)) AS BEGIN
+  DECLARE @code INT = HARDCOR.username_to_code(@username)
+
+  SELECT COUNT(cod_compra)
+    FROM HARDCOR.Compra
+   WHERE cod_us = @code
+     AND cod_calif IS NULL
+END
+GO
+
+CREATE PROCEDURE HARDCOR.promedio_estrellas_dadas(@username NVARCHAR(255)) AS BEGIN
+   DECLARE @code INT = HARDCOR.username_to_code(@username)
+
+   SELECT ROUND(AVG(calif_estrellas), 2)
+     FROM HARDCOR.Compra Co, HARDCOR.Calificacion Ca
+    WHERE Co.cod_us = @code
+      AND Co.cod_calif IS NOT NULL
+      AND Co.cod_calif = Ca.cod_calif
+END
+GO
+
+CREATE PROCEDURE HARDCOR.publicaciones_por_usuario(@username NVARCHAR(255), @pagina INT, @cantidad_resultados_por_pagina INT) AS BEGIN
+   DECLARE @code INT = HARDCOR.username_to_code(@username)
+
+      SELECT *
+        FROM HARDCOR.Publicacion
+       WHERE cod_us = @code
+    ORDER BY fecha_ini
+      OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
+  FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
+END
+GO
+
+CREATE PROCEDURE HARDCOR.total_publicaciones_por_usuario(@username NVARCHAR(255)) AS BEGIN
+  DECLARE @code INT = HARDCOR.username_to_code(@username)
+
+  SELECT COUNT(cod_pub)
+    FROM HARDCOR.Publicacion
+   WHERE cod_us = @code
 END
 GO

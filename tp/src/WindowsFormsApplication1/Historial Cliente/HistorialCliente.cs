@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace WindowsFormsApplication1.Historial_Cliente
@@ -14,62 +17,45 @@ namespace WindowsFormsApplication1.Historial_Cliente
             this.parent = parent;
             this.username = username;
             InitializeComponent();
-            /* TODO: Hacer sp */
-            this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.", this.button1,
-                                           this.button2, "HARDCOR.", this.label1, 10);
-            //this.paginator.set_max_page_number();
-            this.fill_data_set(username);
+            List<KeyValuePair<string, object>> param = new List<KeyValuePair<string, object>>();
+            param.Add(new KeyValuePair<string, object>("@username", this.username));
+            this.paginator = new Paginator(this.numericUpDown1, this.dataGridView1, "HARDCOR.publicaciones_por_usuario", this.button1,
+                                           this.button2, "HARDCOR.total_publicaciones_por_usuario", this.label1, 10, param);
+            this.paginator.load_page(0);
             this.fill_labels(username);
-        }
-
-        private void fill_data_set(string username)
-        {
-            /*
-            using(var connection = DBConnection.getInstance().getConnection())
-            {
-                // TODO: Hacer SP - Compras y subastas por cliente
-                SqlCommand query = new SqlCommand("HARDCOR.", connection);
-                query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@usuario", username));
-
-                //Creo el adapter usando el select_query
-                SqlDataAdapter adapter = new SqlDataAdapter(query);
-
-                //Lleno el dataset y lo seteo como source del dataGridView
-                DataTable table = new DataTable();
-                connection.Open();
-                adapter.Fill(table);
-                this.dataGridView1.DataSource = table;
-                this.dataGridView1.ReadOnly = true;
-            }
-            */
         }
 
         private void fill_labels(string username)
         {
-            /*
-            string stars_given_average, publication_reviewed;
+            string stars_given_average, publication_reviewed, pending_review_publication;
 
             using(var connection = DBConnection.getInstance().getConnection())
             {
-                // TODO: Hacer SP - Promedio de estrellas dadas
-                SqlCommand query = new SqlCommand("HARDCOR.", connection);
+                SqlCommand query = new SqlCommand("HARDCOR.promedio_estrellas_dadas", connection);
                 query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@usuario", username));
+                query.Parameters.Add(new SqlParameter("@username", username));
 
+                connection.Open();
                 stars_given_average = query.ExecuteScalar().ToString();
+                if (stars_given_average == "")
+                    stars_given_average = "0";
 
-                // TODO: Hacer SP - Cantidad de publicaciones puntuadas
-                query = new SqlCommand("HARDCOR.", connection);
+                query = new SqlCommand("HARDCOR.cantidad_publicaciones_calificadas", connection);
                 query.CommandType = CommandType.StoredProcedure;
-                query.Parameters.Add(new SqlParameter("@usuario", username));
+                query.Parameters.Add(new SqlParameter("@username", username));
 
                 publication_reviewed = query.ExecuteScalar().ToString();
+
+                query = new SqlCommand("HARDCOR.cantidad_publicaciones_sin_calificar", connection);
+                query.CommandType = CommandType.StoredProcedure;
+                query.Parameters.Add(new SqlParameter("@username", username));
+
+                pending_review_publication = query.ExecuteScalar().ToString();
             }
 
             this.label3.Text = stars_given_average;
             this.label5.Text = publication_reviewed;
-            */
+            this.label7.Text = pending_review_publication;
         }
 
         private void button3_Click(object sender, EventArgs e)
