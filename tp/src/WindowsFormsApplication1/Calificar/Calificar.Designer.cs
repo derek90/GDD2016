@@ -145,11 +145,11 @@
             // 
             this.label23.AutoSize = true;
             this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))));
-            this.label23.Location = new System.Drawing.Point(6, 382);
+            this.label23.Location = new System.Drawing.Point(21, 382);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(198, 17);
+            this.label23.Size = new System.Drawing.Size(162, 17);
             this.label23.TabIndex = 22;
-            this.label23.Text = "Cantidad total de compras";
+            this.label23.Text = "Calificaciones totales";
             // 
             // label18
             // 
