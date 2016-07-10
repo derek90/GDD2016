@@ -701,6 +701,17 @@ CREATE PROCEDURE HARDCOR.consulta_factura (@razon_social nvarchar(50), @tipo int
                                            @pagina INT, @cantidad_resultados_por_pagina INT, @tipo_doc nvarchar(225))
 AS
 DECLARE @cod_us INT
+DECLARE @table TABLE(cantidad_rows int,
+       nro_fact numeric(18,0),
+       cod_det int,
+       cod_us int,
+       cod_pub numeric(18,0),
+       fecha datetime,
+       total numeric(18,2), 
+       forma_pago nvarchar(225),
+       item_desc int,
+       cantidad numeric(18,0),
+       importe numeric(18,2))
 DECLARE @count INT
 DECLARE @tipo_doc2 INT = (SELECT t.cod_doc FROM HARDCOR.Tipo_doc t WHERE t.documento = @tipo_doc)
 IF (@importei = 0)
@@ -711,13 +722,8 @@ ELSE IF (@tipo = 1 AND @razon_social <> '')
 	   SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.Empresa WHERE emp_cuit = @razon_social)
 ELSE IF (@razon_social = '')
   BEGIN
-    SELECT @count=COUNT(*)
-    FROM HARDCOR.Factura f
-    LEFT JOIN HARDCOR.Detalle d
-    ON f.nro_fact = d.nro_fact
-    WHERE ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND ((@importei = 0) OR (@importei <= d.importe)) AND ((@importef = 0) OR (@importef >= d.importe))
-
-    SELECT @count,
+    INSERT INTO @table
+    SELECT null AS cantidad_rows,
        f.nro_fact AS Nro_Factura,
        d.cod_det AS Codigo_Detalle,
        f.cod_us AS Codigo_Vendedor,
@@ -731,20 +737,12 @@ ELSE IF (@razon_social = '')
   FROM HARDCOR.Factura f
   LEFT JOIN HARDCOR.Detalle d
   ON f.nro_fact = d.nro_fact
-  WHERE ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= d.importe) AND (@importef >= d.importe)
-   ORDER BY f.nro_fact
-  OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
-   FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
+  WHERE ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= f.total) AND (@importef >= f.total)
   END
 ELSE
   BEGIN
-    SELECT @count=COUNT(*)
-    FROM HARDCOR.Factura f
-    LEFT JOIN HARDCOR.Detalle d
-    ON f.nro_fact = d.nro_fact
-    WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND ((@importei = 0) OR (@importei <= d.importe)) AND ((@importef = 0) OR (@importef >= d.importe))
-
-    SELECT  @count,
+    INSERT INTO @table
+    SELECT  null AS cantidad_rows,
        f.nro_fact AS Nro_Factura,
 	   d.cod_det AS Codigo_Detalle,
 	   f.cod_us AS Codigo_Vendedor,
@@ -758,12 +756,14 @@ ELSE
     FROM HARDCOR.Factura f
     LEFT JOIN HARDCOR.Detalle d
     ON f.nro_fact = d.nro_fact
-    WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= d.importe) AND (@importef >= d.importe)
-   ORDER BY f.nro_fact
+    WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= f.total) AND (@importef >= f.total)
+  END
+  SET @count = (SELECT COUNT(*) FROM @table)
+  UPDATE @table SET cantidad_rows = @count
+  SELECT * FROM @table
+  ORDER BY nro_fact
   OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
    FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
-
-  END
 GO
 
  CREATE PROCEDURE HARDCOR.list_vendedor_mayorCantProdSinVta (@anio int, @nro_trim int, @cod_visi int, @mes int)
