@@ -700,13 +700,22 @@ CREATE PROCEDURE HARDCOR.consulta_factura (@razon_social nvarchar(50), @tipo int
                                            @importei numeric(18,2), @importef numeric(18,2), @descripcion nvarchar(225),
                                            @pagina INT, @cantidad_resultados_por_pagina INT)
 AS
-DECLARE @cod_us int
+DECLARE @cod_us INT
+DECLARE @count INT
 IF (@tipo = 0 AND @razon_social <> '')
 	   SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.CLIENTE WHERE cli_num_doc = CONVERT(numeric(18), @razon_social))
 ELSE IF (@tipo = 1 AND @razon_social <> '')
 	   SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.Empresa WHERE emp_cuit = @razon_social)
 ELSE IF (@razon_social = '')
-    SELECT f.nro_fact AS Nro_Factura,
+  BEGIN
+    SELECT @count=COUNT(*)
+    FROM HARDCOR.Factura f
+    LEFT JOIN HARDCOR.Detalle d
+    ON f.nro_fact = d.nro_fact
+    WHERE ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND ((@importei = 0) OR (@importei <= d.importe)) AND ((@importef = 0) OR (@importef >= d.importe))
+
+    SELECT @count,
+       f.nro_fact AS Nro_Factura,
        d.cod_det AS Codigo_Detalle,
        f.cod_us AS Codigo_Vendedor,
        f.cod_pub AS Codigo_Publicacion,
@@ -723,8 +732,17 @@ ELSE IF (@razon_social = '')
    ORDER BY f.nro_fact
   OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
    FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
+  END
 ELSE
-    SELECT f.nro_fact AS Nro_Factura,
+  BEGIN
+    SELECT @count=COUNT(*)
+    FROM HARDCOR.Factura f
+    LEFT JOIN HARDCOR.Detalle d
+    ON f.nro_fact = d.nro_fact
+    WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND ((@importei = 0) OR (@importei <= d.importe)) AND ((@importef = 0) OR (@importef >= d.importe))
+
+    SELECT  @count,
+       f.nro_fact AS Nro_Factura,
 	   d.cod_det AS Codigo_Detalle,
 	   f.cod_us AS Codigo_Vendedor,
 	   f.cod_pub AS Codigo_Publicacion,
@@ -741,6 +759,8 @@ ELSE
    ORDER BY f.nro_fact
   OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
    FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
+
+  END
 GO
 
  CREATE PROCEDURE HARDCOR.list_vendedor_mayorCantProdSinVta (@anio int, @nro_trim int, @cod_visi int, @mes int)
@@ -1942,7 +1962,19 @@ GO
 
 CREATE PROCEDURE HARDCOR.listar_publicaciones(@pagina INT, @cantidad_resultados_por_pagina INT,
                                               @descripcion NVARCHAR(255), @rubros NVARCHAR(255), @username NVARCHAR(255)) AS BEGIN
-  SELECT *
+  DECLARE @count INT
+
+  SELECT @count=COUNT(P.cod_pub)
+    FROM HARDCOR.Publicacion P
+   WHERE P.estado = 1
+     AND ((@descripcion LIKE '') OR ( P.descripcion LIKE '%' + @descripcion + '%'))
+     AND ((@rubros LIKE '') OR ( P.cod_rubro IN (SELECT *
+                                                   FROM HARDCOR.split(@rubros))))
+     AND @username <> (SELECT username
+                         FROM HARDCOR.Usuario U
+                        WHERE U.cod_us = P.cod_us)
+
+  SELECT @count, P.*
     FROM HARDCOR.Publicacion P
    WHERE P.estado = 1
      AND ((@descripcion LIKE '') OR ( P.descripcion LIKE '%' + @descripcion + '%'))
@@ -2081,8 +2113,13 @@ GO
 
 CREATE PROCEDURE HARDCOR.publicaciones_por_usuario(@username NVARCHAR(255), @pagina INT, @cantidad_resultados_por_pagina INT) AS BEGIN
    DECLARE @code INT = HARDCOR.username_to_code(@username)
+   DECLARE @count INT
 
-      SELECT *
+      SELECT @count=COUNT(cod_pub)
+        FROM HARDCOR.Publicacion
+       WHERE cod_us = @code
+
+      SELECT @count, *
         FROM HARDCOR.Publicacion
        WHERE cod_us = @code
     ORDER BY fecha_ini

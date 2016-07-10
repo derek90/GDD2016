@@ -82,8 +82,10 @@ namespace WindowsFormsApplication1
                 // Para que oculte la columna del COUNT
                 this.data_grid.Columns[0].Visible = false;
 
-                int total_pages = (int) this.data_grid.Rows[0].Cells[0].Value;
-                this.page_count_label.Text = "/ " + total_pages.ToString();
+                int total_pages = 0;
+                if(this.data_grid.Rows.Count > 0)
+                    total_pages = (int)this.data_grid.Rows[0].Cells[0].Value;
+                this.page_count_label.Text = "/ " + (total_pages / this.page_size).ToString();
                 this.current_page.Maximum = total_pages;
             }
         }
