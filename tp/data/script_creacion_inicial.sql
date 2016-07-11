@@ -1625,7 +1625,7 @@ CREATE PROCEDURE HARDCOR.listar_clientes (@nombre NVARCHAR(255), @apellido NVARC
      AND ((@nombre LIKE '') OR (Cl.cli_nombre LIKE '%' + @nombre + '%'))
      AND ((@apellido LIKE '') OR (Cl.cli_apellido LIKE '%' +  @apellido + '%'))
      AND ((@email LIKE '') OR (Co.mail LIKE '%' +  @email + '%'))
-     AND ((@dni = 0) OR (Cl.cli_num_doc = @dni)) AND (Cl.cli_tipo_doc = @tipo_doc)
+     AND ((@dni = 0) OR (Cl.cli_num_doc = @dni)) AND ((@tipo_doc = 0) OR (Cl.cli_tipo_doc = @tipo_doc))
 END
 GO
 
