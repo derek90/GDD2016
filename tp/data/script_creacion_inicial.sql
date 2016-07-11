@@ -732,7 +732,7 @@ ELSE IF (@razon_social = '')
   FROM HARDCOR.Factura f
   LEFT JOIN HARDCOR.Detalle d
   ON f.nro_fact = d.nro_fact
-  WHERE ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= f.total) AND (@importef >= f.total)
+  WHERE ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= f.total) AND (@importef >= f.total) AND d.item_desc LIKE '%' + @descripcion + '%'
   END
 ELSE
   BEGIN
@@ -751,7 +751,7 @@ ELSE
     FROM HARDCOR.Factura f
     LEFT JOIN HARDCOR.Detalle d
     ON f.nro_fact = d.nro_fact
-    WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= f.total) AND (@importef >= f.total)
+    WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= f.total) AND (@importef >= f.total) AND d.item_desc LIKE '%' + @descripcion + '%'
   END
   SET @count = (SELECT COUNT(*) FROM @table)
   UPDATE @table SET cantidad_rows = @count
