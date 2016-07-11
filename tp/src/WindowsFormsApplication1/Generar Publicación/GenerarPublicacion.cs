@@ -83,7 +83,15 @@ namespace WindowsFormsApplication1.Generar_Publicación
                 query.CommandType = System.Data.CommandType.StoredProcedure;
                 query.Parameters.Add(new SqlParameter("@descripcion", this.textBox1.Text));
                 query.Parameters.Add(new SqlParameter("@stock", this.numericUpDown1.Value));
-                query.Parameters.Add(new SqlParameter("@precio", this.numericUpDown3.Value));
+                decimal precio;
+                if (numericUpDown3.Enabled)
+                {
+                    precio = this.numericUpDown3.Value;
+                } else
+                {
+                    precio = this.numericUpDown2.Value;
+                }
+                query.Parameters.Add(new SqlParameter("@precio", precio));
                 query.Parameters.Add(new SqlParameter("@rubro", ((KeyValuePair<int, string>) this.comboBox2.SelectedItem).Value));
                 query.Parameters.Add(new SqlParameter("@usuario", this.username));
                 query.Parameters.Add(new SqlParameter("@visi", ((KeyValuePair<int, string>) this.comboBox3.SelectedItem).Value));
