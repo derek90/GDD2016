@@ -250,7 +250,7 @@ IF (OBJECT_ID ('HARDCOR.username_to_code') IS NOT NULL)
   DROP FUNCTION HARDCOR.username_to_code
 
 IF (OBJECT_ID ('HARDCOR.usuario_con_calif_pendientes') IS NOT NULL)
-  DROP FUNCTION HARDCOR.usuario_con_calif_pendientes
+  DROP PROCEDURE HARDCOR.usuario_con_calif_pendientes
 
 IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
     DROP SCHEMA HARDCOR
@@ -1468,9 +1468,9 @@ AS BEGIN
 	DECLARE @calif_pedientes INT = (SELECT COUNT(*) FROM HARDCOR.Compra c WHERE c.cod_us = @cod_us AND c.cod_calif IS NULL)
 	
 	IF @calif_pedientes <= 3
-	RETURN 0
+	SELECT 0
 	
-	RETURN 1 
+	SELECT 1 
 END
 GO
 
