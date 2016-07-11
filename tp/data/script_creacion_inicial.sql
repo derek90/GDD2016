@@ -701,6 +701,7 @@ DECLARE @table TABLE(cantidad_rows int,
        cod_us int,
        cod_pub numeric(18,0),
        fecha datetime,
+
        total numeric(18,2), 
        forma_pago nvarchar(225),
        item_desc int,
@@ -1503,6 +1504,8 @@ AS BEGIN
                             BEGIN
                                 INSERT INTO HARDCOR.Oferta(cod_pub, cod_us, fecha_of, monto_of)
                                 VALUES (@cod_pub, @cod_us, @fecha, @mont_of)
+
+								UPDATE HARDCOR.Publicacion SET precio = @mont_of WHERE cod_pub = @cod_pub
 
                                 SET @ret = 0
                             END ELSE RAISERROR('', 16, 1)
