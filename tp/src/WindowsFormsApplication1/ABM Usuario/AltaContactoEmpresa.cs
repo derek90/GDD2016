@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -140,6 +141,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             create.Parameters.Add(new SqlParameter("@localidad", this.textBox12.Text));
             create.Parameters.Add(new SqlParameter("@codigo_postal", this.textBox13.Text));
             create.Parameters.Add(new SqlParameter("@habilitado", this.checkBox1.Checked));
+            create.Parameters.Add(new SqlParameter("@fecha_creacion", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
 
             connection.Open();
             bool creation_was_ok = create.ExecuteNonQuery() > 0;

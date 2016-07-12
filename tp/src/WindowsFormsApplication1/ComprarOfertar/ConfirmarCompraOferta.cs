@@ -54,10 +54,10 @@ namespace WindowsFormsApplication1.ComprarOfertar
                 }
 
                 connection.Open();
-                int bill_number = Int32.Parse(query.ExecuteScalar().ToString());
 
                 if (!is_auction)
                 {
+                    int bill_number = Int32.Parse(query.ExecuteScalar().ToString());
                     SqlCommand fetch_bill = new SqlCommand("HARDCOR.obtener_factura", connection);
                     fetch_bill.CommandType = CommandType.StoredProcedure;
                     fetch_bill.Parameters.Add(new SqlParameter("@numero", bill_number));

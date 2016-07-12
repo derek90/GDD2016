@@ -26,7 +26,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
 
         public GenerarPublicacion(Form parent, string username, int code, string description, int stock, float price,
                                   int bussiness_code, int visibility_code, int state_code, int type_code, DateTime start_time, DateTime expiration_time,
-                                  bool send_enabled, float starting_price)
+                                  bool send_enabled)
         {
             this.is_modification = true;
             InitializeComponent();
@@ -37,16 +37,15 @@ namespace WindowsFormsApplication1.Generar_Publicación
             this.code = code;
             this.dateTimePicker1.MinDate = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
             this.fill_components(description, stock, price, bussiness_code, visibility_code, start_time,
-                                 state_code, type_code, expiration_time, send_enabled, starting_price);
+                                 state_code, type_code, expiration_time, send_enabled);
         }
 
         private void fill_components(string description, int stock, float price, int bussiness_code, int visibility_code, DateTime start_time,
-                                     int state_code, int type_code, DateTime expiration_time, bool send_enabled, float starting_price)
+                                     int state_code, int type_code, DateTime expiration_time, bool send_enabled)
         {
             this.fill_components();
             this.textBox1.Text = description;
-            this.numericUpDown3.Value = (decimal) price;
-            this.numericUpDown2.Value = (decimal) starting_price;
+            this.numericUpDown2.Value = (decimal) price;
             this.numericUpDown1.Value = stock;
             this.checkBox1.Checked = send_enabled;
             foreach(var pair in this.comboBox1.Items)
@@ -108,19 +107,12 @@ namespace WindowsFormsApplication1.Generar_Publicación
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-                this.numericUpDown3.Enabled = ((ComboBox)sender).SelectedIndex == 1;
-                this.numericUpDown2.Enabled = !this.numericUpDown3.Enabled;
-            if (this.numericUpDown3.Enabled)
-            {
-                this.numericUpDown2.Value = 0;
-                this.dateTimePicker1.Enabled = true;
-                this.dateTimePicker1.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
-            } else
-            {
-                this.numericUpDown3.Value = 0;
-                this.dateTimePicker1.Enabled = false;
-                this.dateTimePicker1.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
-            }
+            this.dateTimePicker1.Enabled = ((ComboBox)sender).SelectedIndex == 1;
+            this.dateTimePicker1.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
+            if (dateTimePicker1.Enabled)
+                this.label5.Text = "Precio inicial";
+            else
+                this.label5.Text = "Precio";
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -136,7 +128,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
                 query.CommandType = System.Data.CommandType.StoredProcedure;
                 query.Parameters.Add(new SqlParameter("@descripcion", this.textBox1.Text));
                 query.Parameters.Add(new SqlParameter("@stock", this.numericUpDown1.Value));
-                query.Parameters.Add(new SqlParameter("@precio", this.numericUpDown3.Value));
+                query.Parameters.Add(new SqlParameter("@precio", this.numericUpDown2.Value));
                 query.Parameters.Add(new SqlParameter("@rubro", ((KeyValuePair<int, string>) this.comboBox2.SelectedItem).Value));
                 query.Parameters.Add(new SqlParameter("@visi", ((KeyValuePair<int, string>) this.comboBox3.SelectedItem).Value));
                 query.Parameters.Add(new SqlParameter("@tipo", ((KeyValuePair<int, string>) this.comboBox1.SelectedItem).Value));

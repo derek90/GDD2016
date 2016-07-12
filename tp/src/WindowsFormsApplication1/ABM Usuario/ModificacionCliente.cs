@@ -28,6 +28,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
                 SqlCommand query = Utils.create_sp("HARDCOR.obtener_tipos_doc", connection);
                 SqlDataReader reader = query.ExecuteReader();
                 Dictionary<int, string> tiposDoc = new Dictionary<int, string>();
+                tiposDoc.Add(0, "");
                 while (reader.Read())
                 {
                     tiposDoc.Add(Convert.ToInt32(reader["cod_doc"]), reader["documento"].ToString());
