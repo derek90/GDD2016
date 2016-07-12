@@ -554,8 +554,6 @@ FROM  gd_esquema.Maestra m, HARDCOR.Factura f WHERE m.Factura_Nro = f.nro_fact
 ORDER BY f.nro_fact
 GO
 
-
-
 INSERT INTO HARDCOR.Oferta(cod_pub, cod_us, monto_of, fecha_of)
 SELECT DISTINCT p.cod_pub, p.cod_us, m.Oferta_Monto, m.Oferta_Fecha
 FROM gd_esquema.Maestra m, HARDCOR.Publicacion p
