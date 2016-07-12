@@ -243,11 +243,17 @@ IF (OBJECT_ID ('HARDCOR.promedio_estrellas_dadas') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.publicaciones_por_usuario') IS NOT NULL)
   DROP PROCEDURE HARDCOR.publicaciones_por_usuario
 
+IF (OBJECT_ID ('HARDCOR.publicaciones_vigentes_por_usuario') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.publicaciones_vigentes_por_usuario
+
 IF (OBJECT_ID ('HARDCOR.total_publicaciones_por_usuario') IS NOT NULL)
   DROP PROCEDURE HARDCOR.total_publicaciones_por_usuario
 
 IF (OBJECT_ID ('HARDCOR.username_to_code') IS NOT NULL)
   DROP FUNCTION HARDCOR.username_to_code
+
+IF (OBJECT_ID ('HARDCOR.modificar_borrador') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.modificar_borrador
 
 
 IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
@@ -2125,5 +2131,47 @@ CREATE PROCEDURE HARDCOR.publicaciones_por_usuario(@username NVARCHAR(255), @pag
     ORDER BY fecha_ini
       OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
   FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
+END
+GO
+
+CREATE PROCEDURE HARDCOR.publicaciones_vigentes_por_usuario(@username NVARCHAR(255), @pagina INT, @cantidad_resultados_por_pagina INT) AS BEGIN
+   DECLARE @code INT = HARDCOR.username_to_code(@username)
+   DECLARE @count INT
+
+      SELECT @count=COUNT(cod_pub)
+        FROM HARDCOR.Publicacion
+       WHERE cod_us = @code
+
+      SELECT @count, *
+        FROM HARDCOR.Publicacion
+       WHERE cod_us = @code
+         AND estado <> 4
+         AND estado <> 5
+    ORDER BY fecha_ini
+      OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
+  FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
+END
+GO
+
+CREATE PROCEDURE HARDCOR.modificar_borrador(@descripcion NVARCHAR(225), @stock NUMERIC(18, 0), @precio NUMERIC(18, 2),
+                                            @rubro NVARCHAR(225), @visi NVARCHAR(225), @tipo NVARCHAR(225),
+                                            @fecha_venc DATETIME, @envio BIT, @cod_pub INT) AS BEGIN
+
+  UPDATE HARDCOR.Publicacion
+     SET descripcion = @descripcion,
+         stock = @stock,
+         precio = @precio,
+         cod_visi = (SELECT V.cod_visi
+                       FROM HARDCOR.Visibilidad V
+                      WHERE V.visi_desc = @visi),
+         cod_tipo = (SELECT T.cod_tipo
+                       FROM HARDCOR.Tipo T
+                      WHERE T.descripcion = @tipo),
+         cod_rubro = (SELECT R.cod_rubro
+                        FROM HARDCOR.Rubro R
+                       WHERE R.rubro_desc_corta = @rubro),
+         fecha_fin = @fecha_venc,
+         envio = @envio
+   WHERE cod_pub = @cod_pub
 END
 GO

@@ -10,15 +10,65 @@ namespace WindowsFormsApplication1.Generar_Publicación
     {
         Form parent;
         string username;
+        int code;
+        bool is_modification;
 
         public GenerarPublicacion(Form parent, string username)
         {
+            this.is_modification = false;
             InitializeComponent();
             this.parent = parent;
             this.username = username;
             this.dateTimePicker1.MinDate = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
             this.dateTimePicker1.Value = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
             this.fill_components();
+        }
+
+        public GenerarPublicacion(Form parent, string username, int code, string description, int stock, float price,
+                                  int bussiness_code, int visibility_code, int state_code, int type_code, DateTime start_time, DateTime expiration_time,
+                                  bool send_enabled, float starting_price)
+        {
+            this.is_modification = true;
+            InitializeComponent();
+            this.label10.Text = "Modificar borrador";
+            this.button1.Text = "Modificar";
+            this.parent = parent;
+            this.username = username;
+            this.code = code;
+            this.dateTimePicker1.MinDate = DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString());
+            this.fill_components(description, stock, price, bussiness_code, visibility_code, start_time,
+                                 state_code, type_code, expiration_time, send_enabled, starting_price);
+        }
+
+        private void fill_components(string description, int stock, float price, int bussiness_code, int visibility_code, DateTime start_time,
+                                     int state_code, int type_code, DateTime expiration_time, bool send_enabled, float starting_price)
+        {
+            this.fill_components();
+            this.textBox1.Text = description;
+            this.numericUpDown3.Value = (decimal) price;
+            this.numericUpDown2.Value = (decimal) starting_price;
+            this.numericUpDown1.Value = stock;
+            this.checkBox1.Checked = send_enabled;
+            foreach(var pair in this.comboBox1.Items)
+                if(((KeyValuePair<int, string>) pair).Key == type_code)
+                {
+                    this.comboBox1.SelectedItem = pair;
+                    break;
+                }
+            foreach(var pair in this.comboBox2.Items)
+                if(((KeyValuePair<int, string>) pair).Key == bussiness_code)
+                {
+                    this.comboBox2.SelectedItem = pair;
+                    break;
+                }
+            foreach(var pair in this.comboBox3.Items)
+                if(((KeyValuePair<int, string>) pair).Key == visibility_code)
+                {
+                    this.comboBox3.SelectedItem = pair;
+                    break;
+                }
+            this.dateTimePicker1.Value = expiration_time;
+            this.dateTimePicker1.MinDate = start_time;
         }
 
         private void fill_components ()
@@ -54,7 +104,6 @@ namespace WindowsFormsApplication1.Generar_Publicación
             Utils.populate(this.comboBox1, publication_types);
             Utils.populate(this.comboBox2, bussines);
             Utils.populate(this.comboBox3, visibilities);
-
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -76,45 +125,68 @@ namespace WindowsFormsApplication1.Generar_Publicación
 
         private void button1_Click(object sender, EventArgs e)
         {
-            int new_publication_code;
+            int new_publication_code = 0;
             using(var connection = DBConnection.getInstance().getConnection())
             {
-                SqlCommand query = new SqlCommand("HARDCOR.generar_publicacion", connection);
+                string query_name = "HARDCOR.generar_publicacion";
+                if (this.is_modification)
+                    query_name = "HARDCOR.modificar_borrador";
+
+                SqlCommand query = new SqlCommand(query_name, connection);
                 query.CommandType = System.Data.CommandType.StoredProcedure;
                 query.Parameters.Add(new SqlParameter("@descripcion", this.textBox1.Text));
                 query.Parameters.Add(new SqlParameter("@stock", this.numericUpDown1.Value));
                 query.Parameters.Add(new SqlParameter("@precio", this.numericUpDown3.Value));
                 query.Parameters.Add(new SqlParameter("@rubro", ((KeyValuePair<int, string>) this.comboBox2.SelectedItem).Value));
-                query.Parameters.Add(new SqlParameter("@usuario", this.username));
                 query.Parameters.Add(new SqlParameter("@visi", ((KeyValuePair<int, string>) this.comboBox3.SelectedItem).Value));
-                query.Parameters.Add(new SqlParameter("@estado", "Borrador"));
                 query.Parameters.Add(new SqlParameter("@tipo", ((KeyValuePair<int, string>) this.comboBox1.SelectedItem).Value));
                 query.Parameters.Add(new SqlParameter("@fecha_venc", this.dateTimePicker1.Value));
                 query.Parameters.Add(new SqlParameter("@envio", this.checkBox1.Checked));
-                query.Parameters.Add(new SqlParameter("@fecha", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
 
-                connection.Open();
-                new_publication_code = (int) query.ExecuteScalar();
-            }
-
-            DialogResult result = MessageBox.Show("Su publicacion fue creada con exito en estado 'Borrador'. Desea activar su publicacion?",
-                                                  "Activar publicacion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (result.ToString() == "Yes")
-            {
-                using (var connection = DBConnection.getInstance().getConnection())
+                if (this.is_modification)
                 {
-                    SqlCommand query = new SqlCommand("HARDCOR.cambiar_estado_publ", connection);
-                    query.CommandType = System.Data.CommandType.StoredProcedure;
-                    query.Parameters.Add(new SqlParameter("@usuario", this.username));
-                    query.Parameters.Add(new SqlParameter("@cod_pub", new_publication_code));
-                    query.Parameters.Add(new SqlParameter("@nuevo_estado", "Activada"));
-                    query.Parameters.Add(new SqlParameter("@fecha", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
-
+                    query.Parameters.Add(new SqlParameter("@cod_pub", this.code));
                     connection.Open();
-                    query.ExecuteNonQuery();
+                    query.ExecuteScalar();
                 }
+                else
+                {
+                    query.Parameters.Add(new SqlParameter("@estado", "Borrador"));
+                    query.Parameters.Add(new SqlParameter("@usuario", this.username));
+                    query.Parameters.Add(new SqlParameter("@fecha", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
+                    connection.Open();
+                    new_publication_code = (int)query.ExecuteScalar();
+                }
+
             }
-            MessageBox.Show("Publicacion creada con exito", "Publicacion creada", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+
+            if (!this.is_modification)
+            {
+                DialogResult result = MessageBox.Show("Su publicacion fue creada con exito en estado 'Borrador'. Desea activar su publicacion?",
+                                                      "Activar publicacion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result.ToString() == "Yes")
+                {
+                    using (var connection = DBConnection.getInstance().getConnection())
+                    {
+                        SqlCommand query = new SqlCommand("HARDCOR.cambiar_estado_publ", connection);
+                        query.CommandType = System.Data.CommandType.StoredProcedure;
+                        query.Parameters.Add(new SqlParameter("@usuario", this.username));
+                        query.Parameters.Add(new SqlParameter("@cod_pub", new_publication_code));
+                        query.Parameters.Add(new SqlParameter("@nuevo_estado", "Activada"));
+                        query.Parameters.Add(new SqlParameter("@fecha", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
+
+                        connection.Open();
+                        query.ExecuteNonQuery();
+                    }
+                }
+                MessageBox.Show("Publicacion creada con exito", "Publicacion creada", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+            }
+            else
+            {
+                MessageBox.Show("Borrador modificado con exito", "Borrador modificado", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                ((ModificarPublicacion) this.parent).refresh();
+            }
+
             this.Close();
             this.parent.Show();
         }

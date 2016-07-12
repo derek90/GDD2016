@@ -151,6 +151,18 @@
     <Compile Include="Facturas\ListadoFacturas.Designer.cs">
       <DependentUpon>ListadoFacturas.cs</DependentUpon>
     </Compile>
+    <Compile Include="Generar Publicación\AMBPublicacion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Generar Publicación\AMBPublicacion.Designer.cs">
+      <DependentUpon>AMBPublicacion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Generar Publicación\ModificarPublicacion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Generar Publicación\ModificarPublicacion.Designer.cs">
+      <DependentUpon>ModificarPublicacion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Login\EleccionRoles.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -242,8 +254,14 @@
     <EmbeddedResource Include="Facturas\ListadoFacturas.resx">
       <DependentUpon>ListadoFacturas.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Generar Publicación\AMBPublicacion.resx">
+      <DependentUpon>AMBPublicacion.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Generar Publicación\GenerarPublicacion.resx">
       <DependentUpon>GenerarPublicacion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Generar Publicación\ModificarPublicacion.resx">
+      <DependentUpon>ModificarPublicacion.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Historial Cliente\HistorialCliente.resx">
       <DependentUpon>HistorialCliente.cs</DependentUpon>
