@@ -87,9 +87,6 @@ IF OBJECT_ID ('HARDCOR.alta_vis') IS NOT NULL
 IF OBJECT_ID ('HARDCOR.mod_vis') IS NOT NULL
     DROP PROCEDURE HARDCOR.mod_vis
 
-IF OBJECT_ID ('HARDCOR.baja_vis') IS NOT NULL
-    DROP PROCEDURE HARDCOR.baja_vis
-
 IF OBJECT_ID ('HARDCOR.baja_rol') IS NOT NULL
     DROP PROCEDURE HARDCOR.baja_rol
 
@@ -1255,33 +1252,6 @@ AS BEGIN
     RETURN 1
 END
 GO
-
-CREATE PROCEDURE HARDCOR.baja_vis(@cod_visi NUMERIC(18, 0))
-AS BEGIN
-    BEGIN TRY
-        BEGIN TRANSACTION
-            IF EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.cod_visi = @cod_visi)
-            BEGIN
-                DELETE FROM HARDCOR.Publicacion WHERE cod_visi = @cod_visi
-            END
-            ELSE
-                RAISERROR('', 16, 1)
-        COMMIT TRANSACTION
-    END TRY
-
-    BEGIN CATCH
-        ROLLBACK TRANSACTION
-
-        IF NOT EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.cod_visi = @cod_visi)
-        BEGIN
-            PRINT 'La visibilidad no existe.'
-            RETURN -1
-        END
-    END CATCH
-
-    RETURN 1
-END
-GO 
 
 CREATE PROCEDURE HARDCOR.generar_publicacion(@descripcion NVARCHAR(225), @stock NUMERIC(18, 0),
                                              @precio NUMERIC(18, 2), @rubro NVARCHAR(225),
