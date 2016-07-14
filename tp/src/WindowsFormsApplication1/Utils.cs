@@ -19,7 +19,8 @@ namespace WindowsFormsApplication1
             items.ForEach(pair => combo.Items.Add(pair));
 
             /* Para que seleccione el primer elemento de la lista */
-            combo.SelectedItem = combo.Items[0];
+            if (combo.Items.Count > 0)
+                combo.SelectedItem = combo.Items[0];
         }
 
         static public void populate(ListBox combo, List<KeyValuePair<int,string>> items)
@@ -31,7 +32,8 @@ namespace WindowsFormsApplication1
             items.ForEach(pair => combo.Items.Add(pair));
 
             /* Para que seleccione el primer elemento de la lista */
-            combo.SelectedItem = combo.Items[0];
+            if(combo.Items.Count > 0)
+                combo.SelectedItem = combo.Items[0];
         }
 
         static public SqlCommand create_sp(string sp_name, List<KeyValuePair<string, object>> parameters, SqlConnection conn)
