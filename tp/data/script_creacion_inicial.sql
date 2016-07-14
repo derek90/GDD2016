@@ -513,23 +513,20 @@ VALUES ('Activada'),
 	   ('Pausada'),
 	   ('Borrador'),
 	   ('Finalizada');
-
-INSERT INTO HARDCOR.Estado_publ(descripcion)
-SELECT DISTINCT M.Publicacion_Estado FROM gd_esquema.Maestra M
 GO
 
 INSERT INTO HARDCOR.Publicacion (cod_pub, cod_us, cod_rubro, cod_visi, descripcion, stock, fecha_ini,
                                 fecha_fin, precio, estado, cod_tipo, envio)
 SELECT DISTINCT m.Publicacion_Cod, u.cod_us, r.cod_rubro, v.cod_visi, m.Publicacion_Descripcion,
                 m.Publicacion_Stock, m.Publicacion_Fecha, m.Publicacion_Fecha_Venc, m.Publicacion_Precio,
-                CASE WHEN t.cod_tipo = 2 THEN 4 ELSE 5 END, t.cod_tipo, 0
+                CASE WHEN t.cod_tipo = 1 THEN 1 ELSE 4 END, t.cod_tipo, 0
 FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Rubro r, HARDCOR.Visibilidad v, HARDCOR.Tipo t
 WHERE u.username = (SELECT CAST(m.Publ_Cli_Dni AS NVARCHAR(225))) AND t.descripcion = m.Publicacion_Tipo
       AND r.rubro_desc_corta = m.Publicacion_Rubro_Descripcion AND v.cod_visi = m.Publicacion_Visibilidad_Cod
 UNION ALL
 SELECT DISTINCT m.Publicacion_Cod, u.cod_us, r.cod_rubro, v.cod_visi, m.Publicacion_Descripcion,
                 m.Publicacion_Stock, m.Publicacion_Fecha, m.Publicacion_Fecha_Venc, m.Publicacion_Precio,
-                CASE WHEN t.cod_tipo = 2 THEN 4 ELSE 5 END, t.cod_tipo, 0
+                CASE WHEN t.cod_tipo = 1 THEN 1 ELSE 4 END, t.cod_tipo, 0
 FROM gd_esquema.Maestra m, HARDCOR.Usuario u, HARDCOR.Rubro r, HARDCOR.Visibilidad v, HARDCOR.Tipo t
 WHERE u.username = m.Publ_Empresa_Cuit AND t.descripcion = m.Publicacion_Tipo
       AND r.rubro_desc_corta = m.Publicacion_Rubro_Descripcion AND v.cod_visi = m.Publicacion_Visibilidad_Cod
@@ -637,6 +634,13 @@ where m.Publicacion_Tipo = 'Subasta' AND m.Calificacion_Codigo IS NOT NULL AND c
 ORDER BY m.Publicacion_Cod
 GO
 
+UPDATE HARDCOR.Publicacion
+   SET estado = 4
+ WHERE EXISTS (SELECT C.cod_compra
+                 FROM HARDCOR.Compra C
+				WHERE C.cod_pub = cod_pub
+				  AND cod_tipo = 1)
+GO
 
 CREATE FUNCTION HARDCOR.Emp_Categ (@emp_cuit NVARCHAR(225) )
     RETURNS INT
@@ -1398,66 +1402,6 @@ AS BEGIN
         BEGIN
             PRINT 'No se puede cambiar el estado de una publicacion finalizada.'
             RETURN -4
-        END
-
-    END CATCH
-
-    RETURN 1
-END
-GO
-
-CREATE PROCEDURE HARDCOR.modif_publ_borrador(@cod_pub NUMERIC(18, 0), @descripcion NVARCHAR(225),
-                                             @stock NUMERIC(18, 0), @precio NUMERIC(18, 2),
-                                             @costo NUMERIC(18, 2), @rubro NVARCHAR(225),
-                                             @usuario NVARCHAR(225), @visi NVARCHAR(225),
-                                             @tipo NVARCHAR(225), @fecha_venc DATETIME)
-AS BEGIN
-    BEGIN TRY
-        BEGIN TRANSACTION
-            DECLARE @r INT
-            DECLARE @v INT
-            DECLARE @t INT
-            DECLARE @estado NVARCHAR(225)
-            DECLARE @cod_us NVARCHAR(225)
-            DECLARE @h BIT
-
-            SELECT @cod_us = u.username, @estado = p.estado, @h = u.habilitado
-            FROM HARDCOR.Publicacion p, HARDCOR.Usuario u
-            WHERE p.cod_pub = @cod_pub AND p.cod_us = u.cod_us
-			
-            IF @usuario = @cod_us AND @h = 1
-            BEGIN
-                IF @estado = 3
-                BEGIN
-					SELECT @v = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @visi
-                    SELECT @r = r.cod_rubro FROM HARDCOR.Rubro r WHERE r.rubro_desc_corta = @rubro
-                    SELECT @t = t.cod_tipo FROM HARDCOR.Tipo t WHERE t.descripcion = @tipo
-
-                    UPDATE HARDCOR.Publicacion SET descripcion = @descripcion, stock = @stock,
-                    precio = @precio, costo = @costo, cod_rubro = @r, cod_visi = @v, cod_tipo = @t,
-                    fecha_fin = @fecha_venc WHERE cod_pub = @cod_pub
-                END
-                ELSE
-                    RAISERROR('', 16, 1)
-            END
-            ELSE
-                RAISERROR('', 16, 1)
-        COMMIT TRANSACTION
-    END TRY
-
-    BEGIN CATCH
-        ROLLBACK TRANSACTION
-
-        IF @usuario <> @cod_us OR @h <> 1
-        BEGIN
-            PRINT 'La publicacion que se quiere modificar no le corresponde al usuario ingresado o esta inhabilitado.'
-            RETURN -1
-        END
-
-        IF @estado <> 3
-        BEGIN
-            PRINT 'Solo se pueden modificar los datos de las publicaciones en estado pausado.'
-            RETURN -2
         END
 
     END CATCH
