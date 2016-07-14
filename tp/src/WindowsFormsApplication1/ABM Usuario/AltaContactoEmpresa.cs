@@ -13,11 +13,14 @@ namespace WindowsFormsApplication1.ABM_Usuario
         int company_code = -1;
         string username;
         string password;
+        Dictionary<int, string> rubros;
 
         public AltaContactoEmpresa(int company_code)
         {
             this.company_code = company_code;
             InitializeComponent();
+            this.rubros = getRubrosFromDB();
+            this.comboBox1.DataSource = this.rubros.Values.ToList();
             this.set_company(company_code);
             this.Text = "Modifique la empresa";
             this.button1.Text = "Modificar";
@@ -28,6 +31,24 @@ namespace WindowsFormsApplication1.ABM_Usuario
             this.username = username;
             this.password = password;
             InitializeComponent();
+            this.rubros = getRubrosFromDB();
+            this.comboBox1.DataSource = this.rubros.Values.ToList();
+        }
+
+        private Dictionary<int, string> getRubrosFromDB()
+        {
+            using (var connection = DBConnection.getInstance().getConnection())
+            {
+                connection.Open();
+                SqlCommand query = Utils.create_sp("HARDCOR.obtener_rubros", connection);
+                SqlDataReader reader = query.ExecuteReader();
+                Dictionary<int, string> rubros = new Dictionary<int, string>();
+                while (reader.Read())
+                {
+                    rubros.Add(Convert.ToInt32(reader["cod_rubro"]), reader["rubro_desc_corta"].ToString());
+                }
+                return rubros;
+            }
         }
 
         private void set_company(int company_code)
@@ -48,8 +69,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             this.textBox1.Text = reader["emp_razon_soc"].ToString();
             // Esto ni idea donde esta
             //this.textBox2.Text = reader["nombre_contacto"].ToString();
-            // Esto tampoco
-            //this.textBox3.Text = reader["rubro_principal"].ToString();
+            this.comboBox1.SelectedIndex = (int)reader["emp_rubro"] - 1;
             this.textBox4.Text = reader["emp_cuit"].ToString();
             this.textBox5.Text = reader["nro_tel"].ToString();
             this.textBox6.Text = reader["mail"].ToString();
@@ -65,7 +85,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
 
         public bool there_are_empty_inputs()
         {
-            List<TextBox> inputs = new List<TextBox> { this.textBox1, this.textBox2, this.textBox3, this.textBox4, this.textBox5,
+            List<TextBox> inputs = new List<TextBox> { this.textBox1, this.textBox2, this.textBox4, this.textBox5,
                                                        this.textBox6, this.textBox7, this.textBox8, this.textBox11, this.textBox12,
                 this.textBox13};
             return inputs.Any((t) => t.Text == "");
@@ -95,6 +115,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             SqlCommand update = new SqlCommand("HARDCOR.modificar_empresa", connection);
             update.CommandType = CommandType.StoredProcedure;
 
+            var rubroSeleccionado = rubros.FirstOrDefault(x => x.Value == comboBox1.Text).Key;
             update.Parameters.Add(new SqlParameter("@codigo", this.company_code));
             update.Parameters.Add(new SqlParameter("@razon_social", this.textBox1.Text));
             update.Parameters.Add(new SqlParameter("@cuit", this.textBox4.Text));
@@ -108,6 +129,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             update.Parameters.Add(new SqlParameter("@localidad", this.textBox12.Text));
             update.Parameters.Add(new SqlParameter("@codigo_postal", this.textBox13.Text));
             update.Parameters.Add(new SqlParameter("@habilitado", this.checkBox1.Checked));
+            update.Parameters.Add(new SqlParameter("@rubro", rubroSeleccionado));
 
             connection.Open();
             bool update_was_ok = (int) update.ExecuteScalar() > 0;
@@ -126,6 +148,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             SqlCommand create = new SqlCommand("HARDCOR.crear_empresa", connection);
             create.CommandType = CommandType.StoredProcedure;
 
+            var rubroSeleccionado = rubros.FirstOrDefault(x => x.Value == comboBox1.Text).Key;
             create.Parameters.Add(new SqlParameter("@username", this.username));
             create.Parameters.Add(new SqlParameter("@password", this.password));
             create.Parameters.Add(new SqlParameter("@codigo_rol", 3));
@@ -142,6 +165,8 @@ namespace WindowsFormsApplication1.ABM_Usuario
             create.Parameters.Add(new SqlParameter("@codigo_postal", this.textBox13.Text));
             create.Parameters.Add(new SqlParameter("@habilitado", this.checkBox1.Checked));
             create.Parameters.Add(new SqlParameter("@fecha_creacion", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
+            create.Parameters.Add(new SqlParameter("@rubro", rubroSeleccionado));
+
 
             connection.Open();
             bool creation_was_ok = (int) create.ExecuteScalar() > 0;

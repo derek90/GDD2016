@@ -25,6 +25,7 @@ namespace WindowsFormsApplication1.ABM_Visibilidad
             this.button1.Text = "Modificar";
             this.button1.Click += this.update;
             this.Text = "Modificar visibilidad";
+            this.textBox1.Enabled = false;
 
             this.visibility_code = Int32.Parse(row.Cells["cod_visi"].Value.ToString());
             this.textBox1.Text = row.Cells["visi_desc"].Value.ToString();
