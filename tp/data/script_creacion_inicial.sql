@@ -2102,7 +2102,6 @@ CREATE PROCEDURE HARDCOR.publicaciones_vigentes_por_usuario(@username NVARCHAR(2
         FROM HARDCOR.Publicacion
        WHERE cod_us = @code
          AND estado <> 4
-         AND estado <> 5
     ORDER BY fecha_ini
       OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
   FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
