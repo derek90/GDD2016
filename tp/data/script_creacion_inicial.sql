@@ -1683,7 +1683,7 @@ CREATE PROCEDURE HARDCOR.crear_cliente (@username NVARCHAR(255),
                                         @localidad NVARCHAR(255),
                                         @codigo_postal NVARCHAR(50),
                                         @habilitado BIT,
-										@tipo_doc NVARCHAR(225)) AS BEGIN
+										@tipo_doc INTEGER) AS BEGIN
 
   /* Crea un nuevo usuario, un nuevo cliente y un nuevo contacto y los llena con los datos recibidos */
   BEGIN TRY
@@ -1698,9 +1698,8 @@ CREATE PROCEDURE HARDCOR.crear_cliente (@username NVARCHAR(255),
     EXEC @codigo_contacto = HARDCOR.crear_contacto @telefono, @mail, @direccion_calle, @direccion_numero, @direccion_piso,
                                                              @numero_departamento, @localidad, @codigo_postal
 
-	DECLARE @cod_tipo_doc INT = (SELECT t.cod_doc FROM HARDCOR.Tipo_doc t WHERE t.documento = @tipo_doc)
     INSERT INTO HARDCOR.Cliente (cod_us, cod_contacto, cli_nombre, cli_apellido, cli_num_doc, cli_fecha_Nac, cli_tipo_doc)
-    VALUES (@codigo_usuario, @codigo_contacto, @nombre, @apellido, @dni, @fecha_nacimiento, @cod_tipo_doc)
+    VALUES (@codigo_usuario, @codigo_contacto, @nombre, @apellido, @dni, @fecha_nacimiento, @tipo_doc)
 
     COMMIT TRANSACTION
   END TRY
@@ -1755,7 +1754,7 @@ CREATE PROCEDURE HARDCOR.modificar_cliente (@codigo INT,
                                             @nombre NVARCHAR(255),
                                             @apellido NVARCHAR(255),
                                             @num_doc NUMERIC(18, 0),
-											@tipo_doc NVARCHAR(225),
+											@tipo_doc INTEGER,
                                             @telefono NVARCHAR(255),
                                             @mail NVARCHAR(50),
                                             @fecha_nacimiento DATETIME,
@@ -1769,14 +1768,12 @@ CREATE PROCEDURE HARDCOR.modificar_cliente (@codigo INT,
   BEGIN TRY
     BEGIN TRANSACTION
 
-	DECLARE @tipo_doc2 INT = (SELECT t.cod_doc FROM HARDCOR.Tipo_doc t WHERE t.documento = @tipo_doc)
-
     UPDATE HARDCOR.Cliente
     SET cli_fecha_Nac = @fecha_nacimiento,
     cli_apellido = @apellido,
     cli_nombre = @nombre,
     cli_num_doc = @num_doc,
-	cli_tipo_doc = @tipo_doc2
+	cli_tipo_doc = @tipo_doc
     WHERE cod_us = @codigo
 
     UPDATE HARDCOR.Usuario

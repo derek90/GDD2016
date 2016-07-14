@@ -14,36 +14,40 @@ namespace WindowsFormsApplication1.ABM_Usuario
         int client_code = -1;
         string username;
         string password;
+        Dictionary<int, string> tiposDoc;
 
         public AltaContactoCliente(string username, string password)
         {
             InitializeComponent();
             this.username = username;
             this.password = password;
-            this.comboBox1.DataSource = getTiposDocFromDB();
+            this.tiposDoc = getTiposDocFromDB();
+            this.comboBox1.DataSource = this.tiposDoc.Values.ToList();
+
         }
 
         public AltaContactoCliente(int client_code)
         {
             this.client_code = client_code;
             InitializeComponent();
+            this.tiposDoc = getTiposDocFromDB();
+            this.comboBox1.DataSource = this.tiposDoc.Values.ToList();
             this.set_client(client_code);
             this.Text = "Modifique al cliente";
             this.button1.Text = "Modificar";
-            this.comboBox1.DataSource = getTiposDocFromDB();
         }
 
-        private List<string> getTiposDocFromDB()
+        private Dictionary<int, string> getTiposDocFromDB()
         {
-            List<string> tiposDoc = new List<string>();
             using (var connection = DBConnection.getInstance().getConnection())
             {
                 connection.Open();
                 SqlCommand query = Utils.create_sp("HARDCOR.obtener_tipos_doc", connection);
                 SqlDataReader reader = query.ExecuteReader();
+                Dictionary<int, string> tiposDoc = new Dictionary<int, string>();
                 while (reader.Read())
                 {
-                    tiposDoc.Add((reader["documento"].ToString()));
+                    tiposDoc.Add(Convert.ToInt32(reader["cod_doc"]), reader["descripcion"].ToString());
                 }
                 return tiposDoc;
             }
@@ -77,6 +81,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             this.textBox12.Text = reader["localidad"].ToString();
             this.textBox13.Text = reader["cod_postal"].ToString();
             this.checkBox1.Checked = (bool) reader["habilitado"];
+            this.comboBox1.SelectedIndex = (int)reader["cli_tipo_doc"] - 1;
         }
 
         public bool there_are_empty_inputs()
@@ -110,11 +115,12 @@ namespace WindowsFormsApplication1.ABM_Usuario
             SqlCommand update = new SqlCommand("HARDCOR.modificar_cliente", connection);
             update.CommandType = CommandType.StoredProcedure;
 
+            var tipoDocSeleccionado = tiposDoc.FirstOrDefault(x => x.Value == comboBox1.Text).Key;
             update.Parameters.Add(new SqlParameter("@codigo", this.client_code));
             update.Parameters.Add(new SqlParameter("@nombre", this.textBox1.Text));
             update.Parameters.Add(new SqlParameter("@apellido", this.textBox2.Text));
             update.Parameters.Add(new SqlParameter("@num_doc", this.numericUpDown1.Value));
-            update.Parameters.Add(new SqlParameter("@tipo_doc", this.comboBox1.SelectedItem));
+            update.Parameters.Add(new SqlParameter("@tipo_doc", tipoDocSeleccionado));
             update.Parameters.Add(new SqlParameter("@telefono", this.textBox5.Text));
             update.Parameters.Add(new SqlParameter("@mail", this.textBox6.Text));
             update.Parameters.Add(new SqlParameter("@fecha_nacimiento", this.dateTimePicker1.Value));
@@ -143,6 +149,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             SqlCommand create = new SqlCommand("HARDCOR.crear_cliente", connection);
             create.CommandType = CommandType.StoredProcedure;
 
+            var tipoDocSeleccionado = tiposDoc.FirstOrDefault(x => x.Value == comboBox1.Text).Key;
             create.Parameters.Add(new SqlParameter("@username", this.username));
             create.Parameters.Add(new SqlParameter("@password", this.password));
             create.Parameters.Add(new SqlParameter("@codigo_rol", 4));
@@ -160,7 +167,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             create.Parameters.Add(new SqlParameter("@localidad", this.textBox12.Text));
             create.Parameters.Add(new SqlParameter("@codigo_postal", this.textBox13.Text));
             create.Parameters.Add(new SqlParameter("@habilitado", this.checkBox1.Checked));
-            create.Parameters.Add(new SqlParameter("@tipo_doc", this.comboBox1.SelectedItem));
+            create.Parameters.Add(new SqlParameter("@tipo_doc", tipoDocSeleccionado));
 
             connection.Open();
             bool creation_was_ok = create.ExecuteNonQuery() > 0;
