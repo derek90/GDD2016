@@ -1550,8 +1550,8 @@ CREATE PROCEDURE HARDCOR.listar_empresas (@razon_social NVARCHAR(255), @cuit NVA
     FROM HARDCOR.Empresa E, HARDCOR.Contacto C
    WHERE E.cod_contacto = C.cod_contacto
      AND ((E.emp_cuit = @cuit) OR (@cuit LIKE ''))
-     AND ((E.emp_razon_soc = @razon_social) OR (@razon_social LIKE ''))
-     AND ((C.mail = @mail) OR (@mail LIKE ''))
+     AND ((E.emp_razon_soc LIKE '%' + @razon_social + '%' ) OR (@razon_social LIKE ''))
+     AND ((C.mail LIKE '%' + @mail + '%') OR (@mail LIKE ''))
 END
 GO
 
