@@ -1662,7 +1662,6 @@ CREATE PROCEDURE HARDCOR.crear_contacto (@telefono NVARCHAR(255),
 	INSERT INTO HARDCOR.Contacto (mail, nro_tel, dom_calle, nro_calle, nro_piso, nro_dpto, localidad, cod_postal)
 	VALUES (@mail, @telefono, @direccion_calle, @direccion_numero, @direccion_piso, @numero_departamento, @localidad, @codigo_postal)
 	RETURN SCOPE_IDENTITY()
-
 END
 GO
 
@@ -1685,7 +1684,9 @@ CREATE PROCEDURE HARDCOR.crear_cliente (@username NVARCHAR(255),
                                         @habilitado BIT,
 										@tipo_doc INTEGER) AS BEGIN
 
-  /* Crea un nuevo usuario, un nuevo cliente y un nuevo contacto y los llena con los datos recibidos */
+  /* Crea un nuevo usuario, un nuevo cliente y un nuevo contacto y los llena con los datos recibidos
+     Devuelve el código del nuevo usuario creado o -1 en caso de error
+   */
   BEGIN TRY
     BEGIN TRANSACTION
     DECLARE @codigo_usuario INT
@@ -1702,9 +1703,11 @@ CREATE PROCEDURE HARDCOR.crear_cliente (@username NVARCHAR(255),
     VALUES (@codigo_usuario, @codigo_contacto, @nombre, @apellido, @dni, @fecha_nacimiento, @tipo_doc)
 
     COMMIT TRANSACTION
+	SELECT @codigo_usuario
   END TRY
   BEGIN CATCH
     ROLLBACK TRANSACTION
+	SELECT -1
   END CATCH
 END
 GO
@@ -1725,8 +1728,8 @@ CREATE PROCEDURE HARDCOR.crear_empresa (@username NVARCHAR(255),
                                         @localidad NVARCHAR(255),
                                         @codigo_postal NVARCHAR(50),
                                         @habilitado BIT) AS BEGIN
-
-  /* Crea un nuevo usuario, una nueva empresa y un nuevo contacto y los llena con los datos recibidos */
+  /* Crea un nuevo usuario, una nueva empresa y un nuevo contacto y los llena con los datos recibidos
+     Devuelve el código del nuevo usuario creado o -1 en caso de error */
   BEGIN TRY
     BEGIN TRANSACTION
       DECLARE @codigo_usuario INT
@@ -1741,11 +1744,12 @@ CREATE PROCEDURE HARDCOR.crear_empresa (@username NVARCHAR(255),
 
       INSERT INTO HARDCOR.Empresa (cod_us, cod_contacto, emp_razon_soc, emp_cuit, emp_ciudad)
       VALUES (@codigo_usuario, @codigo_contacto, @razon_social, @cuit, @ciudad)
-
       COMMIT TRANSACTION
+	  SELECT @codigo_contacto
   END TRY
   BEGIN CATCH
     ROLLBACK TRANSACTION
+	SELECT -1
   END CATCH
 END
 GO

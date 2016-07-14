@@ -110,7 +110,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             update.Parameters.Add(new SqlParameter("@habilitado", this.checkBox1.Checked));
 
             connection.Open();
-            bool update_was_ok = update.ExecuteNonQuery() > 0;
+            bool update_was_ok = (int) update.ExecuteScalar() > 0;
             if (update_was_ok)
                 MessageBox.Show("La modificación de " + this.textBox1.Text + " ha sido exitosa!", "Modificación exitosa");
             else
@@ -144,7 +144,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             create.Parameters.Add(new SqlParameter("@fecha_creacion", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
 
             connection.Open();
-            bool creation_was_ok = create.ExecuteNonQuery() > 0;
+            bool creation_was_ok = (int) create.ExecuteScalar() > 0;
             if (creation_was_ok)
                 MessageBox.Show("La creación de " + this.textBox1.Text + " ha sido exitosa!", "Creación exitosa");
             else
