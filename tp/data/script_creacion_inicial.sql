@@ -95,7 +95,7 @@ IF OBJECT_ID ('HARDCOR.baja_rol') IS NOT NULL
 
 IF OBJECT_ID('HARDCOR.calificar_vta') IS NOT NULL
     DROP PROCEDURE HARDCOR.calificar_vta;
-
+	
 IF OBJECT_ID('HARDCOR.consulta_factura') IS NOT NULL
     DROP PROCEDURE HARDCOR.consulta_factura;
 
@@ -720,7 +720,7 @@ IF (@tipo = 0 AND @razon_social <> '')
 	   SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.CLIENTE WHERE cli_num_doc = CONVERT(numeric(18), @razon_social))
 ELSE IF (@tipo = 1 AND @razon_social <> '')
 	   SET @cod_us = (SELECT TOP 1 cod_us FROM HARDCOR.Empresa WHERE emp_cuit = @razon_social)
-ELSE IF (@razon_social = '')
+IF (@razon_social = '')
   BEGIN
     INSERT INTO @table
     SELECT null AS cantidad_rows,
@@ -737,7 +737,7 @@ ELSE IF (@razon_social = '')
   FROM HARDCOR.Factura f
   LEFT JOIN HARDCOR.Detalle d
   ON f.nro_fact = d.nro_fact
-  WHERE ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= f.total) AND (@importef >= f.total) AND d.item_desc LIKE '%' + @descripcion + '%'
+  WHERE ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= f.total) AND (@importef >= f.total) AND EXISTS (select T.cod_tipo_fact from HARDCOR.Tipo_fact T WHERE T.descripcion LIKE '%' + @descripcion + '%' AND D.item_desc = T.cod_tipo_fact) AND EXISTS (select C.cod_us from HARDCOR.Cliente C WHERE f.cod_us = C.cod_us AND C.cli_tipo_doc = @tipo_doc2)
   END
 ELSE
   BEGIN
@@ -756,7 +756,7 @@ ELSE
     FROM HARDCOR.Factura f
     LEFT JOIN HARDCOR.Detalle d
     ON f.nro_fact = d.nro_fact
-    WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= f.total) AND (@importef >= f.total) AND d.item_desc LIKE '%' + @descripcion + '%'
+    WHERE f.cod_us = @cod_us AND ((@fechai IS NULL) OR (@fechai <= f.fecha)) AND ((@fechaf IS NULL) OR (@fechaf >= f.fecha)) AND (@importei <= f.total) AND (@importef >= f.total)
   END
   SET @count = (SELECT COUNT(*) FROM @table)
   UPDATE @table SET cantidad_rows = @count
