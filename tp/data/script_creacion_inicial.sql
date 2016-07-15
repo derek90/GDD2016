@@ -442,7 +442,8 @@ VALUES ('ABM Rol'),
        ('Historial cliente'),
        ('Calificar vendedor'),
        ('Consulta facturas realizadas al vendedor'),
-       ('Listado estadistico');
+       ('Listado estadistico'),
+       ('Cambiar password');
 GO
 
 INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun)
@@ -459,6 +460,9 @@ GO
 INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun)
 VALUES (4, 5), (4, 6), (4, 7), (4, 8)
 GO
+
+INSERT INTO HARDCOR.RolXfunc(cod_rol, cod_fun)
+SELECT cod_rol, 11 FROM HARDCOR.Rol WHERE cod_rol <> 1
 
 INSERT INTO HARDCOR.Contacto(mail, cod_postal, dom_calle, nro_piso, nro_dpto, nro_calle)
 SELECT DISTINCT m.Cli_Mail AS mail, m.Cli_Cod_Postal, m.Cli_Dom_Calle, m.Cli_Piso, m.Cli_Depto, m.Cli_Nro_Calle
@@ -2133,7 +2137,7 @@ CREATE PROCEDURE HARDCOR.listar_usuarios(@pagina INT, @cantidad_resultados_por_p
 END
 GO
 
-CREATE PROCEDURE HARDCOR.cambiar_password_usuario(@username NVARCHAR(225), @nueva_password NVARCHAR(225)) AS BEGIN
+CREATE PROCEDURE HARDCOR.cambiar_password_usuario(@username NVARCHAR(225), @nueva_password VARCHAR(225)) AS BEGIN
 UPDATE HARDCOR.Usuario SET pass_word = HASHBYTES('SHA2_256', @nueva_password) WHERE username = @username
 END
 GO

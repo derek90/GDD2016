@@ -6,6 +6,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
     public partial class AbmUsuario : Form
     {
         Form parent;
+
         public AbmUsuario(Form parent)
         {
             this.parent = parent;
@@ -36,6 +37,12 @@ namespace WindowsFormsApplication1.ABM_Usuario
         {
             this.Close();
             this.parent.Show();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            (new ModificarPassword(this)).Show();
         }
     }
 }

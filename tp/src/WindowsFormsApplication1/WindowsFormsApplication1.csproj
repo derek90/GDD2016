@@ -96,6 +96,12 @@
     <Compile Include="ABM Usuario\ModificacionEmpresa.Designer.cs">
       <DependentUpon>ModificacionEmpresa.cs</DependentUpon>
     </Compile>
+    <Compile Include="ABM Usuario\ModificarPassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABM Usuario\ModificarPassword.Designer.cs">
+      <DependentUpon>ModificarPassword.cs</DependentUpon>
+    </Compile>
     <Compile Include="ABM Visibilidad\AbmVisibilidad.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,6 +131,12 @@
     </Compile>
     <Compile Include="Calificar\DarCalificacion.Designer.cs">
       <DependentUpon>DarCalificacion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CambiarPassword\CambiarPassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CambiarPassword\CambiarPassword.Designer.cs">
+      <DependentUpon>CambiarPassword.cs</DependentUpon>
     </Compile>
     <Compile Include="ComprarOfertar\ComprarOfertar.cs">
       <SubType>Form</SubType>
@@ -230,6 +242,9 @@
     <EmbeddedResource Include="ABM Usuario\ModificacionEmpresa.resx">
       <DependentUpon>ModificacionEmpresa.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ABM Usuario\ModificarPassword.resx">
+      <DependentUpon>ModificarPassword.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ABM Visibilidad\AbmVisibilidad.resx">
       <DependentUpon>AbmVisibilidad.cs</DependentUpon>
     </EmbeddedResource>
@@ -241,6 +256,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Calificar\DarCalificacion.resx">
       <DependentUpon>DarCalificacion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CambiarPassword\CambiarPassword.resx">
+      <DependentUpon>CambiarPassword.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ComprarOfertar\ComprarOfertar.resx">
       <DependentUpon>ComprarOfertar.cs</DependentUpon>

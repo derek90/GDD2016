@@ -33,6 +33,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label2
@@ -47,7 +48,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(204, 226);
+            this.button5.Location = new System.Drawing.Point(204, 276);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(75, 23);
             this.button5.TabIndex = 12;
@@ -67,7 +68,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(159, 148);
+            this.button2.Location = new System.Drawing.Point(159, 147);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(164, 23);
             this.button2.TabIndex = 9;
@@ -77,7 +78,7 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(159, 187);
+            this.button8.Location = new System.Drawing.Point(159, 185);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(164, 23);
             this.button8.TabIndex = 11;
@@ -85,11 +86,22 @@
             this.button8.UseVisualStyleBackColor = true;
             this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(159, 223);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(164, 23);
+            this.button3.TabIndex = 13;
+            this.button3.Text = "Modificar contrasena";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // AbmUsuario
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 263);
+            this.ClientSize = new System.Drawing.Size(484, 311);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.button8);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -110,5 +122,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button3;
     }
 }
