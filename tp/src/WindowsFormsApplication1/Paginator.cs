@@ -14,6 +14,8 @@ namespace WindowsFormsApplication1
         Label page_count_label;
         int page_size;
         List<KeyValuePair<string, object>> query_params;
+        Button prev;
+        Button next;
 
         public Paginator (NumericUpDown current_page, DataGridView data_grid, string query, Button prev, Button next,
                           Label page_count_label, int page_size)
@@ -23,17 +25,14 @@ namespace WindowsFormsApplication1
             this.data_grid = data_grid;
             this.page_count_label = page_count_label;
             this.page_size = page_size;
+            this.prev = prev;
+            this.next = next;
             this.query_params = new List<KeyValuePair<string, object>>();
             // Seteo que los botones pidan la siguiente y la anterior pagina
             prev.Click += (s, e) => this.current_page.Value -= 1;
             next.Click += (s, e) => this.current_page.Value += 1;
             // Para que al cambiar de valor current_page se haga el pedido a la base
-            current_page.ValueChanged += (s, e) =>
-            {
-                this.load_page(this.current_page.Value);
-                prev.Enabled = !(this.current_page.Value == this.current_page.Minimum);
-                next.Enabled = !(this.current_page.Value == this.current_page.Maximum);
-            };
+            current_page.ValueChanged += (s, e) => this.load_page(this.current_page.Value);
         }
 
         public Paginator (NumericUpDown current_page, DataGridView data_grid, string query, Button prev, Button next,
@@ -44,17 +43,17 @@ namespace WindowsFormsApplication1
             this.data_grid = data_grid;
             this.page_count_label = page_count_label;
             this.page_size = page_size;
+            this.prev = prev;
+            this.next = next;
             this.query_params = query_params;
             // Seteo que los botones pidan la siguiente y la anterior pagina
             prev.Click += (s, e) => this.current_page.Value -= 1;
             next.Click += (s, e) => this.current_page.Value += 1;
+            // Para que antes de cargar alguna pagina no me deje tocar lso botones
+            prev.Enabled = false;
+            next.Enabled = false;
             // Para que al cambiar de valor current_page se haga el pedido a la base
-            current_page.ValueChanged += (s, e) =>
-            {
-                this.load_page(this.current_page.Value);
-                prev.Enabled = !(this.current_page.Value == this.current_page.Minimum);
-                next.Enabled = !(this.current_page.Value == this.current_page.Maximum);
-            };
+            current_page.ValueChanged += (s, e) => this.load_page(this.current_page.Value);
         }
 
         public void load_page(decimal page)
@@ -88,6 +87,8 @@ namespace WindowsFormsApplication1
                 this.page_count_label.Text = "/ " + (total_pages / this.page_size).ToString();
                 this.current_page.Maximum = total_pages;
             }
+            this.prev.Enabled = !(this.current_page.Value == this.current_page.Minimum);
+            this.next.Enabled = !(this.current_page.Value == this.current_page.Maximum);
         }
 
         public void set_query(string query)
