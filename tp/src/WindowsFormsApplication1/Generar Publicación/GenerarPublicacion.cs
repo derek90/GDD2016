@@ -92,8 +92,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
             using (var connection = DBConnection.getInstance().getConnection())
             {
                 connection.Open();
-                SqlCommand query = Utils.create_sp("HARDCOR.obtener_visibilidades_por_usuario", new List<KeyValuePair<string, object>>(), connection);
-                query.Parameters.Add(new SqlParameter("@usuario", this.username));
+                SqlCommand query = Utils.create_sp("HARDCOR.obtener_visibilidades", new List<KeyValuePair<string, object>>(), connection);
                 SqlDataReader reader = query.ExecuteReader();
                 while (reader.Read())
                     visibilities.Add(new KeyValuePair<int, string> (Int32.Parse(reader["cod_visi"].ToString()),
@@ -187,6 +186,19 @@ namespace WindowsFormsApplication1.Generar_Publicación
         {
             this.Close();
             this.parent.Show();
+        }
+
+        private void comboBox3_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (this.comboBox3.GetItemText(this.comboBox3.SelectedItem) == "Gratis")
+            {
+                this.checkBox1.Checked = false;
+                this.checkBox1.Enabled = false;
+            }
+            else
+            {
+                this.checkBox1.Enabled = true;
+            }
         }
     }
 } 
