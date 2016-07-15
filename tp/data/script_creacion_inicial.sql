@@ -1599,7 +1599,7 @@ CREATE PROCEDURE HARDCOR.obtener_roles_para_modificar (@username NVARCHAR(255)) 
                                            AND R.cod_us = U.cod_us)
 END
 GO
-SELECT * FROM HARDCOR.Rol
+
 CREATE PROCEDURE HARDCOR.obtener_usuario (@codigo  INT) AS BEGIN
   SELECT U.cod_us, U.fecha_creacion, U.habilitado, U.username
     FROM HARDCOR.Usuario U
