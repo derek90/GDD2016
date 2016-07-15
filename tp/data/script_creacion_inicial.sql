@@ -255,7 +255,11 @@ IF (OBJECT_ID ('HARDCOR.modificar_borrador') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.usuario_con_calif_pendientes') IS NOT NULL)
   DROP PROCEDURE HARDCOR.usuario_con_calif_pendientes
 
-  
+IF (OBJECT_ID ('HARDCOR.listar_usuarios') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.listar_usuarios
+
+IF (OBJECT_ID ('HARDCOR.cambiar_password_usuario') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.cambiar_password_usuario
 
 IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
     DROP SCHEMA HARDCOR
@@ -2113,5 +2117,23 @@ CREATE PROCEDURE HARDCOR.modificar_borrador(@descripcion NVARCHAR(225), @stock N
          fecha_fin = @fecha_venc,
          envio = @envio
    WHERE cod_pub = @cod_pub
+END
+GO
+
+CREATE PROCEDURE HARDCOR.listar_usuarios(@pagina INT, @cantidad_resultados_por_pagina INT) AS BEGIN
+    DECLARE @tabla_resultados TABLE(cantidad_resultados INT, cod_us INT, username NVARCHAR(225))
+    INSERT INTO @tabla_resultados
+    SELECT NULL, cod_us, username FROM HARDCOR.Usuario
+    DECLARE @cantidad_resultados INT = (SELECT COUNT(*) FROM @tabla_resultados)
+    UPDATE @tabla_resultados SET cantidad_resultados = @cantidad_resultados
+    SELECT * FROM @tabla_resultados
+    ORDER BY cod_us
+    OFFSET @pagina * @cantidad_resultados_por_pagina ROWS
+    FETCH NEXT @cantidad_resultados_por_pagina ROWS ONLY
+END
+GO
+
+CREATE PROCEDURE HARDCOR.cambiar_password_usuario(@username NVARCHAR(225), @nueva_password NVARCHAR(225)) AS BEGIN
+UPDATE HARDCOR.Usuario SET pass_word = HASHBYTES('SHA2_256', @nueva_password) WHERE username = @username
 END
 GO
