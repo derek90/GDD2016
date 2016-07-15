@@ -54,7 +54,6 @@ namespace WindowsFormsApplication1.ComprarOfertar
                 }
 
                 connection.Open();
-                query.ExecuteNonQuery();
 
                 if (!is_auction)
                 {
@@ -74,6 +73,7 @@ namespace WindowsFormsApplication1.ComprarOfertar
                 }
                 else
                 {
+                    query.ExecuteNonQuery();
                     MessageBox.Show("Se ha ofertado correctamente", "Oferta exitosa", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                     this.parent.refresh();
                     this.parent.Show();
