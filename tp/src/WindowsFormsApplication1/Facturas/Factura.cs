@@ -26,8 +26,6 @@ namespace WindowsFormsApplication1.Facturas
 
         private string get_full_name(int user_code)
         {
-            /*
-            string name, lastname;
             using(var connection = DBConnection.getInstance().getConnection())
             {
                 SqlCommand query = new SqlCommand("HARDCOR.obtener_cliente", connection);
@@ -37,12 +35,28 @@ namespace WindowsFormsApplication1.Facturas
                 connection.Open();
                 SqlDataReader reader = query.ExecuteReader();
                 reader.Read();
-                name = reader["cli_nombre"].ToString();
-                lastname = reader["cli_apellido"].ToString();
+                if (reader.HasRows)
+                {
+                    string name = reader["cli_nombre"].ToString();
+                    string lastname = reader["cli_apellido"].ToString();
+                    return lastname + ", " + name;
+                }
+
+                /* El usuario no es un cliente */
+                reader.Close();
+                query.CommandText = "HARDCOR.obtener_empresa";
+                reader = query.ExecuteReader();
+                reader.Read();
+                if (reader.HasRows)
+                    return reader["emp_razon_soc"].ToString();
+
+                /* El usuario no es ni cliente ni empresa */
+                query.CommandText = "HARDCOR.obtener_usuario";
+                reader.Close();
+                reader = query.ExecuteReader();
+                reader.Read();
+                return reader["username"].ToString();
             }
-            return lastname + ", " + name;
-            */
-            return "";
         }
 
         private void fill_data_set (int bill_number)

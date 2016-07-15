@@ -144,6 +144,9 @@ IF (OBJECT_ID ('HARDCOR.listar_clientes') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.obtener_roles') IS NOT NULL)
   DROP PROCEDURE HARDCOR.obtener_roles
 
+IF (OBJECT_ID ('HARDCOR.obtener_usuario') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.obtener_usuario
+
 IF (OBJECT_ID ('HARDCOR.obtener_cliente') IS NOT NULL)
   DROP PROCEDURE HARDCOR.obtener_cliente
 
@@ -1579,6 +1582,13 @@ CREATE PROCEDURE HARDCOR.obtener_roles AS BEGIN
   SELECT *
     FROM HARDCOR.Rol
    WHERE habilitado = 1
+END
+GO
+
+CREATE PROCEDURE HARDCOR.obtener_usuario (@codigo  INT) AS BEGIN
+  SELECT U.cod_us, U.fecha_creacion, U.habilitado, U.username
+    FROM HARDCOR.Usuario U
+   WHERE  U.cod_us = @codigo
 END
 GO
 
