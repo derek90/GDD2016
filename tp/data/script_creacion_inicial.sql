@@ -1152,6 +1152,7 @@ GO
 
 CREATE PROCEDURE HARDCOR.facturar_publicacion(@codigo_publicacion INT, @fecha DATETIME) AS BEGIN
 /* Factura la comision por publicar de una publicacion. Devuelve el numero de factura o -1 */
+
   BEGIN TRY
     BEGIN TRANSACTION
     DECLARE @ret INT
@@ -1165,9 +1166,17 @@ CREATE PROCEDURE HARDCOR.facturar_publicacion(@codigo_publicacion INT, @fecha DA
     WHERE cod_pub = @codigo_publicacion
 
     /* Calculo la comision de publicacion */
-    SELECT @comision = V.comision_pub
-    FROM HARDCOR.Publicacion P, HARDCOR.Visibilidad V 
-	WHERE P.cod_pub = @codigo_publicacion AND P.cod_visi = V.cod_visi
+
+    IF NOT EXISTS ( select COUNT(*) 
+				from HARDCOR.Publicacion p 
+				where @codigo_usuario = p.cod_us and p.estado <> 3 
+				having COUNT(*)>1) AND @codigo_usuario > 97
+        SET @comision = 0
+    ELSE BEGIN
+	   SELECT @comision = V.comision_pub
+	   FROM HARDCOR.Publicacion P, HARDCOR.Visibilidad V 
+	   WHERE P.cod_pub = @codigo_publicacion AND P.cod_visi = V.cod_visi
+	   END
 
     /* Creo una nueva factura asociada */
     INSERT HARDCOR.Factura(nro_fact, cod_pub, fecha, forma_pago, total, cod_us)
@@ -1283,12 +1292,7 @@ AS BEGIN
             BEGIN
                 SELECT @cod_pub = MAX(p.cod_pub) + 1 FROM HARDCOR.Publicacion p
 
-                IF NOT EXISTS (SELECT p.cod_us FROM HARDCOR.Publicacion p WHERE p.cod_us = @cod_us) AND @cod_us > 97
-                BEGIN
-                    SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = 'Gratis'
-                END
-                ELSE
-                    SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @visi
+                SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @visi
 
                 INSERT INTO HARDCOR.Publicacion (cod_pub, cod_us, cod_rubro, cod_visi, descripcion, stock,
                                                 fecha_ini, fecha_fin, precio, estado, cod_tipo, envio)
