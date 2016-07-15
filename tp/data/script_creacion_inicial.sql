@@ -1229,7 +1229,7 @@ AS BEGIN
         BEGIN TRANSACTION
             IF EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.cod_visi = @cod_visi)
             BEGIN
-                IF NOT EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @descripcion)
+                IF NOT EXISTS (SELECT * FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @descripcion AND v.cod_visi <> @cod_visi)
                 BEGIN
                     UPDATE HARDCOR.Visibilidad SET visi_desc = @descripcion, comision_pub = @comision_pub,
                     comision_vta = @comision_vta, comision_envio = @comision_envio WHERE cod_visi = @cod_visi
