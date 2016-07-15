@@ -11,7 +11,6 @@ namespace WindowsFormsApplication1.ComprarOfertar
         Form parent;
         Paginator paginator;
         string username;
-        bool over_pending_reviews;
 
         public ComprarOfertar(Form parent, string username)
         {
@@ -125,15 +124,6 @@ namespace WindowsFormsApplication1.ComprarOfertar
 
                 this.Hide();
                 (new ConfirmarCompraOferta(this, this.username, publication_code, is_auction, min, max)).Show();
-            }
-        }
-
-        private void ComprarOfertar_Load(object sender, EventArgs e)
-        {
-            if (this.over_pending_reviews)
-            {
-                this.Close();
-                this.parent.Show();
             }
         }
     }

@@ -1701,9 +1701,10 @@ CREATE PROCEDURE HARDCOR.crear_empresa (@username NVARCHAR(255),
                                         @numero_departamento NVARCHAR(50),
                                         @localidad NVARCHAR(255),
                                         @codigo_postal NVARCHAR(50),
-                                        @habilitado BIT) AS BEGIN
-  /* Crea un nuevo usuario, una nueva empresa y un nuevo contacto y los llena con los datos recibidos
-     Devuelve el código del nuevo usuario creado o -1 en caso de error */
+                                        @habilitado BIT,
+								@rubro INTEGER, @nom_contacto NVARCHAR(225)) AS BEGIN
+
+  /* Crea un nuevo usuario, una nueva empresa y un nuevo contacto y los llena con los datos recibidos */
   BEGIN TRY
     BEGIN TRANSACTION
       DECLARE @codigo_usuario INT
@@ -1716,8 +1717,9 @@ CREATE PROCEDURE HARDCOR.crear_empresa (@username NVARCHAR(255),
       EXEC @codigo_contacto = HARDCOR.crear_contacto @telefono, @mail, @direccion_calle, @direccion_numero, @direccion_piso,
                                                      @numero_departamento, @localidad, @codigo_postal
 
-      INSERT INTO HARDCOR.Empresa (cod_us, cod_contacto, emp_razon_soc, emp_cuit, emp_ciudad)
-      VALUES (@codigo_usuario, @codigo_contacto, @razon_social, @cuit, @ciudad)
+      INSERT INTO HARDCOR.Empresa (cod_us, cod_contacto, emp_razon_soc, emp_cuit, emp_ciudad, emp_rubro, emp_nom_contacto)
+      VALUES (@codigo_usuario, @codigo_contacto, @razon_social, @cuit, @ciudad, @rubro, @nom_contacto)
+
       COMMIT TRANSACTION
 	  SELECT @codigo_contacto
   END TRY
@@ -1792,13 +1794,16 @@ CREATE PROCEDURE HARDCOR.modificar_empresa (@codigo INT,
                                             @numero_departamento NVARCHAR(50),
                                             @localidad NVARCHAR(255),
                                             @codigo_postal NVARCHAR(50),
-                                            @habilitado BIT) AS BEGIN
+                                            @habilitado BIT,
+								    @rubro INTEGER, @nom_contacto NVARCHAR(225)) AS BEGIN
   BEGIN TRY
     BEGIN TRANSACTION
     UPDATE HARDCOR.Empresa
        SET emp_razon_soc = @razon_social,
                 emp_cuit = @cuit,
-              emp_ciudad = @ciudad
+              emp_ciudad = @ciudad,
+		    emp_rubro = @rubro,
+		    emp_nom_contacto = @nom_contacto
      WHERE cod_us = @codigo
 
     UPDATE HARDCOR.Usuario
