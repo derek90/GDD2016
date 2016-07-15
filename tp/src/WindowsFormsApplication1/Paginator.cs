@@ -31,6 +31,9 @@ namespace WindowsFormsApplication1
             // Seteo que los botones pidan la siguiente y la anterior pagina
             prev.Click += (s, e) => this.current_page.Value -= 1;
             next.Click += (s, e) => this.current_page.Value += 1;
+            // Para que antes de cargar alguna pagina no me deje tocar lso botones
+            prev.Enabled = false;
+            next.Enabled = false;
             // Para que al cambiar de valor current_page se haga el pedido a la base
             current_page.ValueChanged += (s, e) => this.load_page(this.current_page.Value);
         }
