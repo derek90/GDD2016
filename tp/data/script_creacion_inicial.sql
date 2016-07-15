@@ -1773,9 +1773,11 @@ CREATE PROCEDURE HARDCOR.modificar_cliente (@codigo INT,
                              FROM HARDCOR.Cliente
                             WHERE cod_us = @codigo)
     COMMIT TRANSACTION
+    SELECT @codigo
   END TRY
   BEGIN CATCH
     ROLLBACK TRANSACTION
+    SELECT -1
   END CATCH
 END
 GO
@@ -1821,9 +1823,11 @@ CREATE PROCEDURE HARDCOR.modificar_empresa (@codigo INT,
                             WHERE emp_cuit = @cuit)
 
     COMMIT TRANSACTION
+    SELECT @codigo
   END TRY
   BEGIN CATCH
     ROLLBACK TRANSACTION
+    SELECT -1
   END CATCH
 END
 GO
