@@ -44,7 +44,7 @@ namespace WindowsFormsApplication1.Menu_principal
         private void initialize_form_mapping()
         {
             this.form_mapping = new Dictionary<int, Func<Form>>();
-            this.form_mapping.Add(1, () => new ABM_Rol.AbmRol(this));
+            this.form_mapping.Add(1, () => new ABM_Rol.AbmRol(this, this.username));
             this.form_mapping.Add(2, () => new ABM_Usuario.AbmUsuario(this));
             this.form_mapping.Add(3, () => new ABM_Rubro.AbmRubro(this));
             this.form_mapping.Add(4, () => new ABM_Visibilidad.AbmVisibilidad(this));

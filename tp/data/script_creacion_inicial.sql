@@ -144,6 +144,9 @@ IF (OBJECT_ID ('HARDCOR.listar_clientes') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.obtener_roles') IS NOT NULL)
   DROP PROCEDURE HARDCOR.obtener_roles
 
+IF (OBJECT_ID ('HARDCOR.obtener_roles_para_modificar') IS NOT NULL)
+  DROP PROCEDURE HARDCOR.obtener_roles_para_modificar
+
 IF (OBJECT_ID ('HARDCOR.obtener_usuario') IS NOT NULL)
   DROP PROCEDURE HARDCOR.obtener_usuario
 
@@ -1585,6 +1588,18 @@ CREATE PROCEDURE HARDCOR.obtener_roles AS BEGIN
 END
 GO
 
+CREATE PROCEDURE HARDCOR.obtener_roles_para_modificar (@username NVARCHAR(255)) AS BEGIN
+  /* Devuelve todos los roles para el administrador general y todos los roles no administrativos
+     para el que no lo sea */
+  SELECT *
+    FROM HARDCOR.Rol
+  WHERE (cod_rol NOT IN (1, 2)) OR 1 = (SELECT R.cod_rol
+                                          FROM HARDCOR.Usuario U, HARDCOR.RolXus R
+                                         WHERE U.username = @username
+                                           AND R.cod_us = U.cod_us)
+END
+GO
+SELECT * FROM HARDCOR.Rol
 CREATE PROCEDURE HARDCOR.obtener_usuario (@codigo  INT) AS BEGIN
   SELECT U.cod_us, U.fecha_creacion, U.habilitado, U.username
     FROM HARDCOR.Usuario U
