@@ -1071,7 +1071,7 @@ CREATE PROCEDURE HARDCOR.facturar_venta(@codigo_publicacion INT, @fecha DATETIME
 		/* Calculo la comision por envio, si la publicaion la tuviera */ 
 		SELECT @comision_envio = V.comision_envio * P.precio * @cantidad
 		FROM HARDCOR.Publicacion P, HARDCOR.Visibilidad V
-		WHERE P.cod_pub = @codigo_publicacion AND P.envio = 1
+		WHERE P.cod_pub = @codigo_publicacion AND P.envio = 1 AND V.cod_visi = P.cod_visi
 
 		/* Creo una nueva factura asociada */
 		INSERT HARDCOR.Factura(nro_fact, cod_pub, fecha, forma_pago, total, cod_us)
