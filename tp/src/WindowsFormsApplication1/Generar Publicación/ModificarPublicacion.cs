@@ -76,6 +76,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
             bool send_enabled = (bool)this.dataGridView1.SelectedRows[0].Cells["envio"].Value;
             float price = float.Parse(this.dataGridView1.SelectedRows[0].Cells["precio"].Value.ToString());
 
+            this.Hide();
             (new GenerarPublicacion(this, this.username, code, description, stock, price, bussiness_code, visibility_code,
                                     state_code, type_code, start_time, expiration_time, send_enabled)).Show();
         }
@@ -109,11 +110,11 @@ namespace WindowsFormsApplication1.Generar_Publicación
                 float total = float.Parse(reader["total"].ToString());
                 string payment_type = reader["forma_pago"].ToString();
                 int user_code = Int32.Parse(reader["cod_us"].ToString());
-                (new Facturas.Factura(this.parent, bill_number, publication_code, user_code, date, payment_type, total)).Show();
+                this.Hide();
+                (new Facturas.Factura(this, bill_number, publication_code, user_code, date, payment_type, total)).Show();
             }
             MessageBox.Show("Se cambio el estado de la publicacion a " + this.comboBox1.SelectedItem.ToString());
             this.paginator.load_page(0);
-            this.Hide();
         }
 
         private void dataGridView1_SelectionChanged(object sender, EventArgs e)

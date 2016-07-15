@@ -179,7 +179,8 @@ namespace WindowsFormsApplication1.Generar_Publicación
                         float total = float.Parse(reader["total"].ToString());
                         string payment_type = reader["forma_pago"].ToString();
                         int user_code = Int32.Parse(reader["cod_us"].ToString());
-                        (new Facturas.Factura(this.parent, bill_number, new_publication_code, user_code, date, payment_type, total)).Show();
+                        this.Hide();
+                        (new Facturas.Factura(this, bill_number, new_publication_code, user_code, date, payment_type, total)).Show();
                     }
                 }
                 MessageBox.Show("Publicacion creada con exito", "Publicacion creada", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
@@ -188,10 +189,10 @@ namespace WindowsFormsApplication1.Generar_Publicación
             {
                 MessageBox.Show("Borrador modificado con exito", "Borrador modificado", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 ((ModificarPublicacion) this.parent).refresh();
+                this.Close();
+                this.parent.Show();
             }
 
-            this.Close();
-            this.parent.Show();
         }
 
         private void button2_Click(object sender, EventArgs e)
