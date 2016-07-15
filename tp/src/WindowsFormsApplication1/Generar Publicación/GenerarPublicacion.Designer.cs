@@ -281,6 +281,7 @@
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.textBox1);
             this.Name = "GenerarPublicacion";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Generar publicacion";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();

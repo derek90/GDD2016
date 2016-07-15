@@ -123,6 +123,7 @@
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Name = "AltaUsuario";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Elija usuario y contraseña";
             this.ResumeLayout(false);
             this.PerformLayout();

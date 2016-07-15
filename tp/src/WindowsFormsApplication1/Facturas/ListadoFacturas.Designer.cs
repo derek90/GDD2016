@@ -334,6 +334,7 @@
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.groupBox1);
             this.Name = "ListadoFacturas";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ListadoFacturas";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
