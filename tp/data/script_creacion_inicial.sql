@@ -192,9 +192,6 @@ IF (OBJECT_ID ('HARDCOR.obtener_rubros') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.obtener_visibilidades') IS NOT NULL)
   DROP PROCEDURE HARDCOR.obtener_visibilidades
 
-IF (OBJECT_ID ('HARDCOR.obtener_visibilidades_por_usuario') IS NOT NULL)
-  DROP PROCEDURE HARDCOR.obtener_visibilidades_por_usuario
-
 IF (OBJECT_ID ('HARDCOR.listar_publicaciones') IS NOT NULL)
   DROP PROCEDURE HARDCOR.listar_publicaciones
 
@@ -1901,14 +1898,6 @@ GO
 CREATE PROCEDURE HARDCOR.obtener_rubros AS BEGIN
   SELECT *
     FROM HARDCOR.Rubro
-END
-GO
-
-CREATE PROCEDURE HARDCOR.obtener_visibilidades_por_usuario (@usuario NVARCHAR(255)) AS BEGIN
-    IF (EXISTS (SELECT cod_pub FROM HARDCOR.Publicacion p, HARDCOR.Usuario u WHERE u.username = @usuario AND p.cod_us = u.cod_us))
-	   SELECT cod_visi, visi_desc FROM HARDCOR.Visibilidad WHERE visi_desc <> 'Gratis'
-    ELSE
-	   SELECT cod_visi, visi_desc FROM HARDCOR.Visibilidad WHERE visi_desc = 'Gratis'
 END
 GO
 

@@ -76,7 +76,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
                     connection.Open();
                     query.ExecuteNonQuery();
                     connection.Close();
-                    MessageBox.Show("El administrador " + this.textBox1.Text + " ha sido creado con éxito");
+                    MessageBox.Show("El usuario " + this.textBox1.Text + " ha sido creado con éxito");
                     break;
             }
         }

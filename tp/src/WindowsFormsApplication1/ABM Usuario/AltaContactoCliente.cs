@@ -98,6 +98,11 @@ namespace WindowsFormsApplication1.ABM_Usuario
                 MessageBox.Show("Complete todos los campos");
                 return;
             }
+            if (this.numericUpDown1.Value == 0)
+            {
+                MessageBox.Show("El número de documento no puede ser 0");
+                return;
+            }
 
             SqlConnection connection = DBConnection.getInstance().getConnection();
             bool transaction_was_successful;
