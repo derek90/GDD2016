@@ -85,7 +85,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
         public bool there_are_empty_inputs()
         {
             List<TextBox> inputs = new List<TextBox> { this.textBox1, this.textBox2, this.textBox4, this.textBox5,
-                                                       this.textBox6, this.textBox7, this.textBox8, this.textBox11, this.textBox12,
+                                                       this.textBox6, this.textBox7, this.textBox8, this.textBox12,
                 this.textBox13};
             return inputs.Any((t) => t.Text == "");
         }
