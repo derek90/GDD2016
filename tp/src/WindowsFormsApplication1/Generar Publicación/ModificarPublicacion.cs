@@ -40,8 +40,6 @@ namespace WindowsFormsApplication1.Generar_Publicación
             states.Add("Pausada");
             states.Add("Borrador");
             states.Add("Finalizada");
-            // Este estado no se para que esta. Toda publicacion que no es 'Borrador' esta publicada
-            //states.Add("Publicada");
 
             return states;
         }
@@ -94,15 +92,28 @@ namespace WindowsFormsApplication1.Generar_Publicación
                 SqlCommand query = new SqlCommand("HARDCOR.cambiar_estado_publ", connection);
                 query.CommandType = CommandType.StoredProcedure;
                 query.Parameters.Add(new SqlParameter("@usuario", this.username));
-                query.Parameters.Add(new SqlParameter("@cod_pub", this.dataGridView1.SelectedRows[0].Cells["cod_pub"].Value));
+                int publication_code = Int32.Parse(this.dataGridView1.SelectedRows[0].Cells["cod_pub"].Value.ToString());
+                query.Parameters.Add(new SqlParameter("@cod_pub", publication_code));
                 query.Parameters.Add(new SqlParameter("@nuevo_estado", this.comboBox1.SelectedItem));
                 query.Parameters.Add(new SqlParameter("@fecha", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
 
                 connection.Open();
-                query.ExecuteNonQuery();
+                int bill_number = (int) query.ExecuteScalar();
+
+                SqlCommand fetch_bill = new SqlCommand("HARDCOR.obtener_factura", connection);
+                fetch_bill.CommandType = CommandType.StoredProcedure;
+                fetch_bill.Parameters.Add(new SqlParameter("@numero", bill_number));
+                SqlDataReader reader = fetch_bill.ExecuteReader();
+                reader.Read();
+                DateTime date = DateTime.Parse(reader["fecha"].ToString());
+                float total = float.Parse(reader["total"].ToString());
+                string payment_type = reader["forma_pago"].ToString();
+                int user_code = Int32.Parse(reader["cod_us"].ToString());
+                (new Facturas.Factura(this.parent, bill_number, publication_code, user_code, date, payment_type, total)).Show();
             }
             MessageBox.Show("Se cambio el estado de la publicacion a " + this.comboBox1.SelectedItem.ToString());
             this.paginator.load_page(0);
+            this.Hide();
         }
 
         private void dataGridView1_SelectionChanged(object sender, EventArgs e)

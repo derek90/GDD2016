@@ -1152,7 +1152,6 @@ GO
 
 CREATE PROCEDURE HARDCOR.facturar_publicacion(@codigo_publicacion INT, @fecha DATETIME) AS BEGIN
 /* Factura la comision por publicar de una publicacion. Devuelve el numero de factura o -1 */
-
   BEGIN TRY
     BEGIN TRANSACTION
     DECLARE @ret INT
@@ -1166,17 +1165,9 @@ CREATE PROCEDURE HARDCOR.facturar_publicacion(@codigo_publicacion INT, @fecha DA
     WHERE cod_pub = @codigo_publicacion
 
     /* Calculo la comision de publicacion */
-
-    IF NOT EXISTS ( select COUNT(*) 
-				from HARDCOR.Publicacion p 
-				where @codigo_usuario = p.cod_us and p.estado <> 3 
-				having COUNT(*)>1) AND @codigo_usuario > 97
-        SET @comision = 0
-    ELSE BEGIN
-	   SELECT @comision = V.comision_pub
-	   FROM HARDCOR.Publicacion P, HARDCOR.Visibilidad V 
-	   WHERE P.cod_pub = @codigo_publicacion AND P.cod_visi = V.cod_visi
-	   END
+    SELECT @comision = V.comision_pub
+    FROM HARDCOR.Publicacion P, HARDCOR.Visibilidad V 
+	WHERE P.cod_pub = @codigo_publicacion AND P.cod_visi = V.cod_visi
 
     /* Creo una nueva factura asociada */
     INSERT HARDCOR.Factura(nro_fact, cod_pub, fecha, forma_pago, total, cod_us)
@@ -1292,7 +1283,12 @@ AS BEGIN
             BEGIN
                 SELECT @cod_pub = MAX(p.cod_pub) + 1 FROM HARDCOR.Publicacion p
 
-                SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @visi
+                IF NOT EXISTS (SELECT p.cod_us FROM HARDCOR.Publicacion p WHERE p.cod_us = @cod_us) AND @cod_us > 97
+                BEGIN
+                    SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = 'Gratis'
+                END
+                ELSE
+                    SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = @visi
 
                 INSERT INTO HARDCOR.Publicacion (cod_pub, cod_us, cod_rubro, cod_visi, descripcion, stock,
                                                 fecha_ini, fecha_fin, precio, estado, cod_tipo, envio)
@@ -1329,6 +1325,7 @@ AS BEGIN
             DECLARE @tipo NVARCHAR(225)
             DECLARE @cod_us NVARCHAR(225)
             DECLARE @h BIT
+            DECLARE @ret INT = -1
 
 			DECLARE @cod_estado INT = (SELECT E.cod_estado FROM HARDCOR.Estado_publ E WHERE @nuevo_estado = E.descripcion)
 
@@ -1345,8 +1342,10 @@ AS BEGIN
                         IF @estado <> @cod_estado
                         BEGIN
                             UPDATE HARDCOR.Publicacion SET estado = @cod_estado WHERE cod_pub = @cod_pub
-                            IF @nuevo_estado = 'Activada'
-                              EXEC HARDCOR.facturar_publicacion @cod_pub, @fecha 
+                            IF @nuevo_estado = 'Activada' BEGIN
+                              
+                              EXEC @ret = HARDCOR.facturar_publicacion @cod_pub, @fecha 
+                            END
                         END
                         ELSE
                             RAISERROR('', 16, 1)
@@ -1369,30 +1368,30 @@ AS BEGIN
         IF @usuario <> @cod_us OR @h <> 1
         BEGIN
             PRINT 'La publicacion que se quiere modificar no le corresponde al usuario ingresado o esta inhabilitado.'
-            RETURN -1
+            SELECT -1
         END
 
         IF @nuevo_estado = 'Finalizado' AND @tipo = 'Subasta'
         BEGIN
             PRINT 'Las subastas no pueden cambiarse a finalizadas, el sistema lo hace automaticamente.'
-            RETURN -2
+            SELECT -2
         END
 
         IF @estado = @cod_estado
         BEGIN
             PRINT 'La publicacion ya tiene el estado por el que se desea cambiar.'
-            RETURN -3
+            SELECT -3
         END
 
         IF @estado = 4
         BEGIN
             PRINT 'No se puede cambiar el estado de una publicacion finalizada.'
-            RETURN -4
+            SELECT -4
         END
 
     END CATCH
 
-    RETURN 1
+    SELECT 0
 END
 GO
 

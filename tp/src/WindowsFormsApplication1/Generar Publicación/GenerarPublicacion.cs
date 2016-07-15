@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 
@@ -168,7 +169,18 @@ namespace WindowsFormsApplication1.Generar_Publicación
                         query.Parameters.Add(new SqlParameter("@fecha", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
 
                         connection.Open();
-                        query.ExecuteNonQuery();
+                        int bill_number = (int)query.ExecuteScalar();
+
+                        SqlCommand fetch_bill = new SqlCommand("HARDCOR.obtener_factura", connection);
+                        fetch_bill.CommandType = CommandType.StoredProcedure;
+                        fetch_bill.Parameters.Add(new SqlParameter("@numero", bill_number));
+                        SqlDataReader reader = fetch_bill.ExecuteReader();
+                        reader.Read();
+                        DateTime date = DateTime.Parse(reader["fecha"].ToString());
+                        float total = float.Parse(reader["total"].ToString());
+                        string payment_type = reader["forma_pago"].ToString();
+                        int user_code = Int32.Parse(reader["cod_us"].ToString());
+                        (new Facturas.Factura(this.parent, bill_number, new_publication_code, user_code, date, payment_type, total)).Show();
                     }
                 }
                 MessageBox.Show("Publicacion creada con exito", "Publicacion creada", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
