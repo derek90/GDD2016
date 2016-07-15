@@ -1853,9 +1853,11 @@ GO
 CREATE PROCEDURE HARDCOR.funcionalidades_del_rol (@cod_rol TINYINT) AS BEGIN
   /* Lista las funcionalidades que tiene asignado un rol */
   SELECT F.cod_fun, F.descripcion
-    FROM HARDCOR.Funcionalidad F, HARDCOR.RolXfunc R
-   WHERE R.cod_rol = @cod_rol
-     AND F.cod_fun = R.cod_fun
+    FROM HARDCOR.Funcionalidad F, HARDCOR.RolXfunc Rf, HARDCOR.Rol R
+   WHERE Rf.cod_rol = @cod_rol
+     AND F.cod_fun = Rf.cod_fun
+     AND R.habilitado = 1
+     AND R.cod_rol = @cod_rol
 END
 GO
 
