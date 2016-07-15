@@ -255,6 +255,8 @@ IF (OBJECT_ID ('HARDCOR.modificar_borrador') IS NOT NULL)
 IF (OBJECT_ID ('HARDCOR.usuario_con_calif_pendientes') IS NOT NULL)
   DROP PROCEDURE HARDCOR.usuario_con_calif_pendientes
 
+  
+
 IF EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'HARDCOR')
     DROP SCHEMA HARDCOR
 GO
@@ -468,7 +470,7 @@ SELECT @hash = HASHBYTES('SHA2_256', 'w23e');
 
 /* Inserto el usuario admin */
 INSERT INTO HARDCOR.Usuario(username, pass_word, habilitado, intentos)
-VALUES ('admin', @hash, 1, 0)
+VALUES ('admin', @hash, 1, 0), ('Administrador',@hash,1,0);
 
 INSERT INTO HARDCOR.Usuario(username, pass_word, habilitado, intentos)
 SELECT DISTINCT m.Cli_Dni, @hash, 1, 0 FROM gd_esquema.Maestra m WHERE m.Cli_Dni IS NOT NULL
@@ -582,6 +584,8 @@ INSERT INTO HARDCOR.RolXus(cod_rol, cod_us)
 SELECT 3, u.cod_us FROM HARDCOR.Usuario u WHERE u.cod_us IN (SELECT e.cod_us FROM HARDCOR.Empresa e)
 UNION ALL
 SELECT 4, u.cod_us FROM HARDCOR.Usuario u WHERE u.cod_us IN (SELECT c.cod_us FROM HARDCOR.Cliente c)
+UNION ALL
+SELECT 2, u.cod_us FROM HARDCOR.Usuario u WHERE u.cod_us = 2
 GO
 
 CREATE TRIGGER HARDCOR.tr_update_calif
@@ -1271,7 +1275,7 @@ AS BEGIN
             BEGIN
                 SELECT @cod_pub = MAX(p.cod_pub) + 1 FROM HARDCOR.Publicacion p
 
-                IF NOT EXISTS (SELECT p.cod_us FROM HARDCOR.Publicacion p WHERE p.cod_us = @cod_us) AND @cod_us > 96
+                IF NOT EXISTS (SELECT p.cod_us FROM HARDCOR.Publicacion p WHERE p.cod_us = @cod_us) AND @cod_us > 97
                 BEGIN
                     SELECT @cod_visi = v.cod_visi FROM HARDCOR.Visibilidad v WHERE v.visi_desc = 'Gratis'
                 END

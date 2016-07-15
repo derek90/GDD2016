@@ -173,7 +173,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             if (creation_was_ok)
                 MessageBox.Show("La creación de " + this.textBox1.Text + " ha sido exitosa!", "Creación exitosa");
             else
-                MessageBox.Show("El CUIT y razon social ya estan registradas para otra empresa", "Error en la creación",
+                MessageBox.Show("El CUIT y razon social ya estan registradas para otra empresa o el email está duplicado", "Error en la creación",
                                  MessageBoxButtons.OK, MessageBoxIcon.Error);
             connection.Close();
 
