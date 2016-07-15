@@ -67,8 +67,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
         {
             reader.Read();
             this.textBox1.Text = reader["emp_razon_soc"].ToString();
-            // Esto ni idea donde esta
-            //this.textBox2.Text = reader["nombre_contacto"].ToString();
+            this.textBox2.Text = reader["emp_nom_contacto"].ToString();
             this.comboBox1.SelectedIndex = (int)reader["emp_rubro"] - 1;
             this.textBox4.Text = reader["emp_cuit"].ToString();
             this.textBox5.Text = reader["nro_tel"].ToString();
@@ -130,6 +129,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             update.Parameters.Add(new SqlParameter("@codigo_postal", this.textBox13.Text));
             update.Parameters.Add(new SqlParameter("@habilitado", this.checkBox1.Checked));
             update.Parameters.Add(new SqlParameter("@rubro", rubroSeleccionado));
+            update.Parameters.Add(new SqlParameter("@nom_contacto", this.textBox2.Text));
 
             connection.Open();
             bool update_was_ok = (int) update.ExecuteScalar() > 0;
@@ -166,7 +166,7 @@ namespace WindowsFormsApplication1.ABM_Usuario
             create.Parameters.Add(new SqlParameter("@habilitado", this.checkBox1.Checked));
             create.Parameters.Add(new SqlParameter("@fecha_creacion", DateTime.Parse(ConfigurationManager.AppSettings["current_date"].ToString())));
             create.Parameters.Add(new SqlParameter("@rubro", rubroSeleccionado));
-
+            create.Parameters.Add(new SqlParameter("@nom_contacto", this.textBox2.Text));
 
             connection.Open();
             bool creation_was_ok = (int) create.ExecuteScalar() > 0;

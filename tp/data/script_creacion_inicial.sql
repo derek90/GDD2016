@@ -1702,7 +1702,7 @@ CREATE PROCEDURE HARDCOR.crear_empresa (@username NVARCHAR(255),
                                         @localidad NVARCHAR(255),
                                         @codigo_postal NVARCHAR(50),
                                         @habilitado BIT,
-								@rubro INTEGER) AS BEGIN
+								@rubro INTEGER, @nom_contacto NVARCHAR(225)) AS BEGIN
 
   /* Crea un nuevo usuario, una nueva empresa y un nuevo contacto y los llena con los datos recibidos */
   BEGIN TRY
@@ -1717,8 +1717,8 @@ CREATE PROCEDURE HARDCOR.crear_empresa (@username NVARCHAR(255),
       EXEC @codigo_contacto = HARDCOR.crear_contacto @telefono, @mail, @direccion_calle, @direccion_numero, @direccion_piso,
                                                      @numero_departamento, @localidad, @codigo_postal
 
-      INSERT INTO HARDCOR.Empresa (cod_us, cod_contacto, emp_razon_soc, emp_cuit, emp_ciudad, emp_rubro)
-      VALUES (@codigo_usuario, @codigo_contacto, @razon_social, @cuit, @ciudad, @rubro)
+      INSERT INTO HARDCOR.Empresa (cod_us, cod_contacto, emp_razon_soc, emp_cuit, emp_ciudad, emp_rubro, emp_nom_contacto)
+      VALUES (@codigo_usuario, @codigo_contacto, @razon_social, @cuit, @ciudad, @rubro, @nom_contacto)
 
       COMMIT TRANSACTION
 	  SELECT @codigo_contacto
@@ -1795,14 +1795,15 @@ CREATE PROCEDURE HARDCOR.modificar_empresa (@codigo INT,
                                             @localidad NVARCHAR(255),
                                             @codigo_postal NVARCHAR(50),
                                             @habilitado BIT,
-								    @rubro INTEGER) AS BEGIN
+								    @rubro INTEGER, @nom_contacto NVARCHAR(225)) AS BEGIN
   BEGIN TRY
     BEGIN TRANSACTION
     UPDATE HARDCOR.Empresa
        SET emp_razon_soc = @razon_social,
                 emp_cuit = @cuit,
               emp_ciudad = @ciudad,
-		    emp_rubro = @rubro
+		    emp_rubro = @rubro,
+		    emp_nom_contacto = @nom_contacto
      WHERE cod_us = @codigo
 
     UPDATE HARDCOR.Usuario
@@ -2114,6 +2115,3 @@ CREATE PROCEDURE HARDCOR.modificar_borrador(@descripcion NVARCHAR(225), @stock N
    WHERE cod_pub = @cod_pub
 END
 GO
-
-EXEC HARDCOR.obtener_empresa 30
-SELECT * FROM HARDCOR.Empresa e WHERE e.emp_razon_soc = 'unaEmpresa'
