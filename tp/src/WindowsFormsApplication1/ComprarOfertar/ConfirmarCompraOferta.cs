@@ -54,6 +54,7 @@ namespace WindowsFormsApplication1.ComprarOfertar
                 }
 
                 connection.Open();
+                query.ExecuteNonQuery();
 
                 if (!is_auction)
                 {
