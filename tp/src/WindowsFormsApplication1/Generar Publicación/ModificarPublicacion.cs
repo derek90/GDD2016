@@ -54,7 +54,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
         {
             if(this.dataGridView1.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Debe seleccionar un cliente");
+                MessageBox.Show("Debe seleccionar una publicacion");
                 return;
             }
             if((int) this.dataGridView1.SelectedRows[0].Cells["estado"].Value != 3)
@@ -85,7 +85,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
         {
             if(this.dataGridView1.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Debe seleccionar un cliente");
+                MessageBox.Show("Debe seleccionar un estado");
                 return;
             }
             using(var connection = DBConnection.getInstance().getConnection())
