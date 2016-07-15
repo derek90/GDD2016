@@ -35,6 +35,10 @@ namespace WindowsFormsApplication1.Menu_principal
                     roles.Add(new KeyValuePair<int, string>(Int32.Parse(reader["cod_fun"].ToString()), reader["descripcion"].ToString()));
             }
             Utils.populate(this.listBox1, roles);
+            if (this.listBox1.Items.Count < 1)
+            {
+                this.button1.Enabled = false;
+            }
         }
 
         private void initialize_form_mapping()
