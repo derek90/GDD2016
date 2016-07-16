@@ -44,7 +44,7 @@ namespace WindowsFormsApplication1.ABM_Rol
             update_command.Parameters.Add(new SqlParameter("@habilitado", this.checkBox1.Checked));
 
             connection.Open();
-            if(update_command.ExecuteNonQuery() == 1)
+            if(update_command.ExecuteNonQuery() >= 1)
             {
                 this.apply_sp_to_list_of_functionalities(this.added_functionalities, "HARDCOR.agregar_funcionalidad");
                 this.apply_sp_to_list_of_functionalities(this.deleted_functionalities, "HARDCOR.quitar_funcionalidad");
