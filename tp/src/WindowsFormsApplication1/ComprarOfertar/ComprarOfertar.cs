@@ -113,7 +113,7 @@ namespace WindowsFormsApplication1.ComprarOfertar
                 bool is_auction = Int32.Parse(cells["cod_tipo"].Value.ToString()) == 2;
                 if (is_auction) // Es una subasta
                 {
-                    min = decimal.Parse(cells["precio"].Value.ToString());
+                    min = decimal.Parse(cells["precio"].Value.ToString()) + 1.0m;
                     max = Int32.MaxValue;
                 }
                 else
