@@ -1345,8 +1345,9 @@ AS BEGIN
                         IF @estado <> @cod_estado
                         BEGIN
                             UPDATE HARDCOR.Publicacion SET estado = @cod_estado WHERE cod_pub = @cod_pub
-                            IF @nuevo_estado = 'Activada' BEGIN
-                              
+                            IF @nuevo_estado = 'Activada' and not exists (select f.nro_fact from HARDCOR.Factura f where f.cod_pub = @cod_pub)
+					   BEGIN
+                             
                               EXEC @ret = HARDCOR.facturar_publicacion @cod_pub, @fecha 
                             END
                         END
@@ -1394,7 +1395,7 @@ AS BEGIN
 
     END CATCH
 
-    SELECT 0
+    SELECT @ret
 END
 GO
 
@@ -2030,7 +2031,7 @@ CREATE PROCEDURE HARDCOR.ultimas_operaciones_calificadas (@usuario NVARCHAR(255)
                        WHERE username = @usuario)
      AND Ca.cod_calif = Co.cod_calif
      AND P.cod_pub = Co.cod_pub
-  ORDER BY Co.fecha_compra DESC
+  ORDER BY Ca.cod_calif  DESC
 END
 GO
 

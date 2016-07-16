@@ -101,6 +101,8 @@ namespace WindowsFormsApplication1.Generar_Publicación
                 connection.Open();
                 int bill_number = (int) query.ExecuteScalar();
 
+                if(bill_number > 0)
+                {
                 SqlCommand fetch_bill = new SqlCommand("HARDCOR.obtener_factura", connection);
                 fetch_bill.CommandType = CommandType.StoredProcedure;
                 fetch_bill.Parameters.Add(new SqlParameter("@numero", bill_number));
@@ -112,6 +114,7 @@ namespace WindowsFormsApplication1.Generar_Publicación
                 int user_code = Int32.Parse(reader["cod_us"].ToString());
                 this.Hide();
                 (new Facturas.Factura(this, bill_number, publication_code, user_code, date, payment_type, total)).Show();
+                }
             }
             MessageBox.Show("Se cambio el estado de la publicacion a " + this.comboBox1.SelectedItem.ToString());
             this.paginator.load_page(0);
