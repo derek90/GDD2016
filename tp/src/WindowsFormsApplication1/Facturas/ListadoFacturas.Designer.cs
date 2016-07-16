@@ -335,7 +335,7 @@
             this.Controls.Add(this.groupBox1);
             this.Name = "ListadoFacturas";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ListadoFacturas";
+            this.Text = "Listado Facturas - Mercado Envio";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);

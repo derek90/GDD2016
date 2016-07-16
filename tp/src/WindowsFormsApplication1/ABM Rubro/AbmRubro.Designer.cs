@@ -61,7 +61,7 @@
             this.Controls.Add(this.label2);
             this.Name = "AbmRubro";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ABM Rubro - MercadoEnvio";
+            this.Text = "ABM Rubro - Mercado Envio";
             this.ResumeLayout(false);
             this.PerformLayout();
 

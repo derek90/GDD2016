@@ -124,7 +124,7 @@
             this.Controls.Add(this.label1);
             this.Name = "ModificacionRol";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Form1";
+            this.Text = "Modificar Rol - Mercado Envio";
             this.ResumeLayout(false);
             this.PerformLayout();
 

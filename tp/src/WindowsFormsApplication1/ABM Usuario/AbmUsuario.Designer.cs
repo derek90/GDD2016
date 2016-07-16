@@ -110,7 +110,7 @@
             this.MinimumSize = new System.Drawing.Size(100, 100);
             this.Name = "AbmUsuario";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ABM Usuario - MercadoEnvio";
+            this.Text = "ABM Usuario - Mercado Envio";
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -145,7 +145,7 @@
             this.Controls.Add(this.button1);
             this.Name = "ModificarPublicacion";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ModificarPublicacion - Mercado Envio";
+            this.Text = "Modificar Publicacion - Mercado Envio";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);

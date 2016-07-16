@@ -373,7 +373,7 @@
             this.Controls.Add(this.groupBox1);
             this.Name = "AltaContactoEmpresa";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Nueva empresa";
+            this.Text = "Nueva empresa - Mercado Envio";
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();

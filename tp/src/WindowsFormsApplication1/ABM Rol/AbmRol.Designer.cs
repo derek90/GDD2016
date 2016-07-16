@@ -85,7 +85,7 @@
             this.MinimumSize = new System.Drawing.Size(100, 100);
             this.Name = "AbmRol";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ABM Rol - MercadoEnvio";
+            this.Text = "ABM Rol - Mercado Envio";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 

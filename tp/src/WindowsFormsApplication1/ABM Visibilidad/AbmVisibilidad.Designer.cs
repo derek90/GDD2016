@@ -97,7 +97,7 @@
             this.MinimumSize = new System.Drawing.Size(500, 400);
             this.Name = "AbmVisibilidad";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ABM Visibilidad - MercadoEnvio";
+            this.Text = "ABM Visibilidad - Mercado Envio";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

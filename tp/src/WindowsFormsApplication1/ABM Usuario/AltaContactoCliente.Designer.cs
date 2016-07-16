@@ -385,7 +385,7 @@
             this.Controls.Add(this.groupBox1);
             this.Name = "AltaContactoCliente";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Nuevo cliente";
+            this.Text = "Nuevo cliente - Mercado Envio";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();

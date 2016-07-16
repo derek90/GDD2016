@@ -83,7 +83,7 @@
             this.Controls.Add(this.comboBox1);
             this.Name = "EleccionRoles";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Elija un rol - MercadoEnvio";
+            this.Text = "Elija un rol - Mercado Envio";
             this.ResumeLayout(false);
             this.PerformLayout();
 

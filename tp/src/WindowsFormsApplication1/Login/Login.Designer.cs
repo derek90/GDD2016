@@ -116,7 +116,7 @@
             this.MinimumSize = new System.Drawing.Size(500, 400);
             this.Name = "Login";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Login - MercadoEnvio";
+            this.Text = "Login - Mercado Envio";
             this.ResumeLayout(false);
             this.PerformLayout();
 
